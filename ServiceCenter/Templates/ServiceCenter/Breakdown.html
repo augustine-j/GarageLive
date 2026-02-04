@@ -182,11 +182,13 @@
 
                         {% elif i.servicecenter_breakdown_service.servicetype.servicetype_name == "Battery Jump Start" %}
                           {% if i.progress_step == 0 %}
-                            on the way
+                            Accepted
                           {% elif i.progress_step == 1 %}
-                            Arrived
+                            On the way
                           {% elif i.progress_step == 2 %}
-                            Jumb started
+                            Arrived
+                          {% elif i.progress_step == 3 %}
+                            Jump started
                             
                           {% else %}
                             Completed
@@ -381,6 +383,9 @@
   window.location = "{% url 'ServiceCenter:breakdownrequest' %}";
 </script>
 {% endif %}
+
+
+
 
 
 {% endblock content %}

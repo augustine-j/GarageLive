@@ -131,28 +131,32 @@ def AjaxLocation(request):
 
 
 def servicebooking(request,sid):
-   user=tbl_user.objects.get(id=request.session['uid'])
-   greeting=tbl_user.objects.get(id=request.session['uid'])
-   servicecenter=tbl_servicecenter.objects.get(id=sid)
-   servicetype=tbl_servicecenterservices.objects.filter(servicecenter_id=sid)
-   vehicle_data=tbl_vehicle.objects.filter(user_id=request.session['uid'])
-   if request.method=="POST":
-      todate=request.POST.get("txt_date")
-      complaint=request.POST.get("txt_complaint")
-      
-      vehicle=tbl_vehicle.objects.get(id=request.POST.get("sel_vehicle"))
-      service_ids=request.POST.getlist("services")
+    if 'uid' not in request.session:
+      return redirect("Guest:Login")
+    else:
 
-      booking=tbl_booking.objects.create(booking_todate=todate,booking_complaints=complaint,user=user,
-      servicecenter=servicecenter,vehicle=vehicle)
+        user=tbl_user.objects.get(id=request.session['uid'])
+        greeting=tbl_user.objects.get(id=request.session['uid'])
+        servicecenter=tbl_servicecenter.objects.get(id=sid)
+        servicetype=tbl_servicecenterservices.objects.filter(servicecenter_id=sid)
+        vehicle_data=tbl_vehicle.objects.filter(user_id=request.session['uid'])
+        if request.method=="POST":
+            todate=request.POST.get("txt_date")
+            complaint=request.POST.get("txt_complaint")
+            
+            vehicle=tbl_vehicle.objects.get(id=request.POST.get("sel_vehicle"))
+            service_ids=request.POST.getlist("services")
 
-      for service_id in service_ids:
-         sc_service=tbl_servicecenterservices.objects.get(id=service_id)
-         tbl_booking_services.objects.create(booking=booking,servicecenter_services=sc_service,
-         base_amount=sc_service.base_amount)
+            booking=tbl_booking.objects.create(booking_todate=todate,booking_complaints=complaint,user=user,
+            servicecenter=servicecenter,vehicle=vehicle)
 
-      return render(request,"User/HomePage.html",{'msg':"Service Booked"})
-   return render(request,"User/ServiceBooking.html",{'data':servicetype,'vehicle_data':vehicle_data,'greeting':greeting})
+            for service_id in service_ids:
+                sc_service=tbl_servicecenterservices.objects.get(id=service_id)
+                tbl_booking_services.objects.create(booking=booking,servicecenter_services=sc_service,
+                base_amount=sc_service.base_amount)
+
+            return render(request,"User/HomePage.html",{'msg':"Service Booked"})
+        return render(request,"User/ServiceBooking.html",{'data':servicetype,'vehicle_data':vehicle_data,'greeting':greeting})
 
 
 
@@ -160,12 +164,14 @@ def myservice_request(request):
     if 'uid' not in request.session:
       return redirect("Guest:Login")
     else:
-      bookingdata=tbl_booking.objects.filter(user=request.session['uid'])
+      bookingdata=tbl_booking.objects.filter(user=request.session['uid']).order_by('-id')
       
       greeting=tbl_user.objects.get(id=request.session['uid'])
       
       for booking in bookingdata:
          booking.services=tbl_booking_services.objects.filter(booking=booking)
+
+       
 
       return render(request,"User/MyServiceRequest.html",{'data':bookingdata,'greeting':greeting})
 

@@ -148,10 +148,13 @@ def delmyservices(request,did):
 
 
 def service_requests(request):
-    bookingdata=tbl_booking.objects.filter(servicecenter_id=request.session['cid'])
-    for booking in bookingdata:
-        booking.services=tbl_booking_services.objects.filter(booking=booking)
-    return render(request,"ServiceCenter/ServiceRequest.html",{'data':bookingdata})
+    if 'cid' not in request.session:
+      return redirect("Guest:Login")
+    else:
+        bookingdata=tbl_booking.objects.filter(servicecenter_id=request.session['cid']).order_by('-id')
+        for booking in bookingdata:
+            booking.services=tbl_booking_services.objects.filter(booking=booking)
+        return render(request,"ServiceCenter/ServiceRequest.html",{'data':bookingdata})
 
 
 

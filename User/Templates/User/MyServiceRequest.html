@@ -388,10 +388,32 @@
 /* TRACK */
 .track{
   margin-top:18px;
-  padding:18px;
+  padding:20px;
   border-radius:16px;
   border:1px solid var(--border);
   background:rgba(255,255,255,.02);
+  position:relative;
+}
+
+.track::before{
+  content:"LIVE";
+  position:absolute;
+  top:16px;
+  right:16px;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.15em;
+  padding:4px 10px;
+  background:var(--red);
+  color:#fff;
+  border-radius:999px;
+  animation:blink 1.5s infinite;
+  z-index:10;
+}
+
+@keyframes blink{
+  0%, 100%{opacity:1}
+  50%{opacity:.6}
 }
 
 .track-top{
@@ -399,16 +421,17 @@
   align-items:center;
   justify-content:space-between;
   gap:12px;
-  margin-bottom:14px;
+  margin-bottom:20px;
+  padding-right:50px;
 }
 
 .track-top h3{
   margin:0;
-  font-size:14px;
-  font-weight:700;
-  color:var(--text);
+  font-size:11px;
+  font-weight:600;
+  color:var(--muted);
   text-transform:uppercase;
-  letter-spacing:.05em;
+  letter-spacing:.15em;
 }
 
 .pct{
@@ -418,76 +441,133 @@
   white-space:nowrap;
 }
 
-.bar{
-  height:10px;
-  border-radius:999px;
-  background:rgba(255,255,255,.05);
-  overflow:hidden;
-  border:1px solid var(--border);
-  margin-bottom:16px;
-}
-
-.bar>div{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg, var(--accent), var(--green));
-  border-radius:999px;
-  transition:width .6s ease;
-  box-shadow:0 0 15px rgba(240,165,0,.4);
+/* LIVE TRACK TIMELINE */
+.bd-track-timeline{
   position:relative;
-}
-
-.bar>div::after{
-  content:"";
-  position:absolute;
-  right:-4px;
-  top:50%;
-  transform:translateY(-50%);
-  width:8px;
-  height:8px;
-  background:#fff;
-  border-radius:50%;
-  box-shadow:0 0 0 3px var(--green);
-}
-
-/* STEPPER */
-.stepper{
-  display:flex;
-  gap:8px;
-  align-items:center;
+  padding:0;
   margin-bottom:14px;
 }
 
-.stepper .step{
+.bd-track-line{
+  position:absolute;
+  top:15px;
+  left:15px;
+  right:15px;
+  height:3px;
+  background:rgba(255,255,255,.1);
+  border-radius:999px;
+}
+
+.bd-track-progress{
+  position:absolute;
+  top:0;
+  left:0;
+  height:100%;
+  background:linear-gradient(90deg, var(--accent), var(--green));
+  border-radius:999px;
+  transition:width 1s ease;
+  box-shadow:0 0 20px rgba(240,165,0,.5);
+  max-width:100%;
+  width:0%;
+}
+
+.bd-track-progress::after{
+  content:"";
+  position:absolute;
+  right:-6px;
+  top:50%;
+  transform:translateY(-50%);
   width:12px;
   height:12px;
+  background:#fff;
   border-radius:50%;
-  background:rgba(255,255,255,.15);
-  border:2px solid rgba(255,255,255,.1);
-  transition:all .4s;
+  box-shadow:0 0 0 4px var(--green), 0 0 20px rgba(32,201,176,.6);
+  animation:trackPulse 2s infinite;
 }
 
-.stepper .step.done{
+@keyframes trackPulse{
+  0%, 100%{transform:translateY(-50%) scale(1)}
+  50%{transform:translateY(-50%) scale(1.2)}
+}
+
+.bd-track-steps{
+  display:flex;
+  justify-content:space-between;
+  position:relative;
+}
+
+.bd-track-step{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  flex:1;
+  position:relative;
+  z-index:2;
+}
+
+.bd-track-dot{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:rgba(255,255,255,.05);
+  border:2px solid rgba(255,255,255,.15);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:10px;
+  transition:all .4s;
+  position:relative;
+}
+
+.bd-track-dot svg{
+  width:14px;
+  height:14px;
+  opacity:.3;
+}
+
+.bd-track-step.done .bd-track-dot{
   background:var(--green);
   border-color:var(--green);
-  box-shadow:0 0 15px rgba(32,201,176,.4);
+  box-shadow:0 0 20px rgba(32,201,176,.4);
 }
 
-.stepper .rail{
-  flex:1;
-  height:4px;
-  border-radius:999px;
-  background:rgba(255,255,255,.05);
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,.05);
+.bd-track-step.done .bd-track-dot svg{
+  opacity:1;
+  fill:#fff;
 }
 
-.stepper .rail>div{
-  height:100%;
-  width:0%;
-  background:var(--green);
-  transition:width .6s ease;
-  box-shadow:0 0 10px rgba(32,201,176,.3);
+.bd-track-step.active .bd-track-dot{
+  background:var(--accent);
+  border-color:var(--accent);
+  box-shadow:0 0 25px rgba(240,165,0,.6);
+  animation:activeDot 2s infinite;
+}
+
+.bd-track-step.active .bd-track-dot svg{
+  opacity:1;
+  fill:#fff;
+}
+
+@keyframes activeDot{
+  0%, 100%{transform:scale(1)}
+  50%{transform:scale(1.15)}
+}
+
+.bd-track-label{
+  font-size:11px;
+  color:var(--muted);
+  text-align:center;
+  font-weight:500;
+  max-width:80px;
+}
+
+.bd-track-step.done .bd-track-label{
+  color:var(--green);
+}
+
+.bd-track-step.active .bd-track-label{
+  color:var(--accent);
+  font-weight:600;
 }
 
 .smallnote{
@@ -929,20 +1009,11 @@
                   <div class="pct" id="pct-{{ forloop.counter }}">0% completed</div>
                 </div>
 
-                <div class="bar"><div id="bar-{{ forloop.counter }}"></div></div>
-
-                <div class="stepper">
-                  <div class="step" id="s1-{{ forloop.counter }}"></div>
-                  <div class="rail"><div id="r1-{{ forloop.counter }}"></div></div>
-                  <div class="step" id="s2-{{ forloop.counter }}"></div>
-                  <div class="rail"><div id="r2-{{ forloop.counter }}"></div></div>
-                  <div class="step" id="s3-{{ forloop.counter }}"></div>
-                  <div class="rail"><div id="r3-{{ forloop.counter }}"></div></div>
-                  <div class="step" id="s4-{{ forloop.counter }}"></div>
-                  <div class="rail"><div id="r4-{{ forloop.counter }}"></div></div>
-                  <div class="step" id="s5-{{ forloop.counter }}"></div>
-                  <div class="rail"><div id="r5-{{ forloop.counter }}"></div></div>
-                  <div class="step" id="s6-{{ forloop.counter }}"></div>
+                <div class="bd-track-timeline">
+                  <div class="bd-track-line">
+                    <div class="bd-track-progress" id="track-progress-{{ forloop.counter }}"></div>
+                  </div>
+                  <div class="bd-track-steps" id="track-steps-{{ forloop.counter }}"></div>
                 </div>
 
                 <p class="smallnote" style="margin-top:14px;">
@@ -1049,9 +1120,27 @@
 </div>
 
 <script>
-  // Progress + stepper rendering
+  // Status labels mapping
+  const STATUS_LABELS = {
+    0: "Booking Pending",
+    1: "Booking Accepted",
+    2: "Booking Rejected",
+    3: "Work Started",
+    4: "Diagnosis Started",
+    5: "Diagnosis Completed",
+    6: "Repair In Progress",
+    7: "Parts Replaced",
+    8: "Vehicle Being Tested",
+    9: "Service Completed",
+    10: "Out For Delivery",
+    11: "Payment Due",
+    12: "Service Completed"
+  };
+
+  // Progress + animated timeline rendering
   (function () {
     const cards = document.querySelectorAll('.card-item[data-status][data-index]');
+    
     cards.forEach((card) => {
       const status = parseInt(card.getAttribute('data-status') || '0', 10);
       const idx = parseInt(card.getAttribute('data-index') || '1', 10);
@@ -1059,38 +1148,130 @@
       const clamped = Math.max(0, Math.min(12, status));
       const percent = Math.round((clamped / 12) * 100);
 
+      // Update percentage text
       const pctEl = document.getElementById(`pct-${idx}`);
-      const barEl = document.getElementById(`bar-${idx}`);
       if (pctEl) pctEl.textContent = `${percent}% completed`;
-      if (barEl) {
-        setTimeout(() => {
-          barEl.style.width = `${percent}%`;
-        }, 300);
-      }
 
-      const dotsDone = Math.max(1, Math.ceil((clamped / 12) * 6));
-      for (let i = 1; i <= 6; i++) {
-        const dot = document.getElementById(`s${i}-${idx}`);
-        if (dot) dot.classList.toggle('done', i <= dotsDone);
-      }
-
-      const railPct = (clamped / 12) * 100;
-      const rails = [
-        document.getElementById(`r1-${idx}`),
-        document.getElementById(`r2-${idx}`),
-        document.getElementById(`r3-${idx}`),
-        document.getElementById(`r4-${idx}`),
-        document.getElementById(`r5-${idx}`)
+      // Create timeline steps based on status
+      const steps = [
+        {label: "Booking", status: [0, 1]},
+        {label: "Work Started", status: [3]},
+        {label: "Diagnosis", status: [4, 5]},
+        {label: "Repair", status: [6, 7]},
+        {label: "Testing", status: [8]},
+        {label: "Completed", status: [9, 10, 11, 12]}
       ];
-      rails.forEach((r, i) => {
-        if (!r) return;
-        const segStart = i * 20;
-        const fill = Math.max(0, Math.min(20, railPct - segStart)) / 20 * 100;
-        setTimeout(() => {
-          r.style.width = `${fill}%`;
-        }, 400 + i * 100);
-      });
+
+      const wrap = document.getElementById(`track-steps-${idx}`);
+      const progressBar = document.getElementById(`track-progress-${idx}`);
+      
+      if (wrap) {
+        wrap.innerHTML = "";
+
+        // Determine current step
+        let currentStep = 0;
+        for (let i = 0; i < steps.length; i++) {
+          if (steps[i].status.includes(status)) {
+            currentStep = i;
+            break;
+          }
+        }
+
+        steps.forEach((stepData, stepIdx) => {
+          const el = document.createElement('div');
+          el.className = "bd-track-step";
+          
+          if (stepIdx < currentStep) el.classList.add("done");
+          if (stepIdx === currentStep) el.classList.add("active");
+          
+          const checkSvg = `<svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+          </svg>`;
+          
+          el.innerHTML = `
+            <div class="bd-track-dot">
+              ${stepIdx < currentStep ? checkSvg : ''}
+            </div>
+            <div class="bd-track-label">${stepData.label}</div>
+          `;
+          
+          wrap.appendChild(el);
+        });
+        
+        // Animate progress bar from 0% to current progress
+        let progressPercent = 0;
+        if (currentStep > 0 && steps.length > 1) {
+          // Calculate progress to reach the current step
+          progressPercent = ((currentStep) / (steps.length - 1)) * 100;
+        }
+        
+        if (progressBar) {
+          // Start from 0
+          progressBar.style.width = '0%';
+          // Animate to target percentage
+          setTimeout(() => {
+            progressBar.style.width = progressPercent + '%';
+          }, 300);
+        }
+      }
     });
+  })();
+
+  // Complaint modal
+  (function(){
+    const modal = document.getElementById('complaintModal');
+    const title = document.getElementById('cmTitle');
+    const sub = document.getElementById('cmSub');
+    const body = document.getElementById('cmBody');
+    const closeBtn = document.getElementById('cmClose');
+
+    function openModal(data){
+      title.textContent = `Complaint Details`;
+      sub.textContent = `${data.title || ''} • ${data.ref || ''}`.trim();
+      
+      // Decode the complaint text - handle both escaped and unescaped text
+      let complaintText = data.complaint || '';
+      
+      // Try to parse as JSON string if it looks escaped
+      try {
+        complaintText = JSON.parse('"' + complaintText.replace(/"/g, '\\"') + '"');
+      } catch (e) {
+        // If parsing fails, manually replace common escape sequences
+        complaintText = complaintText
+          .replace(/\\u000D\\u000A/g, '\n')
+          .replace(/\\u000D/g, '\r')
+          .replace(/\\u000A/g, '\n')
+          .replace(/\\n/g, '\n')
+          .replace(/\\r/g, '\r')
+          .replace(/\\t/g, '\t');
+      }
+      
+      body.textContent = complaintText;
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(){
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('click', function(e){
+      const btn = e.target.closest('[data-open-complaint="1"]');
+      if (btn){
+        openModal({
+          title: btn.getAttribute('data-title'),
+          ref: btn.getAttribute('data-ref'),
+          complaint: btn.getAttribute('data-complaint')
+        });
+      }
+      if (e.target === modal) closeModal();
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
   })();
 
   // Complaint modal
@@ -1167,6 +1348,12 @@
 
     buttons.forEach(b => b.addEventListener('click', () => apply(b.getAttribute('data-filter'))));
   })();
+</script>
+
+<script>
+  setTimeout(function () {
+    location.reload();
+  }, 9000); // 9 seconds
 </script>
 
 {% if msg %}

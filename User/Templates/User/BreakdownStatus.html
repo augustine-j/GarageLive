@@ -639,13 +639,14 @@
 /* ===== SERVICE STEP DEFINITIONS ===== */
 const SERVICE_STEPS = {
   "Fuel Refill": [
-    { label: "Job Assigned" },
+    { label: "Request accepted" },
     { label: "On the way" },
     { label: "Arrived" },
     { label: "Fuel filled" },
     { label: "Completed" }
   ],
   "Battery Jump Start": [
+    { label: "Request accepted" },
     { label: "On the way" },
     { label: "Arrived" },
     
@@ -653,14 +654,16 @@ const SERVICE_STEPS = {
     { label: "Completed" }
   ],
   "Tyre Puncture Repair": [
+    { label: "Request accepted" },
     { label: "On the way" },
-    { label: "arrived" },
+    { label: "Arrived" },
     { label: "Tyre changed" },
     { label: "Completed" }
   ],
   "Towing Service": [
+    { label: "Request accepted" },
     { label: "On the way" },
-    { label: "arrived" },
+    { label: "Arrived" },
     { label: "Towing" },
     { label: "Completed" }
   ]
@@ -722,5 +725,14 @@ document.querySelectorAll('.bd-card').forEach(card => {
 
 });
 </script>
+
+
+
+<script>
+  setTimeout(function () {
+    location.reload();
+  }, 3000); // 3 seconds
+</script>
+
 
 {% endblock %}

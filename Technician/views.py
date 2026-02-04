@@ -74,7 +74,7 @@ def assigned_jobs(request):
     if 'tid' not in request.session:
       return redirect("Guest:Login")
     else:
-        jobdata=tbl_booking.objects.filter(technician=request.session['tid']).order_by('-booking_todate') 
+        jobdata=tbl_booking.objects.filter(technician=request.session['tid']).order_by('-id') 
         for booking in jobdata:
             booking.services = tbl_booking_services.objects.filter(booking=booking)
 
