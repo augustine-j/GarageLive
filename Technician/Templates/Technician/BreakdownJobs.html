@@ -72,9 +72,10 @@
       {% else %}Completed{% endif %}
 
     {% elif i.servicecenter_breakdown_service.servicetype.servicetype_name == "Towing Service" %}
-      {% if i.progress_step == 0 %}On the way
-      {% elif i.progress_step == 1 %}Arrived
-      {% elif i.progress_step == 2 %}Towing
+      {% if i.progress_step == 0 %}Job Assigned
+      {% elif i.progress_step == 1 %}On the way
+      {% elif i.progress_step == 2 %}Arrived
+      {% elif i.progress_step == 3 %}Towing
       {% else %}Completed{% endif %}
 
     {% elif i.servicecenter_breakdown_service.servicetype.servicetype_name == "Tyre Puncture Repair" %}
