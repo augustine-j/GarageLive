@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reply</title>
+</head>
+<body>
+    <form method="post">
+        <center><h1>Reply Form </h1></center>
+        {% csrf_token %}
+        <table border="1" align="center"><tr>
+            <td>Reply</td>
+            <td><textarea name="txt_reply" rows="10" cols="30"></textarea></td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center"><input type="submit" value="submit"></td>
+            
+        </tr></table>
+    </form>
+</body>
+</html>
+

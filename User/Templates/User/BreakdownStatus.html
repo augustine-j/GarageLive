@@ -1,0 +1,725 @@
+{% extends 'User/Head_User.html' %}
+{% block content %}
+
+<style>
+:root{
+  --bg:#0a0e27;
+  --card:#141b2d;
+  --border:rgba(255,255,255,.08);
+  --text:#eef0f4;
+  --muted:#7a8294;
+  --accent:#f0a500;
+  --green:#20c9b0;
+  --blue:#4a9eff;
+  --red:#ff4757;
+  --purple:#a855f7;
+}
+
+.bd-wrap{
+  background:linear-gradient(135deg, var(--bg) 0%, #0d1321 100%);
+  min-height:100vh;
+  padding:30px;
+  color:var(--text);
+}
+
+.bd-container{max-width:1200px;margin:auto}
+
+.bd-header{
+  margin-bottom:30px;
+}
+
+.bd-header h1{
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:8px;
+  background:linear-gradient(135deg, var(--accent) 0%, #ffd700 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.bd-header p{
+  color:var(--muted);
+  font-size:14px;
+}
+
+.bd-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:28px;
+  margin-bottom:24px;
+  box-shadow:0 8px 32px rgba(0,0,0,.3);
+  transition:transform .3s, box-shadow .3s;
+  position:relative;
+  overflow:hidden;
+}
+
+.bd-card::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:4px;
+  background:linear-gradient(90deg, var(--accent), var(--green));
+  opacity:0;
+  transition:opacity .3s;
+}
+
+.bd-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 48px rgba(240,165,0,.15);
+}
+
+.bd-card:hover::before{
+  opacity:1;
+}
+
+.bd-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:24px;
+}
+
+.bd-id{
+  font-size:24px;
+  color:var(--accent);
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.bd-id-icon{
+  width:36px;
+  height:36px;
+  background:rgba(240,165,0,.15);
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+}
+
+.bd-status{
+  font-size:13px;
+  font-weight:600;
+  padding:8px 18px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.bd-status::before{
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  animation:pulse 2s infinite;
+}
+
+.status-pending{
+  background:rgba(138,138,138,.15);
+  color:#8a8a8a;
+}
+.status-pending::before{background:#8a8a8a}
+
+.status-accepted{
+  background:rgba(74,158,255,.15);
+  color:var(--blue);
+}
+.status-accepted::before{background:var(--blue)}
+
+.status-ontheway{
+  background:rgba(168,85,247,.15);
+  color:var(--purple);
+}
+.status-ontheway::before{background:var(--purple)}
+
+.status-inprogress{
+  background:rgba(240,165,0,.15);
+  color:var(--accent);
+}
+.status-inprogress::before{background:var(--accent)}
+
+.status-completed{
+  background:rgba(32,201,176,.15);
+  color:var(--green);
+}
+.status-completed::before{background:var(--green)}
+
+@keyframes pulse{
+  0%, 100%{opacity:1}
+  50%{opacity:.5}
+}
+
+.bd-body{
+  display:grid;
+  grid-template-columns:1fr 300px;
+  gap:24px;
+}
+
+.bd-meta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:20px;
+}
+
+.bd-kv{
+  background:rgba(255,255,255,.02);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+  transition:all .3s;
+}
+
+.bd-kv:hover{
+  background:rgba(255,255,255,.04);
+  border-color:rgba(255,255,255,.15);
+}
+
+.bd-kv small{
+  display:block;
+  font-size:10px;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:6px;
+  font-weight:600;
+}
+
+.bd-kv div{
+  font-size:14px;
+  font-weight:500;
+}
+
+.bd-vehicle{
+  border:1px solid var(--border);
+  border-radius:18px;
+  overflow:hidden;
+  background:rgba(255,255,255,.02);
+  transition:transform .3s;
+}
+
+.bd-vehicle:hover{
+  transform:scale(1.02);
+}
+
+.bd-vehicle img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+}
+
+.bd-vehicle-info{
+  padding:14px;
+  font-size:13px;
+  background:linear-gradient(180deg, rgba(0,0,0,.3) 0%, transparent 100%);
+}
+
+.bd-vehicle-info strong{
+  font-size:15px;
+  color:var(--accent);
+  display:block;
+  margin-bottom:4px;
+}
+
+/* LIVE TRACK BAR */
+.bd-live-track{
+  margin-top:24px;
+  background:rgba(255,255,255,.02);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  position:relative;
+}
+
+.bd-live-track::before{
+  content:"LIVE";
+  position:absolute;
+  top:12px;
+  right:12px;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.15em;
+  padding:4px 10px;
+  background:var(--red);
+  color:#fff;
+  border-radius:999px;
+  animation:blink 1.5s infinite;
+}
+
+@keyframes blink{
+  0%, 100%{opacity:1}
+  50%{opacity:.6}
+}
+
+.bd-live-track h4{
+  font-size:11px;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:20px;
+  font-weight:600;
+}
+
+.bd-track-timeline{
+  position:relative;
+  padding:0 0px;
+}
+
+.bd-track-line{
+  position:absolute;
+  top:15px;
+  left:15px;
+  right:15px;
+  height:3px;
+  background:rgba(255,255,255,.1);
+  border-radius:999px;
+}
+
+.bd-track-progress{
+  position:absolute;
+  top:0;
+  left:0;
+  height:100%;
+  background:linear-gradient(90deg, var(--accent), var(--green));
+  border-radius:999px;
+  transition:width 1s ease;
+  box-shadow:0 0 20px rgba(240,165,0,.5);
+  max-width:100%;
+}
+
+.bd-track-progress::after{
+  content:"";
+  position:absolute;
+  right:-6px;
+  top:50%;
+  transform:translateY(-50%);
+  width:12px;
+  height:12px;
+  background:#fff;
+  border-radius:50%;
+  box-shadow:0 0 0 4px var(--green), 0 0 20px rgba(32,201,176,.6);
+  animation:trackPulse 2s infinite;
+}
+
+@keyframes trackPulse{
+  0%, 100%{transform:translateY(-50%) scale(1)}
+  50%{transform:translateY(-50%) scale(1.2)}
+}
+
+.bd-track-steps{
+  display:flex;
+  justify-content:space-between;
+  position:relative;
+}
+
+.bd-track-step{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  flex:1;
+  position:relative;
+  z-index:2;
+}
+
+.bd-track-dot{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:rgba(255,255,255,.05);
+  border:2px solid rgba(255,255,255,.15);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:10px;
+  transition:all .4s;
+  position:relative;
+}
+
+.bd-track-dot svg{
+  width:14px;
+  height:14px;
+  opacity:.3;
+}
+
+.bd-track-step.done .bd-track-dot{
+  background:var(--green);
+  border-color:var(--green);
+  box-shadow:0 0 20px rgba(32,201,176,.4);
+}
+
+.bd-track-step.done .bd-track-dot svg{
+  opacity:1;
+  fill:#fff;
+}
+
+.bd-track-step.active .bd-track-dot{
+  background:var(--accent);
+  border-color:var(--accent);
+  box-shadow:0 0 25px rgba(240,165,0,.6);
+  animation:activeDot 2s infinite;
+}
+
+.bd-track-step.active .bd-track-dot svg{
+  opacity:1;
+  fill:#fff;
+}
+
+@keyframes activeDot{
+  0%, 100%{transform:scale(1)}
+  50%{transform:scale(1.15)}
+}
+
+.bd-track-label{
+  font-size:11px;
+  color:var(--muted);
+  text-align:center;
+  font-weight:500;
+  max-width:80px;
+}
+
+.bd-track-step.done .bd-track-label{
+  color:var(--green);
+}
+
+.bd-track-step.active .bd-track-label{
+  color:var(--accent);
+  font-weight:600;
+}
+
+.bd-track-time{
+  font-size:9px;
+  color:rgba(255,255,255,.3);
+  margin-top:4px;
+}
+
+.bd-track-step.done .bd-track-time,
+.bd-track-step.active .bd-track-time{
+  color:rgba(255,255,255,.5);
+}
+
+.bd-footer{
+  margin-top:24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding-top:20px;
+  border-top:1px solid var(--border);
+}
+
+.bd-amount{
+  font-size:13px;
+  color:var(--muted);
+}
+
+.bd-amount strong{
+  font-size:20px;
+  color:var(--accent);
+  font-weight:700;
+  margin-left:8px;
+}
+
+.bd-actions{
+  display:flex;
+  gap:10px;
+}
+
+.bd-actions a{
+  padding:10px 20px;
+  border-radius:12px;
+  text-decoration:none;
+  font-size:13px;
+  font-weight:600;
+  transition:all .3s;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.bd-actions a.secondary{
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border);
+  color:var(--text);
+}
+
+.bd-actions a.secondary:hover{
+  background:rgba(255,255,255,.08);
+  border-color:rgba(255,255,255,.2);
+}
+
+.bd-actions a.primary{
+  background:linear-gradient(135deg, var(--accent) 0%, #ffa500 100%);
+  border:none;
+  color:#000;
+  box-shadow:0 4px 15px rgba(240,165,0,.3);
+}
+
+.bd-actions a.primary:hover{
+  box-shadow:0 6px 25px rgba(240,165,0,.5);
+  transform:translateY(-2px);
+}
+
+@media(max-width:768px){
+  .bd-body{
+    grid-template-columns:1fr;
+  }
+  
+  .bd-meta{
+    grid-template-columns:1fr;
+  }
+  
+  .bd-track-label{
+    font-size:9px;
+  }
+  
+  .bd-track-dot{
+    width:24px;
+    height:24px;
+  }
+}
+</style>
+
+<div class="bd-wrap">
+<div class="bd-container">
+
+  <div class="bd-header">
+    <h1>🚗 Breakdown Assistance Tracking</h1>
+    <p>Real-time tracking of your vehicle breakdown service requests</p>
+  </div>
+
+{% for i in data %}
+<div class="bd-card"
+     data-service="{{ i.servicecenter_breakdown_service.servicetype.servicetype_name }}"
+     data-step="{{ i.progress_step }}"
+     data-status="{{ i.booking.breakdown_status }}">
+
+  <!-- TOP -->
+  <div class="bd-top">
+    <div class="bd-id">
+      <div class="bd-id-icon">🔧</div>
+      REQ #{{ i.id }}
+    </div>
+    <div class="bd-status status-{{ i.booking.breakdown_status }}">
+      {% if i.booking.breakdown_status == 0 %}Pending
+      {% elif i.booking.breakdown_status == 1 %}Accepted
+      {% elif i.booking.breakdown_status == 3 %}On the way
+      {% elif i.booking.breakdown_status == 4 %}In progress
+      {% elif i.booking.breakdown_status == 5 %}Completed
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="bd-body">
+
+    <!-- LEFT -->
+    <div>
+      <div class="bd-meta">
+
+        <div class="bd-kv">
+          <small>Breakdown Service</small>
+          <div>{{ i.servicecenter_breakdown_service.servicetype.servicetype_name }}</div>
+        </div>
+
+        <div class="bd-kv">
+          <small>Service Center</small>
+          <div>{{ i.booking.servicecenter.servicecenter_name }}</div>
+        </div>
+
+        <div class="bd-kv">
+          <small>Vehicle Brand</small>
+          <div>{{ i.booking.vehicle.model.brand.brand_name }}</div>
+        </div>
+
+        <div class="bd-kv">
+          <small>Vehicle Model</small>
+          <div>{{ i.booking.vehicle.model.model_name }}</div>
+        </div>
+
+        <div class="bd-kv">
+          <small>Vehicle Number</small>
+          <div>{{ i.booking.vehicle.vehicle_number }}</div>
+        </div>
+
+        <div class="bd-kv">
+          <small>Technician</small>
+          <div>
+            {% if i.booking.technician %}
+              {{ i.booking.technician.technician_name }}
+            {% else %}
+              — Not assigned
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- LIVE TRACK BAR -->
+      <div class="bd-live-track">
+        <h4>Service Progress</h4>
+        <div class="bd-track-timeline">
+          <div class="bd-track-line">
+            <div class="bd-track-progress"></div>
+          </div>
+          <div class="bd-track-steps"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="bd-vehicle">
+      <img src="{{ i.booking.vehicle.vehicle_photo.url }}" alt="Vehicle">
+      <div class="bd-vehicle-info">
+        <strong>{{ i.booking.vehicle.model.brand.brand_name }}
+        {{ i.booking.vehicle.model.model_name }}</strong>
+        {{ i.booking.vehicle.vehicle_number }}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+<div class="bd-footer">
+
+  <div class="bd-amount">
+    {% if i.billing_status %}
+      <span>Total Amount:</span>
+      <strong>₹{{ i.final_amount }}</strong>
+    {% else %}
+      <span style="font-style:italic">
+        Amount will be updated after service
+      </span>
+    {% endif %}
+  </div>
+
+  <div class="bd-actions">
+
+    {# -------- INVOICE BUTTON -------- #}
+    {% if i.billing_status %}
+      <a href="{% url 'User:breakdown_invoice' i.id %}" class="secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        Invoice
+      </a>
+    {% endif %}
+
+    {# -------- PAY NOW BUTTON -------- #}
+    {% if i.billing_status and not i.payment_status %}
+      <a href="{% url 'User:breakdown_payment' i.id %}" class="primary">
+        Pay Now
+      </a>
+
+    {% elif i.payment_status %}
+      <span class="badge bg-success">
+        Paid ✓
+      </span>
+    {% endif %}
+
+  </div>
+
+</div>
+
+
+</div>
+{% endfor %}
+
+</div>
+</div>
+
+<script>
+/* ===== SERVICE STEP DEFINITIONS ===== */
+const SERVICE_STEPS = {
+  "Fuel Refill": [
+    { label: "On the way" },
+    { label: "arrived" },
+    { label: "Fuel filled" },
+    { label: "Completed" }
+  ],
+  "Battery Jump Start": [
+    { label: "On the way" },
+    { label: "Arrived" },
+    
+    { label: "Jump started" },
+    { label: "Completed" }
+  ],
+  "Tyre Puncture Repair": [
+    { label: "On the way" },
+    { label: "arrived" },
+    { label: "Tyre changed" },
+    { label: "Completed" }
+  ],
+  "Towing Service": [
+    { label: "On the way" },
+    { label: "arrived" },
+    { label: "Towing" },
+    { label: "Completed" }
+  ]
+};
+
+document.querySelectorAll('.bd-card').forEach(card => {
+
+  const service = card.dataset.service;
+  const step = parseInt(card.dataset.step || 0);
+  const status = parseInt(card.dataset.status || 0);
+
+  const stepsWrap = card.querySelector('.bd-track-steps');
+  const progressBar = card.querySelector('.bd-track-progress');
+
+  stepsWrap.innerHTML = '';
+  progressBar.style.width = '0%';
+
+  /* 🚨 VERY IMPORTANT FIX
+     STOP PROGRESS UNTIL ACCEPTED */
+  if (status === 0) {
+    const el = document.createElement('div');
+    el.className = 'bd-track-step active';
+    el.innerHTML = `
+      <div class="bd-track-dot"></div>
+      <div class="bd-track-label">Waiting for service center approval</div>
+    `;
+    stepsWrap.appendChild(el);
+    return; // ⛔ EXIT – nothing else runs
+  }
+
+  const steps = SERVICE_STEPS[service] || [
+    { label: "In progress" },
+    { label: "Completed" }
+  ];
+
+  steps.forEach((s, idx) => {
+    const el = document.createElement('div');
+    el.className = 'bd-track-step';
+
+    if (idx < step) el.classList.add('done');
+    if (idx === step) el.classList.add('active');
+
+    el.innerHTML = `
+      <div class="bd-track-dot"></div>
+      <div class="bd-track-label">${s.label}</div>
+    `;
+    stepsWrap.appendChild(el);
+  });
+
+  /* Progress bar movement */
+  if (steps.length > 1) {
+    let percent = (step / (steps.length - 1)) * 100;
+    percent = Math.min(percent, 100);
+
+    setTimeout(() => {
+      progressBar.style.width = percent + '%';
+    }, 300);
+  }
+
+});
+</script>
+
+{% endblock %}

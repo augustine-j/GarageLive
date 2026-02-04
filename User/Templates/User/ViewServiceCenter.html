@@ -1,0 +1,362 @@
+{% extends 'User/Head_User.html' %}
+{% block content %}
+
+<!-- View Service Centers (Booking-style layout) -->
+<div class="container-fluid bg-secondary booking my-5 wow fadeInUp" data-wow-delay="0.1s">
+  <div class="container">
+    <div class="row gx-5">
+
+      <!-- Left Info Panel -->
+      <div class="col-lg-6 py-5">
+        <div class="py-5">
+          <h1 class="text-white mb-4">Find nearby service centers</h1>
+          <p class="text-white mb-0">
+            Select your district and place to filter service centers. Then book a service with your preferred center.
+          </p>
+
+          <div class="mt-4 p-4 bg-primary bg-opacity-25 rounded">
+            <h5 class="text-white mb-2">Tips</h5>
+            <ul class="text-white-50 mb-0 ps-3">
+              <li>Choose the correct location for accurate results.</li>
+              <li>Check address and contact before booking.</li>
+              <li>Use “Book Service” to start your request.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Filter Panel -->
+      <div class="col-lg-6">
+        <div class="bg-primary h-100 d-flex flex-column justify-content-center text-center p-5 wow zoomIn" data-wow-delay="0.6s">
+          <h1 class="text-white mb-4">Service Centers</h1>
+
+          <form method="post">
+            {% csrf_token %}
+
+            <div class="row g-3">
+
+              <div class="col-12 col-sm-6 text-start">
+                <label class="text-white-50 mb-2 fw-semibold d-block">District</label>
+                <select name="sel_district" id="sel_district" class="form-select border-0" style="height: 55px;" required>
+                  <option value="">Select district</option>
+                  {% for i in districtdata %}
+                    <option value="{{i.id}}">{{i.district_name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="col-12 col-sm-6 text-start">
+                <label class="text-white-50 mb-2 fw-semibold d-block">Place</label>
+                <select name="sel_place" id="sel_place" class="form-select border-0" style="height: 55px;" required>
+                  <option value="">----select place----</option>
+                </select>
+              </div>
+
+              <div class="col-12">
+                <button class="btn btn-secondary w-100 py-3" type="submit">Search Service Centers</button>
+              </div>
+
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Results (NEW STYLE - list cards) -->
+<div class="row mt-5">
+  <div class="col-12">
+
+    <style>
+      /* Results-only styling */
+      .sc-results-wrap{
+        background: rgba(255,255,255,.10);
+        border: 1px solid rgba(255,255,255,.18);
+        border-radius: 18px;
+        padding: 16px;
+      }
+
+      .sc-results-head{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:12px;
+        flex-wrap:wrap;
+        margin-bottom: 14px;
+      }
+
+      .sc-results-head h3{
+        margin:0;
+        color:#fff;
+        font-weight:900;
+        letter-spacing:-0.01em;
+      }
+
+      .sc-count{
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.24);
+        color: rgba(255,255,255,.92);
+        font-weight:900;
+        font-size: 12px;
+        white-space:nowrap;
+      }
+
+      .sc-list{
+        display:flex;
+        flex-direction:column;
+        gap: 12px;
+      }
+
+      .sc-item{
+        background: #fff;
+        border-radius: 18px;
+        border: 1px solid rgba(0,0,0,.06);
+        box-shadow: 0 12px 26px rgba(0,0,0,.10);
+        overflow:hidden;
+      }
+
+      .sc-row{
+        display:grid;
+        grid-template-columns: 120px 1fr auto;
+        gap: 14px;
+        padding: 14px;
+        align-items:center;
+      }
+
+      .sc-logo{
+        width: 120px;
+        height: 96px;
+        border-radius: 14px;
+        border: 1px solid rgba(0,0,0,.08);
+        overflow:hidden;
+        background:#f2f2f2;
+        flex-shrink:0;
+      }
+      .sc-logo img{
+        width:100%;
+        height:100%;
+        object-fit: cover;
+        display:block;
+      }
+
+      .sc-main{ min-width:0; }
+
+      .sc-name{
+        margin:0;
+        font-size: 16px;
+        font-weight: 950;
+        color: #0f172a;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+
+      .sc-badges{
+        margin-top:8px;
+        display:flex;
+        gap:8px;
+        flex-wrap:wrap;
+      }
+
+      .sc-pill{
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        padding: 7px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 850;
+        border: 1px solid rgba(0,0,0,.10);
+        background: rgba(0,0,0,.02);
+        color: rgba(15,23,42,.82);
+        max-width: 100%;
+      }
+      .sc-pill span{
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        max-width: 320px;
+        display:inline-block;
+        vertical-align:bottom;
+      }
+
+      .sc-pill.email{
+        border-color: rgba(47,128,237,.25);
+        background: rgba(47,128,237,.10);
+        color: #1e5fb7;
+      }
+      .sc-pill.phone{
+        border-color: rgba(39,174,96,.25);
+        background: rgba(39,174,96,.10);
+        color: #1f7f47;
+      }
+
+      .sc-address{
+        margin-top:10px;
+        color: rgba(15,23,42,.70);
+        font-weight:750;
+        font-size: 13px;
+        line-height: 1.45;
+        display:-webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow:hidden;
+      }
+
+      .sc-action{
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+        align-items:flex-end;
+        justify-content:center;
+        padding-left: 10px;
+      }
+
+      .sc-rank{
+        font-size: 12px;
+        font-weight: 950;
+        color: rgba(15,23,42,.55);
+        background: rgba(0,0,0,.04);
+        border: 1px solid rgba(0,0,0,.08);
+        border-radius: 999px;
+        padding: 6px 10px;
+        white-space:nowrap;
+      }
+
+      .sc-book{
+        border-radius: 14px;
+        font-weight: 900;
+        padding: 10px 16px;
+        white-space:nowrap;
+      }
+
+      .sc-footer{
+        display:flex;
+        justify-content:space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        border-top: 1px solid rgba(0,0,0,.06);
+        padding: 10px 14px 14px;
+        background: rgba(0,0,0,.02);
+        color: rgba(15,23,42,.62);
+        font-size: 12px;
+        font-weight: 750;
+      }
+
+      @media (max-width: 992px){
+        .sc-row{
+          grid-template-columns: 100px 1fr;
+          grid-template-rows: auto auto;
+        }
+        .sc-action{
+          grid-column: 1 / -1;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items:center;
+          padding-left: 0;
+        }
+        .sc-logo{
+          width: 100px;
+          height: 88px;
+        }
+        .sc-pill span{ max-width: 240px; }
+      }
+
+      @media (max-width: 576px){
+        .sc-pill span{ max-width: 170px; }
+      }
+    </style>
+
+    <div class="sc-results-wrap">
+      <div class="sc-results-head">
+        <h3>Available Centers</h3>
+        <div class="sc-count">Total: {{ servicecenter|length }}</div>
+      </div>
+
+      <div class="sc-list">
+        {% for i in servicecenter %}
+        <div class="sc-item">
+          <div class="sc-row">
+            <div class="sc-logo">
+              <img src="{{i.servicecenter_logo.url}}" alt="logo">
+            </div>
+
+            <div class="sc-main">
+              <p class="sc-name">{{i.servicecenter_name}}</p>
+
+              <div class="sc-badges">
+                <div class="sc-pill email">
+                  <strong>Email:</strong> <span>{{i.servicecenter_email}}</span>
+                </div>
+                <div class="sc-pill phone">
+                  <strong>Contact:</strong> <span>{{i.servicecenter_contact}}</span>
+                </div>
+              </div>
+
+              <div class="sc-address">
+                {{i.servicecenter_address}}
+              </div>
+            </div>
+
+            <div class="sc-action">
+              <div class="sc-rank">#{{forloop.counter}}</div>
+              <a href="{% url 'User:servicebooking' i.id %}" class="btn btn-primary sc-book">
+                Book Service
+              </a>
+            </div>
+          </div>
+
+          <div class="sc-footer">
+            <div>Tip: Confirm the address and contact details before booking.</div>
+            <div>GarageLive</div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="sc-item">
+          <div class="sc-row" style="grid-template-columns: 1fr;">
+            <div class="sc-main">
+              <p class="sc-name">No service centers found</p>
+              <div class="sc-address" style="-webkit-line-clamp: unset;">
+                Select district and place, then click “Search Service Centers”.
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+    </div>
+
+  </div>
+</div>
+<!-- End Results -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+  $('#sel_district').change(function () {
+      var did = $(this).val();
+      var ur = "{% url 'User:AjaxLocation' %}";
+      $.ajax({
+          url: ur,
+          data: { did: did },
+          success: function (data) {
+              $('#sel_place').html(data);
+          }
+      });
+  });
+</script>
+
+{% if msg %}
+<script>
+  alert("{{msg}}");
+  window.location = "{% url 'User:viewservicecenter' %}";
+</script>
+{% endif %}
+
+{% endblock content %}

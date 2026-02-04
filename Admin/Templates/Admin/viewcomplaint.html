@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>viewcomplaint</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        <center><h1>Complaints</h1></form></center>
+        <table border="1" align="center"><tr>
+            <td>Sno</td>
+            <td>User Name</td>
+            <td>E-mail</td>
+            <td>Title</td>
+            <td>Content</td>
+            <td>Date</td>
+            <td>Action</td>
+        </tr>
+        <tr>
+            {% for i in Data %}
+            <td>{{forloop.counter}}</td>
+            <td>{{i.user.user_name}}</td>
+            <td>{{i.user.user_email}}</td>
+            <td>{{i.complaint_title}}</td>
+            <td>{{i.complaint_content}}</td>
+            <td>{{i.complaint_date}}</td>
+            <td>
+                <a href="{% url 'Admin:reply' i.id %}">Reply</a></td>
+               
+        </tr>
+    {% endfor %}
+    </table>
+    <br><br>
+    <center><h1>Replied Complaints</h1></form></center>
+        <table border="1" align="center"><tr>
+            <td>Sno</td>
+            <td>User Name</td>
+            <td>E-mail</td>
+            <td>Title</td>
+            <td>Content</td>
+            <td>Date</td>
+            <td>Reply</td>
+            
+        </tr>
+        <tr>
+            {% for i in replied %}
+            <td>{{forloop.counter}}</td>
+            <td>{{i.user.user_name}}</td>
+            <td>{{i.user.user_email}}</td>
+            <td>{{i.complaint_title}}</td>
+            <td>{{i.complaint_content}}</td>
+            <td>{{i.complaint_date}}</td>
+            <td>{{i.complaint_reply}}</td>
+            
+        </tr>
+    {% endfor %}
+    </table>
+    </form>
+</body>
+</html>
+
+{% if msg %}
+<script>
+    alert("{{msg}}")
+    window.location="{% url 'Admin:complaint' %}"
+    
+</script>
+{% endif %}

@@ -1,0 +1,107 @@
+{% extends 'Guest/Head.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewSeller</title>
+    
+</head>
+<body>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <table border="1"><tr>
+            <td>Name</td>
+            <td><input type="text" name="txt_name" id=""></td>
+        </tr>
+        <tr>
+            <td>contact_number</td>
+            <td><input type="text" name="txt_number" id=""></td>
+        </tr>
+        <tr>
+            <td>E-mail</td>
+            <td><input type="text" name="txt_email" id=""></td>
+        </tr>
+        <tr>
+            <td>Password</td>
+            <td><input type="password" name="txt_password" id=""></td>
+        </tr>
+         <tr>
+            <td>Confirm Password</td>
+            <td><input type="password" name="conf_password" id=""></td>
+        </tr>
+        <tr>
+            <td>District</td>
+            <td>
+                 <select name="sel_district" id="sel_district">
+                    <option  value="">select district</option>
+                    {% for i in districtdata %}
+                    <option 
+                    value="{{i.id}}">{{i.district_name}}</option>
+                    {% endfor %} 
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Place</td>
+            <td>
+                 <select name="sel_place" id="sel_place">
+                    <option  value="">----select place----</option>
+                    
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Estd Date</td>
+            <td><input type="date" name="estd_date" id=""></td>
+        </tr>
+        <tr>
+            <td>License Number</td>
+            <td><input type="text" name="txt_license" id=""></td>
+        </tr>
+        <tr>
+            <td>Owner Name</td>
+            <td><input type="text" name="txt_owner" id=""></td>
+        </tr>
+        <tr>
+            <td>License Proof</td>
+            <td><input type="file" name="license" id=""></td>
+        </tr>
+        <tr>
+            <td>Owner Proof</td>
+            <td><input type="file" name="owner" id=""></td>
+        </tr>
+        <tr>
+            <td><input type="submit" value="submit"></td>
+            <td><input type="button"  value="Cancel" onclick="window.location='{% url 'Guest:NewSeller' %}'"></td>
+        </tr>
+       </table>
+    </form>
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $('#sel_district').change(function () {
+        var did = $(this).val();
+        var ur = "{% url 'Guest:AjaxPlace' %}"
+        $.ajax({
+            url: ur,
+            data: { did: did },
+            success: function (data) {
+                $('#sel_place').html(data);
+            }
+        });
+    });
+</script>
+</html>
+
+
+{% if msg %}
+<script>
+    alert("{{msg}}")
+    
+</script>
+{% endif %}
+
+{% endblock content %}

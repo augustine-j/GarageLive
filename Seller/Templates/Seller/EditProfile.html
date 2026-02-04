@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EditProfile</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+
+        <table border="1" align="center"><tr>
+            <td>Seller Name</td>
+            <td><input type="text" name="txt_name" value="{{Data.user_name}}" id=""></td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td><input type="text" name="txt_email" value="{{Data.user_email}}" id=""></td>
+        </tr>
+        <tr>
+            <td>Contact</td>
+            <td><input type="text" name="txt_contact" value="{{Data.contact_number}}" id=""></td>
+        </tr>
+        <tr>
+            <td>Established Date</td>
+            <td><input type="text" name="txt_date" value="{{Data.estd_date}}" id=""></td>
+        </tr>
+         <tr>
+            <td>License Number</td>
+            <td><input type="text" name="license_number" value="{{Data.license_number}}" id=""></td>
+        </tr>
+         <tr>
+            <td>Owner Name</td>
+            <td><input type="text" name="txt_owner" value="{{Data.owner_name}}" id=""></td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center"><input type="submit" value="Update"></td>
+            
+        </tr></table>
+    </form>
+</body>
+</html>
+
+

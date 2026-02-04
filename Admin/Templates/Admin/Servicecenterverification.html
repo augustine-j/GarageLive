@@ -1,0 +1,335 @@
+{% extends 'Admin/Head_admin.html' %}
+{% block content %}
+
+<style>
+  /* Media thumbnails */
+  .sc-img{
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,.08);
+    background: #fff;
+  }
+
+  /* Address aesthetic (no textarea) */
+  .address-cell{ min-width: 260px; max-width: 340px; }
+  .address-label{
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: #6c757d;
+    margin-bottom: 6px;
+  }
+  .address-box{
+    background: #f8f9fa;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 0.875rem;
+    line-height: 1.3;
+    color: #343a40;
+
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    word-break: break-word;
+    transition: all .15s ease-in-out;
+  }
+  .address-box:hover{
+    background: #ffffff;
+    border-color: rgba(0,0,0,.14);
+    box-shadow: 0 6px 18px rgba(0,0,0,.08);
+    -webkit-line-clamp: 6;
+  }
+
+  /* Keep action buttons on one line */
+  td.action-cell { white-space: nowrap; }
+</style>
+
+<div class="main-panel">
+  <div class="content-wrapper">
+
+    <form method="post">
+      {% csrf_token %}
+
+      <!-- PENDING CENTERS -->
+      <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                  <h4 class="card-title mb-1">Service Center Verification</h4>
+                  <p class="card-description mb-0">Pending centers awaiting approval</p>
+                </div>
+                <span class="badge badge-warning">Pending</span>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead>
+                    <tr>
+                      <th style="width:70px;">Sl.No</th>
+                      <th>Center Name</th>
+                      <th>E-mail</th>
+                      <th>Contact</th>
+                      <th style="width:320px;">Address</th>
+                      <th>Place</th>
+                      <th>District</th>
+                      <th style="width:90px;">Logo</th>
+                      <th style="width:90px;">License</th>
+                      <th style="width:130px;">Date Of Join</th>
+                      <th class="text-center" style="width:220px;">Action</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {% for i in data %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>{{ i.servicecenter_name }}</td>
+                      <td>{{ i.servicecenter_email }}</td>
+                      <td>{{ i.servicecenter_contact }}</td>
+
+                      <td class="address-cell">
+                        <div class="address-label">Address</div>
+                        <div class="address-box">{{ i.servicecenter_address }}</div>
+                      </td>
+
+                      <td>{{ i.place.place_name }}</td>
+                      <td>{{ i.place.district.district_name }}</td>
+
+                      <td>
+                        <a href="{{ i.servicecenter_logo.url }}" target="_blank" title="View Logo">
+                          <img src="{{ i.servicecenter_logo.url }}" alt="logo" class="sc-img">
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ i.servicecenter_license.url }}" target="_blank" title="View License">
+                          <img src="{{ i.servicecenter_license.url }}" alt="license" class="sc-img">
+                        </a>
+                      </td>
+
+                      <td>{{ i.servicecenter_regdate }}</td>
+
+                      <td class="text-center action-cell">
+                        <a href="{% url 'Admin:acceptcenter' i.id %}" class="btn btn-sm btn-success me-2">
+                          Accept
+                        </a>
+                        <a href="{% url 'Admin:rejectcenter' i.id %}"
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Reject this service center?');">
+                          Reject
+                        </a>
+                      </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                      <td colspan="11" class="text-center text-muted py-4">
+                        No pending centers found.
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCEPTED CENTERS -->
+      <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                  <h4 class="card-title mb-1">Accepted Centers</h4>
+                  <p class="card-description mb-0">Verified service centers</p>
+                </div>
+                <span class="badge badge-success">Verified</span>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead>
+                    <tr>
+                      <th style="width:70px;">Sl.No</th>
+                      <th>Center Name</th>
+                      <th>E-mail</th>
+                      <th>Contact</th>
+                      <th style="width:320px;">Address</th>
+                      <th>Place</th>
+                      <th>District</th>
+                      <th style="width:90px;">Logo</th>
+                      <th style="width:90px;">License</th>
+                      <th style="width:130px;">Date Of Join</th>
+                      <th class="text-center" style="width:140px;">Status</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {% for i in accepted %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>{{ i.servicecenter_name }}</td>
+                      <td>{{ i.servicecenter_email }}</td>
+                      <td>{{ i.servicecenter_contact }}</td>
+
+                      <td class="address-cell">
+                        <div class="address-label">Address</div>
+                        <div class="address-box">{{ i.servicecenter_address }}</div>
+                      </td>
+
+                      <td>{{ i.place.place_name }}</td>
+                      <td>{{ i.place.district.district_name }}</td>
+
+                      <td>
+                        <a href="{{ i.servicecenter_logo.url }}" target="_blank" title="View Logo">
+                          <img src="{{ i.servicecenter_logo.url }}" alt="logo" class="sc-img">
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ i.servicecenter_license.url }}" target="_blank" title="View License">
+                          <img src="{{ i.servicecenter_license.url }}" alt="license" class="sc-img">
+                        </a>
+                      </td>
+
+                      <td>{{ i.servicecenter_regdate }}</td>
+
+                      <td class="text-center">
+                        {% if i.servicecenter_status == 1 %}
+                          <span class="badge badge-success">Verified</span>
+                        {% elif i.servicecenter_status == 2 %}
+                          <span class="badge badge-danger">Rejected</span>
+                        {% else %}
+                          <span class="badge badge-warning">Pending</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                      <td colspan="11" class="text-center text-muted py-4">
+                        No accepted centers found.
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REJECTED CENTERS -->
+      <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                  <h4 class="card-title mb-1">Rejected Centers</h4>
+                  <p class="card-description mb-0">Centers rejected during verification</p>
+                </div>
+                <span class="badge badge-danger">Rejected</span>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead>
+                    <tr>
+                      <th style="width:70px;">Sl.No</th>
+                      <th>Center Name</th>
+                      <th>E-mail</th>
+                      <th>Contact</th>
+                      <th style="width:320px;">Address</th>
+                      <th>Place</th>
+                      <th>District</th>
+                      <th style="width:90px;">Logo</th>
+                      <th style="width:90px;">License</th>
+                      <th style="width:130px;">Date Of Join</th>
+                      <th class="text-center" style="width:140px;">Status</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {% for i in rejected %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>{{ i.servicecenter_name }}</td>
+                      <td>{{ i.servicecenter_email }}</td>
+                      <td>{{ i.servicecenter_contact }}</td>
+
+                      <td class="address-cell">
+                        <div class="address-label">Address</div>
+                        <div class="address-box">{{ i.servicecenter_address }}</div>
+                      </td>
+
+                      <td>{{ i.place.place_name }}</td>
+                      <td>{{ i.place.district.district_name }}</td>
+
+                      <td>
+                        <a href="{{ i.servicecenter_logo.url }}" target="_blank" title="View Logo">
+                          <img src="{{ i.servicecenter_logo.url }}" alt="logo" class="sc-img">
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ i.servicecenter_license.url }}" target="_blank" title="View License">
+                          <img src="{{ i.servicecenter_license.url }}" alt="license" class="sc-img">
+                        </a>
+                      </td>
+
+                      <td>{{ i.servicecenter_regdate }}</td>
+
+                      <td class="text-center">
+                        {% if i.servicecenter_status == 1 %}
+                          <span class="badge badge-success">Verified</span>
+                        {% elif i.servicecenter_status == 2 %}
+                          <span class="badge badge-danger">Rejected</span>
+                        {% else %}
+                          <span class="badge badge-warning">Pending</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                      <td colspan="11" class="text-center text-muted py-4">
+                        No rejected centers found.
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% if msg %}
+<script>
+  alert("{{ msg }}");
+  window.location = "{% url 'Admin:centerlist' %}";
+</script>
+{% endif %}
+
+{% endblock content %}

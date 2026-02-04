@@ -1,0 +1,104 @@
+{% extends 'User/Head_User.html' %}
+{% block content %}
+
+<!-- Edit Profile Start -->
+<div class="container-fluid bg-secondary booking my-5 wow fadeInUp" data-wow-delay="0.1s">
+  <div class="container">
+    <div class="row gx-5">
+
+      <!-- Left Content -->
+      <div class="col-lg-6 py-5">
+        <div class="py-5">
+          <h1 class="text-white mb-4">Edit Profile</h1>
+          <p class="text-white mb-0">
+            Update your personal information to keep your account details accurate. This helps you receive service updates and confirmations without interruption.
+          </p>
+
+          <div class="mt-4 p-4 bg-primary bg-opacity-25 rounded">
+            <div class="d-flex align-items-center gap-3">
+              <div class="flex-shrink-0">
+                <img
+                  src="{{editprofile.image.url}}"
+                  alt="Profile Picture"
+                  class="rounded-circle border border-3 border-light"
+                  style="width: 90px; height: 90px; object-fit: cover;"
+                >
+              </div>
+              <div>
+                <h4 class="text-white mb-1">{{editprofile.user_name}}</h4>
+                <div class="text-white-50">{{editprofile.user_email}}</div>
+                <div class="text-white-50">{{editprofile.contact_number}}</div>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <a href="{% url 'User:MyProfile' %}" class="btn btn-light px-4 py-2">Back to Profile</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Form Card (Reduced size like profile details) -->
+      <div class="col-lg-6">
+        <div class="bg-primary h-100 p-4 wow zoomIn" data-wow-delay="0.6s">
+
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h3 class="text-white mb-0">Update Details</h3>
+          </div>
+
+          <div class="bg-white rounded p-3 mx-auto" style="max-width: 460px;">
+            <form method="post">
+              {% csrf_token %}
+
+              <div class="row g-2">
+
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Name</label>
+                  <input type="text" name="txt_name" value="{{editprofile.user_name}}"
+                         class="form-control border-0 bg-light" style="height: 50px;" required>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Email</label>
+                  <input type="email" name="txt_email" value="{{editprofile.user_email}}"
+                         class="form-control border-0 bg-light" style="height: 50px;" required>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Contact</label>
+                  <input type="text" name="txt_contact" value="{{editprofile.contact_number}}"
+                         class="form-control border-0 bg-light" style="height: 50px;" required>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Address</label>
+                  <textarea name="txt_address" rows="4"
+                            class="form-control border-0 bg-light"
+                            placeholder="Enter your address" required>{{editprofile.address}}</textarea>
+                </div>
+
+                <div class="col-12 mt-2 d-grid gap-2">
+                  <button type="submit" class="btn btn-secondary py-2">Update</button>
+                  <a href="{% url 'User:MyProfile' %}" class="btn btn-outline-secondary py-2">Cancel</a>
+                </div>
+
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Edit Profile End -->
+
+{% if msg %}
+<script>
+  alert("{{msg}}");
+  window.location = "{% url 'User:MyProfile' %}";
+</script>
+{% endif %}
+
+{% endblock content %}

@@ -1,0 +1,114 @@
+{% extends 'Technician/Head_tech.html' %}
+{% block content %}
+
+<style>
+  .profile-preview{
+    width: 86px;
+    height: 86px;
+    border-radius: 18px;
+    object-fit: cover;
+    border: 1px solid rgba(0,0,0,.10);
+    background: #fff;
+  }
+  .hint-text{ font-size: .85rem; color: #6c757d; }
+
+  /* Help file input show full text */
+  input[type="file"].form-control{
+    width: 100% !important;
+  }
+</style>
+
+<div class="main-panel">
+  <div class="content-wrapper">
+
+    <div class="row">
+      <div class="col-lg-7 mx-auto grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+
+            <div class="d-flex align-items-center justify-content-between flex-wrap mb-3">
+              <div>
+                <h4 class="card-title mb-1">Edit Profile</h4>
+                <p class="card-description mb-0">Update your technician details</p>
+              </div>
+
+              <div class="d-flex align-items-center mt-2 mt-md-0">
+                {% if data.technician_photo %}
+                  <img src="{{ data.technician_photo.url }}" alt="Profile" class="profile-preview me-3">
+                {% endif %}
+                <a href="{% url 'Technician:profile' %}" class="btn btn-light">Back</a>
+              </div>
+            </div>
+
+            <hr>
+
+            <form method="post" enctype="multipart/form-data" class="forms-sample">
+              {% csrf_token %}
+
+              <div class="form-group">
+                <label for="txt_name">Technician Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="txt_name"
+                  name="txt_name"
+                  value="{{ data.technician_name }}"
+                  placeholder="Enter technician name"
+                  required
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="txt_email">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="txt_email"
+                  name="txt_email"
+                  value="{{ data.technician_email }}"
+                  placeholder="Enter email"
+                  required
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="txt_contact">Contact</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="txt_contact"
+                  name="txt_contact"
+                  value="{{ data.technician_contact }}"
+                  placeholder="Enter contact number"
+                  required
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="file_photo">Photo</label>
+                <input
+                  type="file"
+                  class="form-control"
+                  id="file_photo"
+                  name="file_photo"
+                  accept="image/*"
+                >
+                <div class="hint-text mt-2">
+                  Leave empty to keep current photo.
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary me-2">Update</button>
+              <a href="{% url 'Technician:profile' %}" class="btn btn-light">Cancel</a>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock content %}

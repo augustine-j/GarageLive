@@ -1,0 +1,73 @@
+{% extends 'ServiceCenter/Head_service.html' %}
+{% block content %}
+
+<div class="main-panel">
+  <div class="content-wrapper">
+
+    <div class="row">
+      <div class="col-lg-8 mx-auto grid-margin stretch-card">
+        <div class="card shadow-sm">
+          <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h4 class="card-title mb-1">Invoice Preview</h4>
+                <p class="text-muted mb-0">
+                  Booking #{{ booking.id }} • {{ booking.user.user_name }}
+                </p>
+              </div>
+              <a href="javascript:history.back()" class="btn btn-light btn-sm">Back</a>
+            </div>
+
+            <div class="table-responsive mb-3">
+              <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Service</th>
+                    <th class="text-end">Base</th>
+                    <th class="text-end">Labour</th>
+                    <th class="text-end">Parts</th>
+                    <th class="text-end">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for s in services %}
+                  <tr>
+                    <td>{{ s.servicecenter_services.servicetype.servicetype_name }}</td>
+                    <td class="text-end">₹{{ s.base_amount }}</td>
+                    <td class="text-end">₹{{ s.labour_charge }}</td>
+                    <td class="text-end">₹{{ s.parts_charge }}</td>
+                    <td class="text-end fw-semibold">₹{{ s.final_amount }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+                <tfoot>
+                  <tr class="table-secondary">
+                    <th colspan="4" class="text-end">Grand Total</th>
+                    <th class="text-end">₹{{ total_amount }}</th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <form method="post">
+              {% csrf_token %}
+              <div class="text-end">
+                <button type="submit" class="btn btn-success">
+                  Confirm & Generate Bill
+                </button>
+                <a href="javascript:history.back()" class="btn btn-light">
+                  Cancel
+                </a>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock content %}

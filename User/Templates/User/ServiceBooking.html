@@ -1,0 +1,554 @@
+{% extends 'User/Head_User.html' %}
+{% block content %}
+
+<style>
+  /* Using system fonts for clean, professional look matching screenshot */
+  
+  :root {
+    --primary-dark: #0a0e27;
+    --primary-accent: #ff3366;
+    --secondary-accent: #00d4ff;
+    --surface: #ffffff;
+    --surface-alt: #f8f9fa;
+    --text-primary: #1a1a2e;
+    --text-secondary: #6c757d;
+    --border-color: #e9ecef;
+    --success: #00b894;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  .booking-section {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 80px 0;
+  }
+
+  .booking-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 51, 102, 0.15) 1px, transparent 1px);
+    background-size: 30px 30px;
+    animation: moveGrid 20s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes moveGrid {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(30px, 30px); }
+  }
+
+  .booking-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .info-panel {
+    padding: 60px 40px;
+    animation: slideInLeft 0.6s ease-out;
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .info-panel h1 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .info-panel p {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 1.125rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.7;
+    max-width: 480px;
+  }
+
+  .feature-badges {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  .badge-item {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 10px 20px;
+    border-radius: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.875rem;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .badge-item:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+  }
+
+  .form-panel {
+    animation: slideInRight 0.6s ease-out;
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .booking-card {
+    background: linear-gradient(135deg, #dc143c 0%, #b91c3a 100%);
+    border-radius: 24px;
+    padding: 48px;
+    box-shadow: 0 20px 60px rgba(220, 20, 60, 0.4);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .booking-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #ff3366, #ff6b9d);
+  }
+
+  .card-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .card-header h2 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 8px;
+  }
+
+  .card-header p {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .form-group {
+    margin-bottom: 28px;
+  }
+
+  .form-label {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 10px;
+    display: block;
+    letter-spacing: 0.3px;
+  }
+
+  .form-control-custom {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.9375rem;
+    color: var(--text-primary);
+    background: var(--surface);
+    transition: all 0.3s ease;
+  }
+
+  .form-control-custom:focus {
+    outline: none;
+    border-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15);
+  }
+
+  .form-control-custom:hover:not(:focus) {
+    border-color: #cbd5e0;
+  }
+
+  textarea.form-control-custom {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .services-container {
+    background: var(--surface-alt);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+
+  .services-container::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .services-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  .services-container::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 10px;
+  }
+
+  .services-container::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+  }
+
+  .service-item {
+    background: var(--surface);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .service-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .service-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: #ffffff;
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+  }
+
+  .service-item:hover {
+    border-color: #e0e0e0;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .service-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #1a1a2e;
+  }
+
+  .service-item input[type="checkbox"]:checked ~ .service-label {
+    color: #1a1a2e;
+    font-weight: 700;
+  }
+
+  .service-item:has(input:checked) {
+    border-color: #1a1a2e;
+    background: linear-gradient(to right, rgba(26, 26, 46, 0.08), transparent);
+  }
+
+  .service-item:has(input:checked)::before {
+    transform: scaleY(1);
+  }
+
+  .service-label {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-left: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .service-price {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-left: auto;
+    font-size: 1rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 18px 32px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #0a0e27 100%);
+    color: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 1.125rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .submit-btn:hover::before {
+    left: 100%;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .submit-btn:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 991px) {
+    .info-panel {
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .info-panel h1 {
+      font-size: 2.5rem;
+    }
+
+    .info-panel p {
+      max-width: 100%;
+    }
+
+    .feature-badges {
+      justify-content: center;
+    }
+
+    .booking-card {
+      padding: 32px 24px;
+      margin-top: 40px;
+    }
+  }
+
+  @media (max-width: 575px) {
+    .info-panel h1 {
+      font-size: 2rem;
+    }
+
+    .booking-card {
+      padding: 24px 20px;
+    }
+
+    .card-header h2 {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+
+<div class="booking-section">
+  <div class="container booking-container">
+    <div class="row gx-5">
+
+      <!-- Left Info Panel -->
+      <div class="col-lg-6 info-panel">
+        <h1 class="text-white mb-4">Book Your Service in Seconds</h1>
+        <p>
+          Select multiple services if required. Final amount will be calculated
+          after inspection by our expert technicians.
+        </p>
+        
+        <div class="feature-badges">
+          <div class="badge-item">⚡ Instant Booking</div>
+          <div class="badge-item">🛠️ Expert Technicians</div>
+          <div class="badge-item">💯 Quality Guaranteed</div>
+        </div>
+      </div>
+
+      <!-- Right Form Panel -->
+      <div class="col-lg-6 form-panel">
+        <div class="booking-card">
+          <div class="card-header">
+            <h2>Service Booking</h2>
+            <p>Fill in the details below to schedule your service</p>
+          </div>
+
+          <form method="post">
+            {% csrf_token %}
+
+            <!-- Date Selection -->
+            <div class="form-group">
+              <label class="form-label">Service Date</label>
+              <input
+                type="date"
+                name="txt_date"
+                class="form-control-custom"
+                required
+                min="{{ today }}"
+              >
+            </div>
+
+            <!-- Service Selection -->
+            <div class="form-group">
+              <label class="form-label">Select Services</label>
+              <div class="services-container">
+                {% for s in data %}
+                  <div class="service-item">
+                    <div style="display: flex; align-items: center;">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="services"
+                        value="{{ s.id }}"
+                        id="service{{ s.id }}"
+                      >
+                      <label class="service-label" for="service{{ s.id }}">
+                        {{ s.servicetype.servicetype_name }}
+                      </label>
+                      <span class="service-price">₹{{ s.base_amount }}</span>
+                    </div>
+                  </div>
+                {% empty %}
+                  <div class="empty-state">
+                    <p>No services available at the moment</p>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Vehicle Selection -->
+            <div class="form-group">
+              <label class="form-label">Choose Vehicle</label>
+              <select name="sel_vehicle" class="form-control-custom" required>
+                <option value="">Select your vehicle</option>
+                {% for v in vehicle_data %}
+                  <option value="{{ v.id }}">
+                    {{ v.model.brand.brand_name }} {{ v.model.model_name }} - {{ v.vehicle_number }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Complaint/Description -->
+            <div class="form-group">
+              <label class="form-label">Describe Your Issue</label>
+              <textarea
+                name="txt_complaint"
+                class="form-control-custom"
+                rows="4"
+                placeholder="Tell us what's wrong with your vehicle..."
+                required
+              ></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="submit-btn">
+              Submit Booking
+            </button>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% if msg %}
+<script>
+  // Modern alert replacement with better UX
+  document.addEventListener('DOMContentLoaded', function() {
+    const message = "{{ msg }}";
+    if (message) {
+      // Create a toast notification instead of alert
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #00b894 0%, #00d4aa 100%);
+        color: white;
+        padding: 20px 28px;
+        border-radius: 12px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        box-shadow: 0 8px 32px rgba(0, 184, 148, 0.3);
+        z-index: 10000;
+        animation: slideInDown 0.4s ease-out;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      // Add animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideInDown {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `;
+      document.head.appendChild(style);
+
+      // Remove after 4 seconds
+      setTimeout(() => {
+        toast.style.animation = 'slideInDown 0.4s ease-out reverse';
+        setTimeout(() => toast.remove(), 400);
+      }, 4000);
+    }
+  });
+</script>
+{% endif %}
+
+{% endblock content %}

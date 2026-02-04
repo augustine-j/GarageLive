@@ -1,0 +1,137 @@
+{% extends 'User/Head_User.html' %}
+{% block content %}
+
+<!-- My Profile Start -->
+<div class="container-fluid bg-secondary booking my-5 wow fadeInUp" data-wow-delay="0.1s">
+  <div class="container">
+    <div class="row gx-5">
+
+      <!-- Left Content -->
+      <div class="col-lg-6 py-5">
+        <div class="py-5">
+          <h1 class="text-white mb-4">My Profile</h1>
+          <p class="text-white mb-0">
+            View and manage your personal information. Keep your contact details updated to receive service updates and confirmations.
+          </p>
+
+          <div class="mt-4 p-4 bg-primary bg-opacity-25 rounded">
+            <div class="d-flex align-items-center gap-3">
+              <div class="flex-shrink-0">
+                <img
+                  src="{{Data.image.url}}"
+                  alt="Profile Picture"
+                  class="rounded-circle border border-3 border-light"
+                  style="width: 90px; height: 90px; object-fit: cover;"
+                >
+              </div>
+              <div>
+                <h4 class="text-white mb-1">{{Data.user_name}}</h4>
+                <div class="text-white-50">{{Data.user_email}}</div>
+                <div class="text-white-50">{{Data.contact_number}}</div>
+              </div>
+            </div>
+
+            <div class="mt-4 d-flex flex-wrap gap-2">
+              <a href="{% url 'User:editprofile' %}" class="btn btn-secondary px-4 py-2">Edit Profile</a>
+              <a href="{% url 'User:changepassword' %}" class="btn btn-light px-4 py-2">Change Password</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Details Card (Reduced size) -->
+      <div class="col-lg-6">
+        <!-- reduced padding from p-5 to p-4, and added centered narrower details card -->
+        <div class="bg-primary h-100 p-4 wow zoomIn" data-wow-delay="0.6s">
+
+          <!-- Smaller Photo at the TOP -->
+          <div class="text-center mb-3">
+            <img
+              src="{{Data.image.url}}"
+              alt="Profile Picture"
+              class="rounded border border-3 border-light"
+              style="width: 160px; height: 160px; object-fit: cover;"
+            >
+            <div class="text-white-50 mt-2">
+              <small>Profile photo</small>
+            </div>
+          </div>
+
+         <!-- Smaller heading (CENTER) -->
+<div class="d-flex align-items-center justify-content-center mb-3">
+  <h3 class="text-white mb-0 text-center">Profile Details</h3>
+</div>
+
+
+          <!-- Reduced width + padding -->
+          <div class="bg-white rounded p-3 mx-auto" style="max-width: 460px;">
+            <div class="row g-2">
+
+              <div class="col-12">
+                <div class="d-flex justify-content-between">
+                  <span class="fw-semibold">Name</span>
+                  <span class="text-muted">{{Data.user_name}}</span>
+                </div>
+                <hr class="my-2">
+              </div>
+
+              <div class="col-12">
+                <div class="d-flex justify-content-between">
+                  <span class="fw-semibold">Email</span>
+                  <span class="text-muted">{{Data.user_email}}</span>
+                </div>
+                <hr class="my-2">
+              </div>
+
+              <div class="col-12">
+                <div class="d-flex justify-content-between">
+                  <span class="fw-semibold">Contact</span>
+                  <span class="text-muted">{{Data.contact_number}}</span>
+                </div>
+                <hr class="my-2">
+              </div>
+
+              <div class="col-12">
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                  <span class="fw-semibold">Address</span>
+                  <span class="text-muted text-end" style="white-space: pre-line;">{{Data.address}}</span>
+                </div>
+                <hr class="my-2">
+              </div>
+
+              <!-- District -->
+              <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="fw-semibold">District</span>
+                  <span class="text-muted text-end ms-3">{{Data.place.district.district_name}}</span>
+                </div>
+                <hr class="my-2">
+              </div>
+
+              <!-- Place -->
+              <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="fw-semibold">Place</span>
+                  <span class="text-muted text-end ms-3">{{Data.place.place_name}}</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- My Profile End -->
+
+{% if msg %}
+<script>
+  alert("{{msg}}");
+  window.location = "{% url 'User:MyProfile' %}";
+</script>
+{% endif %}
+
+{% endblock content %}

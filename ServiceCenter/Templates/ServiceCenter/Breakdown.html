@@ -1,0 +1,386 @@
+{% extends 'ServiceCenter/Head_service.html' %}
+{% block content %}
+
+
+<style>
+  .blink-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+    background-color: #dc3545;
+    animation: blink 1.4s infinite;
+  }
+  @keyframes blink {
+    0%,100% { opacity: 1; }
+    50% { opacity: .3; }
+  }
+</style>
+
+<div class="container-xxl py-4">
+  <div class="row">
+    <div class="col-lg-12 grid-margin stretch-card">
+      <div class="card shadow-sm">
+        <div class="card-body">
+
+          <!-- Header -->
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <div>
+              <h4 class="card-title mb-1">
+                <span class="blink-dot"></span> Breakdown Requests
+              </h4>
+              <p class="card-description mb-0">
+                Emergency roadside assistance requests.
+              </p>
+            </div>
+
+            <div class="input-group" style="max-width:300px;">
+              <span class="input-group-text">
+                <i class="mdi mdi-magnify"></i>
+              </span>
+              <input id="bdSearch" type="text" class="form-control" placeholder="Search breakdowns...">
+            </div>
+          </div>
+
+          <!-- Status Filter Pills -->
+<div class="d-flex flex-wrap gap-2 mb-3" id="statusFilters">
+
+  <button class="btn btn-sm btn-outline-warning active"
+          data-status="all">
+    All <span class="badge bg-warning ms-1" id="cnt-all">0</span>
+  </button>
+
+  <button class="btn btn-sm btn-outline-danger"
+          data-status="0">
+    Pending <span class="badge bg-danger ms-1" id="cnt-pending">0</span>
+  </button>
+
+  <button class="btn btn-sm btn-outline-success"
+          data-status="1">
+    Accepted <span class="badge bg-success ms-1" id="cnt-accepted">0</span>
+  </button>
+
+  <button class="btn btn-sm btn-outline-info"
+          data-status="inprogress">
+    In Progress <span class="badge bg-info ms-1" id="cnt-inprogress">0</span>
+  </button>
+
+  <button class="btn btn-sm btn-outline-success"
+          data-status="5">
+    Completed <span class="badge bg-success ms-1" id="cnt-completed">0</span>
+  </button>
+
+  <button class="btn btn-sm btn-outline-secondary"
+          data-status="2">
+    Rejected <span class="badge bg-secondary ms-1" id="cnt-rejected">0</span>
+  </button>
+
+</div>
+
+
+          <form method="post">
+            {% csrf_token %}
+
+            <div class="table-responsive">
+              <table class="table table-striped align-middle" id="bdTable">
+                <thead>
+                  <tr>
+                    <th style="width:60px;">Sno</th>
+                    <th>User</th>
+                    <th>Contact</th>
+                    <th>Date</th>
+                    <th>Service Type</th>
+                    <th>Complaint</th>
+                    <th>Vehicle</th>
+                    <th style="width:160px;">Vehicle Image</th>
+                    <th style="width:160px;">Status</th>
+                    <th style="width:220px;">Action</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {% for i in services %}
+                  <tr data-status="{{ i.booking.breakdown_status }}">
+
+
+                    <td class="fw-semibold">{{ forloop.counter }}</td>
+
+                    <!-- User -->
+                    <td>
+                      <div class="d-flex flex-column">
+                        <span class="fw-semibold">{{ i.booking.user.user_name }}</span>
+                        <small class="text-muted">{{ i.booking.user.user_email }}</small>
+                      </div>
+                    </td>
+
+                    <td>{{ i.booking.user.contact_number }}</td>
+
+                    <td>
+                      <span class="badge badge-outline-primary">
+                        {{ i.booking.breakdown_date|date:"d M Y" }}
+                      </span>
+                    </td>
+
+                    <td>
+                    <span class="badge bg-warning text-dark">
+                       {{ i.servicecenter_breakdown_service.servicetype.servicetype_name }}
+                     </span>
+                      </td>
+
+
+                    <td style="max-width:260px;">
+                      <div class="text-wrap">{{ i.booking.breakdown_complaint }}</div>
+                    </td>
+
+                    <!-- Vehicle -->
+                    <td>
+                      <div class="d-flex flex-column">
+                        <span class="fw-semibold">
+                          {{ i.booking.vehicle.model.brand.brand_name }}
+                          {{ i.booking.vehicle.model.model_name }}
+                        </span>
+                        <small class="text-muted">{{ i.booking.vehicle.vehicle_number }}</small>
+                      </div>
+                    </td>
+
+                    <!-- Vehicle Image -->
+                    <td>
+                      <img
+                        src="{{ i.booking.vehicle.vehicle_photo.url }}"
+                        alt="Vehicle"
+                        class="img-fluid rounded shadow-sm"
+                        style="width:150px; height:110px; object-fit:cover;"
+                      />
+                    </td>
+
+                    <!-- Status -->
+                    <td>
+                    
+
+                      {% if i.booking.breakdown_status == 0 %}
+                        Pending Approval
+
+                      {% elif i.booking.breakdown_status == 2 %}
+                        Rejected
+
+                      {% else %}
+                        {# ========== ACCEPTED OR BEYOND ========== #}
+
+                        {% if i.servicecenter_breakdown_service.servicetype.servicetype_name == "Fuel Refill" %}
+                          {% if i.progress_step == 0 %}
+                            Accepted
+                          {% elif i.progress_step == 1 %}
+                            On the Way
+                          {% elif i.progress_step == 2 %}
+                            Arrived
+                          {% elif i.progress_step == 3 %}
+                            Fueled up
+                          {% else %}
+                            Completed
+                          {% endif %}
+
+                        {% elif i.servicecenter_breakdown_service.servicetype.servicetype_name == "Battery Jump Start" %}
+                          {% if i.progress_step == 0 %}
+                            on the way
+                          {% elif i.progress_step == 1 %}
+                            Arrived
+                          {% elif i.progress_step == 2 %}
+                            Jumb started
+                            
+                          {% else %}
+                            Completed
+                          {% endif %}
+
+                        {% elif i.servicecenter_breakdown_service.servicetype.servicetype_name == "Tyre Puncture Repair" %}
+                          {% if i.progress_step == 0 %}
+                            Accepted
+                          {% elif i.progress_step == 1 %}
+                            On the way
+                          {% elif i.progress_step == 2 %}
+                            Arrived
+                          {% elif i.progress_step == 3 %}
+                            Tyre changed
+                          {% else %}
+                            Completed
+                          {% endif %}
+
+                        {% elif i.servicecenter_breakdown_service.servicetype.servicetype_name == "Towing Service" %}
+                          {% if i.progress_step == 0 %}
+                            Accepted
+                          {% elif i.progress_step == 1 %}
+                            On the way
+                          {% elif i.progress_step == 2 %}
+                            Vehicle reached
+                          {% elif i.progress_step == 3 %}
+                            Towing
+                          {% else %}
+                            Completed
+                          {% endif %}
+
+                        {% else %}
+                          In progress
+                        {% endif %}
+
+                      {% endif %}
+
+                </td>
+
+
+                    <!-- Action -->
+                   <td>
+                              {% if i.booking.breakdown_status == 0 %}
+                                <a class="btn btn-sm btn-success"
+                                  href="{% url 'ServiceCenter:acceptbreakdown' i.booking.id %}">
+                                  Accept
+                                </a>
+                                <a class="btn btn-sm btn-danger"
+                                  href="{% url 'ServiceCenter:rejectbreakdown' i.booking.id %}">
+                                  Reject
+                                </a>
+
+                              {% elif i.booking.breakdown_status == 1 %}
+                                {% if not i.booking.technician %}
+                                  <a class="btn btn-sm btn-primary"
+                                    href="{% url 'ServiceCenter:breakdown_technician' i.booking.id %}">
+                                    Assign Technician
+                                  </a>
+                                {% else %}
+                                  <small class="text-muted">
+                                    Technician:
+                                    <b>{{ i.booking.technician.technician_name }}</b>
+                                  </small>
+                                {% endif %}
+
+                              {% elif i.progress_step >= 1 and not i.billing_status %}
+                                <span class="badge bg-warning text-dark">
+                                  Awaiting Technician Billing
+                                </span>
+
+                              {% elif i.billing_status %}
+                                <span class="badge bg-success">
+                                  Billed
+                                </span>
+
+                              {% else %}
+                                <span class="text-muted">No action</span>
+                              {% endif %}
+                            </td>
+
+
+                  </tr>
+
+                  {% empty %}
+                  <tr>
+                    <td colspan="9" class="text-center py-4 text-muted">
+                      No breakdown requests found.
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Client-side filtering -->
+<script>
+  (function () {
+    const search = document.getElementById("bdSearch");
+    const table = document.getElementById("bdTable");
+    if (!search || !table) return;
+
+    search.addEventListener("keyup", function () {
+      const q = this.value.toLowerCase().trim();
+      table.querySelectorAll("tbody tr").forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(q) ? "" : "none";
+      });
+    });
+  })();
+</script>
+
+
+<script>
+(function () {
+  const rows = Array.from(document.querySelectorAll("#bdTable tbody tr"));
+  const filterButtons = document.querySelectorAll("#statusFilters button");
+
+  const counters = {
+    all: 0,
+    pending: 0,
+    accepted: 0,
+    inprogress: 0,
+    completed: 0,
+    rejected: 0
+  };
+
+ function bucket(status) {
+  status = parseInt(status);
+
+  if (status === 0) return "pending";
+  if (status === 2) return "rejected";
+  if (status === 5) return "completed";
+
+  // ✅ EVERYTHING ELSE IS IN PROGRESS
+  if ([1, 3, 4].includes(status)) return "inprogress";
+
+  return "all";
+}
+
+
+  // Count statuses
+  rows.forEach(row => {
+    counters.all++;
+    const key = bucket(row.dataset.status);
+    counters[key]++;
+  });
+
+  // Update badges
+  document.getElementById("cnt-all").innerText = counters.all;
+  document.getElementById("cnt-pending").innerText = counters.pending;
+  document.getElementById("cnt-accepted").innerText = counters.accepted;
+  document.getElementById("cnt-inprogress").innerText = counters.inprogress;
+  document.getElementById("cnt-completed").innerText = counters.completed;
+  document.getElementById("cnt-rejected").innerText = counters.rejected;
+
+  // Filtering logic
+  filterButtons.forEach(btn => {
+    btn.addEventListener("click", function () {
+
+      filterButtons.forEach(b => b.classList.remove("active"));
+      this.classList.add("active");
+
+      const filter = this.dataset.status;
+
+      rows.forEach(row => {
+        const rowStatus = row.dataset.status;
+        const rowBucket = bucket(rowStatus);
+
+        if (filter === "all") {
+          row.style.display = "";
+        } else if (filter === "inprogress") {
+          row.style.display = (rowBucket === "inprogress") ? "" : "none";
+        } else {
+          row.style.display = (rowStatus === filter) ? "" : "none";
+        }
+      });
+    });
+  });
+
+})();
+</script>
+
+{% if msg %}
+<script>
+  alert("{{msg}}");
+  window.location = "{% url 'ServiceCenter:breakdownrequest' %}";
+</script>
+{% endif %}
+
+
+{% endblock content %}

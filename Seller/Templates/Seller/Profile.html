@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        <center><h1>My Profile</h1></center>
+        <table border="1" align="center">
+        <tr>
+            <td>Name</td>
+            <td>{{Data.user_name}}</td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td>{{Data.user_email}}</td>
+        </tr>
+        <tr>
+            <td>Contact</td>
+            <td>{{Data.contact_number}}</td>
+        </tr>
+        <tr>
+            <td>Established Date</td>
+            <td>{{Data.estd_date}}</td>
+        </tr>
+        <tr>
+            <td>license_number</td>
+            <td>{{Data.license_number}}</td>
+        </tr>
+        <tr>
+            <td>Owner Name</td>
+            <td>{{Data.owner_name}}</td>
+        </tr>
+        <tr>
+            <td>District</td>
+            <td>{{Data.place.district.district_name}}</td>
+        </tr>
+        <tr>
+            <td>Place</td>
+            <td>{{Data.place.place_name}}</td>
+        </tr>
+        <tr>
+            <td>License Proof</td>
+            <td colspan="2" align="center"><img src="{{Data.license_proof.url}}" alt="Profile Picture" width="230" height="230"></td>
+        </tr>
+        <tr>
+            <td>Owner Proof</td>
+            <td colspan="2" align="center"><img src="{{Data.owner_proof.url}}" alt="Profile Picture" width="230" height="230"></td>
+        </tr>
+
+
+        <tr>
+            <td><button><a href="{% url 'Seller:editprofile' %}">Edit Profile</a></button></td>
+            <td><button><a href="{% url 'Seller:changepassword' %}">Change Password</a></button></td>
+        </tr>
+    </table>
+    </form>
+</body>
+</html>
+
+{% if msg %}
+<script>
+    alert("{{msg}}")
+    window.location="{% url 'Seller:profile' %}"
+    
+</script>
+{% endif %}

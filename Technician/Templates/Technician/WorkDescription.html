@@ -1,0 +1,92 @@
+{% extends 'Technician/Head_tech.html' %}
+{% block content %}
+
+<style>
+  .note-box{
+    background: #f8f9fa;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 14px;
+    padding: 12px 14px;
+    line-height: 1.45;
+    color: #212529;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .note-meta{
+    font-size: .85rem;
+    color: #6c757d;
+  }
+</style>
+
+<div class="main-panel">
+  <div class="content-wrapper">
+
+    <div class="row">
+
+      <!-- Add Work Description Card -->
+      <div class="col-lg-5 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+
+            <h4 class="card-title">Add Work Description</h4>
+            <p class="card-description mb-3">Add notes about diagnostics, repairs, and progress</p>
+
+            <form method="post" class="forms-sample">
+              {% csrf_token %}
+
+              <div class="form-group">
+                <label for="txt_work">Work Description</label>
+                <textarea
+                  class="form-control"
+                  name="txt_work"
+                  id="txt_work"
+                  rows="8"
+                  placeholder="Write details like: issue found, parts changed, test results, etc."
+                  required
+                ></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary me-2">Submit</button>
+              <a href="javascript:history.back()" class="btn btn-light">Back</a>
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Work Description List Card -->
+      <div class="col-lg-7 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div>
+                <h4 class="card-title mb-1">Work Descriptions</h4>
+                <p class="card-description mb-0">Previously added notes for this job</p>
+              </div>
+            </div>
+
+            {% if notes %}
+              <div class="d-flex flex-column gap-3">
+                {% for i in notes %}
+                  <div class="note-box">
+                    {{ i.workedesc_content }}
+                  </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="text-center text-muted py-4">
+                No work descriptions added yet.
+              </div>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+{% endblock content %}

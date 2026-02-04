@@ -1,0 +1,527 @@
+{% extends 'ServiceCenter/Head_service.html' %}
+{% block content %}
+
+
+
+<style>
+  .blink-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+    background-color: #dc3545;
+    animation: blink 1.3s infinite;
+  }
+  @keyframes blink {
+    0%,100% { opacity: 1; }
+    50% { opacity: .3; }
+  }
+</style>
+
+
+<div class="container-xxl py-4">
+  <div class="row">
+    <div class="col-lg-12 grid-margin stretch-card">
+      <div class="card shadow-sm">
+        <div class="card-body">
+
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <div>
+              <h4 class="card-title mb-1">
+              <span class="blink-dot"></span> Service Requests</h4>
+
+              <p class="card-description mb-0">Manage booking requests, assign technicians, and track status.</p>
+            </div>
+
+            <div class="d-flex gap-2">
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="mdi mdi-magnify"></i>
+                </span>
+                <input id="tableSearch" type="text" class="form-control" placeholder="Search requests...">
+              </div>
+            </div>
+          </div>
+
+          <!-- Status Filters -->
+<div class="d-flex flex-wrap gap-2 mb-3" id="statusFilters">
+  <button class="btn btn-sm btn-outline-warning active" data-status="all">
+    All <span class="badge bg-warning ms-1" id="cnt-all">0</span>
+  </button>
+
+  <button class="btn btn-sm btn-outline-danger" data-status="0">
+    <span class="badge bg-danger ms-1"></span> Pending
+    <span class="badge bg-danger ms-1" id="cnt-pending">0</span>
+  </button>
+
+  <button class="btn btn-sm btn-outline-success" data-status="1">
+    Accepted <span class="badge bg-success ms-1" id="cnt-accepted">0</span>
+  </button>
+
+  <button class="btn btn-sm btn-outline-info" data-status="inprogress">
+    In Progress <span class="badge bg-info ms-1" id="cnt-inprogress">0</span>
+  </button>
+
+  <button class="btn btn-sm btn-outline-success" data-status="completed">
+    Completed <span class="badge bg-success ms-1" id="cnt-completed">0</span>
+  </button>
+
+  <button class="btn btn-sm btn-outline-danger" data-status="2">
+    Rejected <span class="badge bg-danger ms-1" id="cnt-rejected">0</span>
+  </button>
+</div>
+
+
+          <form method="post">
+            {% csrf_token %}
+
+            <div class="table-responsive">
+              <table class="table table-striped align-middle" id="requestsTable">
+                <thead>
+                  <tr>
+                    <th style="width:70px;">Sno</th>
+                    <th>User</th>
+                    <th>Contact</th>
+                    <th>Booking Date</th>
+                    <th>To Date</th>
+                    <th>Complaint</th>
+                    <th>Service Type</th>
+                    <th>Vehicle</th>
+                    <th style="width:170px;">Vehicle Image</th>
+                    <th style="width:340px;">Status / Action</th>
+                    <th>Assigned Technician</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {% for i in data %}
+                  <tr data-status="{{ i.booking_status }}">
+
+                    <td class="fw-semibold">{{ forloop.counter }}</td>
+
+                    <td>
+                      <div class="d-flex flex-column">
+                        <span class="fw-semibold">{{ i.user.user_name }}</span>
+                        <small class="text-muted">{{ i.user.user_email }}</small>
+                      </div>
+                    </td>
+
+                    <td>
+                      <span class="fw-semibold">{{ i.user.contact_number }}</span>
+                    </td>
+                    <td>
+                      <span class="badge badge-outline-primary">{{ i.booking_date }}</span>
+                    </td>
+                    <td>
+                      <span class="badge badge-outline-primary">{{ i.booking_todate }}</span>
+                    </td>
+
+                    <td style="max-width: 240px;">
+                          {% if i.booking_complaints %}
+                            <button
+                              type="button"
+                              class="btn btn-sm btn-outline-danger"
+                              data-bs-toggle="modal"
+                              data-bs-target="#complaintModal"
+                              data-complaint="{{ i.booking_complaints|escapejs }}"
+                              data-user="{{ i.user.user_name }}"
+                              data-booking="#{{ i.id }}"
+                            >
+                              View
+                            </button>
+                          {% else %}
+                            <span class="text-muted">—</span>
+                          {% endif %}
+                      </td>
+
+
+                    
+                       <td style="max-width:220px;">
+                          <div class="d-flex flex-wrap gap-1">
+                            {% for bs in i.services %}
+                              <span class="badge bg-light text-dark border">
+                                {{ bs.servicecenter_services.servicetype.servicetype_name }}
+                              </span>
+                            {% empty %}
+                              <span class="text-muted">No services</span>
+                            {% endfor %}
+                          </div>
+                        </td>
+
+
+                  
+
+                    <td>
+                      <div class="d-flex flex-column">
+                        <span class="fw-semibold">{{i.vehicle.model.brand.brand_name}} {{ i.vehicle.model.model_name }}</span>
+                        <small class="text-muted">{{ i.vehicle.vehicle_number }}</small>
+                      </div>
+                    </td>
+
+                    <td>
+                      <img
+                        src="{{ i.vehicle.vehicle_photo.url }}"
+                        alt="Vehicle"
+                        class="img-fluid rounded shadow-sm"
+                        style="width: 150px; height: 110px; object-fit: cover;"
+                      />
+                    </td>
+
+                    <!-- STATUS / ACTION (badge + progress bar for all statuses) -->
+                    <td>
+                      {% comment %}
+                        booking_status -> %
+                        0 Pending            0
+                        1 Accepted          10
+                        2 Rejected          100 (Closed)
+                        3 Work Started      20
+                        4 Diagnosis Started 35
+                        5 Diagnosis Done    50
+                        6 Repair In Progress 65
+                        7 Parts Replaced    75
+                        8 Testing           85
+                        9 Service Completed 95
+                        10 Billing          98
+                        11 Bill Generated  100
+                        12 Service Completed 100
+                      {% endcomment %}
+
+                      {% if i.booking_status == 0 %}
+                        <span class="badge badge-outline-danger">Pending</span>
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                          <a class="btn btn-sm btn-success" href="{% url 'ServiceCenter:acceptrequest' i.id %}">Accept</a>
+                          <a class="btn btn-sm btn-danger" href="{% url 'ServiceCenter:rejectrequest' i.id %}">Reject</a>
+                        </div>
+
+                        <div class="mt-2" style="max-width:220px;">
+                          <div class="progress" style="height:8px;">
+                            <div class="progress-bar bg-secondary" role="progressbar"
+                                 style="width:5%;" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted d-block mt-1">0%</small>
+                        </div>
+
+                      {% elif i.booking_status == 1 %}
+                        <span class="badge badge-outline-success">Accepted</span>
+
+                        {% if not i.technician %}
+                          <div class="mt-2">
+                            <a class="btn btn-sm btn-primary" href="{% url 'ServiceCenter:assign_technician' i.id %}">
+                              Assign Technician
+                            </a>
+                          </div>
+                        {% else %}
+                          <div class="mt-2">
+                            <small class="text-muted">
+                              Technician Assigned: <span class="fw-semibold">{{ i.technician.technician_name }}</span>
+                            </small>
+                          </div>
+                        {% endif %}
+
+                        <div class="mt-2" style="max-width:220px;">
+                          <div class="progress" style="height:8px;">
+                            <div class="progress-bar bg-success" role="progressbar"
+                                 style="width:10%;" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted d-block mt-1">10%</small>
+                        </div>
+
+                      {% elif i.booking_status == 2 %}
+                        <span class="badge badge-outline-danger">Rejected</span>
+
+                        <div class="mt-2" style="max-width:220px;">
+                          <div class="progress" style="height:8px;">
+                            <div class="progress-bar bg-danger" role="progressbar"
+                                 style="width:100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted d-block mt-1">Closed</small>
+                        </div>
+
+                      {% elif i.booking_status == 3 %}
+                        <span class="badge badge-outline-warning">Work Started</span>
+
+                        <div class="mt-2" style="max-width:220px;">
+                          <div class="progress" style="height:8px;">
+                            <div class="progress-bar bg-warning" role="progressbar"
+                                 style="width:20%;" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted d-block mt-1">20%</small>
+                        </div>
+
+                      {% elif i.booking_status == 4 %}
+                        <span class="badge badge-outline-info">Diagnosis Started</span>
+
+                        <div class="mt-2" style="max-width:220px;">
+                          <div class="progress" style="height:8px;">
+                            <div class="progress-bar bg-info" role="progressbar"
+                                 style="width:35%;" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted d-block mt-1">35%</small>
+                        </div>
+
+                      {% elif i.booking_status == 5 %}
+                        <span class="badge badge-outline-primary">Diagnosis Completed</span>
+
+                        <div class="mt-2" style="max-width:220px;">
+                          <div class="progress" style="height:8px;">
+                            <div class="progress-bar bg-primary" role="progressbar"
+                                 style="width:50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted d-block mt-1">50%</small>
+                        </div>
+
+                      {% elif i.booking_status == 6 %}
+                        <span class="badge badge-warning">Repair In Progress</span>
+
+                        <div class="mt-2" style="max-width:220px;">
+                          <div class="progress" style="height:8px;">
+                            <div class="progress-bar bg-warning" role="progressbar"
+                                 style="width:65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted d-block mt-1">65%</small>
+                        </div>
+
+                      {% elif i.booking_status == 7 %}
+                        <span class="badge badge-outline-primary">Parts Replaced</span>
+
+                        <div class="mt-2" style="max-width:220px;">
+                          <div class="progress" style="height:8px;">
+                            <div class="progress-bar bg-primary" role="progressbar"
+                                 style="width:75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted d-block mt-1">75%</small>
+                        </div>
+
+                      {% elif i.booking_status == 8 %}
+                        <span class="badge badge-outline-info">Vehicle Being Tested</span>
+
+                        <div class="mt-2" style="max-width:220px;">
+                          <div class="progress" style="height:8px;">
+                            <div class="progress-bar bg-info" role="progressbar"
+                                 style="width:85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted d-block mt-1">85%</small>
+                        </div>
+
+                      {% elif i.booking_status == 9 %}
+                        <span class="badge badge-outline-success">Service Completed</span>
+
+                        <div class="mt-2" style="max-width:220px;">
+                          <div class="progress" style="height:8px;">
+                            <div class="progress-bar bg-success" role="progressbar"
+                                 style="width:95%;" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted d-block mt-1">95%</small>
+                        </div>
+
+                      {% elif i.booking_status == 10 %}
+                        <span class="badge badge-outline-dark">Billing</span>
+
+                        <div class="mt-2">
+                          <a class="btn btn-sm btn-dark" href="{% url 'ServiceCenter:generate_bill' i.id %}">
+                            Generate Bill
+                          </a>
+                        </div>
+
+                        <div class="mt-2" style="max-width:220px;">
+                          <div class="progress" style="height:8px;">
+                            <div class="progress-bar bg-dark" role="progressbar"
+                                 style="width:98%;" aria-valuenow="98" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted d-block mt-1">98%</small>
+                        </div>
+
+                      {% elif i.booking_status == 11 %}
+                        <span class="badge badge-outline-success">Bill Generated</span>
+
+                        <div class="mt-2" style="max-width:220px;">
+                          <div class="progress" style="height:8px;">
+                            <div class="progress-bar bg-success" role="progressbar"
+                                 style="width:100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted d-block mt-1">100%</small>
+                        </div>
+
+                      {% elif i.booking_status == 12 %}
+                        <span class="badge badge-outline-success">Service Completed</span>
+
+                        <div class="mt-2" style="max-width:220px;">
+                          <div class="progress" style="height:8px;">
+                            <div class="progress-bar bg-success" role="progressbar"
+                                 style="width:100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted d-block mt-1">100%</small>
+                        </div>
+
+                      {% else %}
+                        <span class="badge badge-outline-secondary">Unknown</span>
+
+                        <div class="mt-2" style="max-width:220px;">
+                          <div class="progress" style="height:8px;">
+                            <div class="progress-bar bg-secondary" role="progressbar"
+                                 style="width:0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted d-block mt-1">0%</small>
+                        </div>
+                      {% endif %}
+                    </td>
+
+                    <td>
+                      <center>
+                    <div class="mt-2">
+                           <span class="fw-semibold">{{ i.technician.technician_name }}</span>
+                          </div></center>
+                      </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="9" class="text-center py-4 text-muted">
+                      No service requests found.
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<div class="modal fade" id="complaintModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Customer Complaint</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-1 fw-semibold" id="complaintMeta"></p>
+        <hr>
+        <p id="complaintText" class="mb-0" style="white-space: pre-line;"></p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+{% if msg %}
+<script>
+  alert("{{msg}}");
+  window.location = "{% url 'ServiceCenter:service_request' %}";
+</script>
+{% endif %}
+
+<!-- Client-side table search -->
+<script>
+  (function () {
+    const search = document.getElementById("tableSearch");
+    const table = document.getElementById("requestsTable");
+    if (!search || !table) return;
+
+    search.addEventListener("keyup", function () {
+      const q = this.value.toLowerCase().trim();
+      const rows = table.querySelectorAll("tbody tr");
+      rows.forEach(r => {
+        const text = r.innerText.toLowerCase();
+        r.style.display = text.includes(q) ? "" : "none";
+      });
+    });
+  })();
+</script>
+
+
+<script>
+(function () {
+
+  const rows = Array.from(document.querySelectorAll("#requestsTable tbody tr"));
+  const buttons = document.querySelectorAll("#statusFilters button");
+
+  const counters = {
+    all: 0, pending: 0, accepted: 0,
+    inprogress: 0, completed: 0, rejected: 0
+  };
+
+  function bucket(status) {
+    status = parseInt(status);
+    if (status === 0) return "pending";
+    if (status === 1) return "accepted";
+    if (status === 2) return "rejected";
+    if ([3,4,5,6,7,8].includes(status)) return "inprogress";
+    if ([9,11,12].includes(status)) return "completed";
+    return "all";
+  }
+
+  // Count rows
+  rows.forEach(row => {
+    counters.all++;
+    counters[bucket(row.dataset.status)]++;
+  });
+
+  // Update badges
+  document.getElementById("cnt-all").innerText = counters.all;
+  document.getElementById("cnt-pending").innerText = counters.pending;
+  document.getElementById("cnt-accepted").innerText = counters.accepted;
+  document.getElementById("cnt-inprogress").innerText = counters.inprogress;
+  document.getElementById("cnt-completed").innerText = counters.completed;
+  document.getElementById("cnt-rejected").innerText = counters.rejected;
+
+  // Filter click
+  buttons.forEach(btn => {
+    btn.addEventListener("click", function () {
+
+      buttons.forEach(b => b.classList.remove("active"));
+      this.classList.add("active");
+
+      const filter = this.dataset.status;
+
+      rows.forEach(row => {
+        const s = row.dataset.status;
+        const b = bucket(s);
+
+        if (filter === "all") row.style.display = "";
+        else if (filter === "inprogress") row.style.display = b === "inprogress" ? "" : "none";
+        else if (filter === "completed") row.style.display = b === "completed" ? "" : "none";
+        else row.style.display = s === filter ? "" : "none";
+      });
+    });
+  });
+
+})();
+</script>
+
+<script>
+  const complaintModal = document.getElementById('complaintModal');
+  complaintModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const complaint = button.getAttribute('data-complaint');
+    const user = button.getAttribute('data-user');
+    const booking = button.getAttribute('data-booking');
+
+    document.getElementById('complaintMeta').innerText =
+      user + ' • Booking ' + booking;
+
+    document.getElementById('complaintText').innerText = complaint;
+  });
+</script>
+
+
+
+
+{% endblock content %}

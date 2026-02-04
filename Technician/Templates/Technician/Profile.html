@@ -1,0 +1,117 @@
+{% extends 'Technician/Head_tech.html' %}
+{% block content %}
+
+<style>
+  .profile-avatar{
+    width: 92px;
+    height: 92px;
+    border-radius: 18px;
+    object-fit: cover;
+    border: 1px solid rgba(0,0,0,.10);
+    background: #fff;
+  }
+  .kv-label{
+    font-size: .78rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: #6c757d;
+    margin-bottom: 6px;
+  }
+  .kv-value{
+    background: #f8f9fa;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 14px;
+    padding: 12px 14px;
+    color: #212529;
+    line-height: 1.35;
+    word-break: break-word;
+  }
+  .info-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 992px){
+    .info-grid{ grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="main-panel">
+  <div class="content-wrapper">
+
+    <div class="row">
+      <div class="col-lg-8 mx-auto grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+
+            <!-- Header -->
+            <div class="d-flex align-items-center justify-content-between flex-wrap mb-3">
+              <div class="d-flex align-items-center">
+                <div class="me-3">
+                  <img src="{{ data.technician_photo.url }}" alt="Profile" class="profile-avatar">
+                </div>
+                <div>
+                  <h4 class="card-title mb-1">{{ data.technician_name }}</h4>
+                  <p class="card-description mb-0">Technician Profile</p>
+                </div>
+              </div>
+
+              <div class="d-flex mt-2 mt-md-0">
+                <a href="{% url 'Technician:editprofile' %}" class="btn btn-outline-primary me-2">
+                  Edit Profile
+                </a>
+                <a href="{% url 'Technician:changepassword' %}" class="btn btn-outline-primary">
+                  Change Password
+                </a>
+              </div>
+            </div>
+
+            <hr>
+
+            <!-- Profile Details -->
+            <div class="info-grid mt-4">
+
+              <div>
+                <div class="kv-label">Technician Name</div>
+                <div class="kv-value">{{ data.technician_name }}</div>
+              </div>
+
+              <div>
+                <div class="kv-label">Email</div>
+                <div class="kv-value">{{ data.technician_email }}</div>
+              </div>
+
+              <div>
+                <div class="kv-label">Contact</div>
+                <div class="kv-value">{{ data.technician_contact }}</div>
+              </div>
+
+              <div>
+                <div class="kv-label">Service Center</div>
+                <div class="kv-value">
+                  {% if data.servicecenter %}
+                    {{ data.servicecenter.servicecenter_name }}
+                  {% else %}
+                    Not Assigned
+                  {% endif %}
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% if msg %}
+<script>
+  alert("{{ msg }}");
+  window.location = "{% url 'Technician:profile' %}";
+</script>
+{% endif %}
+
+{% endblock content %}

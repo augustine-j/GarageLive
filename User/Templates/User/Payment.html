@@ -1,0 +1,133 @@
+{% extends 'User/Head_User.html' %}
+{% block content %}
+
+<!-- Payment Section -->
+<div class="container-fluid bg-secondary booking my-5 wow fadeInUp" data-wow-delay="0.1s">
+  <div class="container">
+    <div class="row gx-5">
+
+      <!-- Left Info Panel -->
+      <div class="col-lg-6 py-5">
+        <div class="py-5">
+          <h1 class="text-white mb-4">Secure Payment</h1>
+          <p class="text-white mb-0">
+            Review your service charges and complete the payment to confirm delivery.
+            Once paid, the invoice will be locked and available for download.
+          </p>
+
+          <div class="mt-4 p-4 bg-primary bg-opacity-25 rounded">
+            <h5 class="text-white mb-2">After Payment</h5>
+            <ul class="text-white-50 mb-0 ps-3">
+              <li>Booking status will be marked as <strong>Paid</strong></li>
+              <li>You can view the final invoice anytime</li>
+              <li>No further changes can be made to the bill</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Payment Panel -->
+      <div class="col-lg-6">
+        <div class="bg-primary h-100 d-flex flex-column justify-content-center p-5 wow zoomIn" data-wow-delay="0.6s">
+
+          <h2 class="text-white text-center mb-4">Payment Summary</h2>
+
+          <form method="post">
+            {% csrf_token %}
+
+            <!-- Bill Summary -->
+            <div class="bg-white rounded p-4 mb-4">
+
+              <div class="mb-3">
+                <div class="text-muted fw-semibold" style="font-size: 12px; letter-spacing: .04em;">
+                  BOOKING ID
+                </div>
+                <div class="fw-bold">#{{ booking.id }}</div>
+              </div>
+
+              <hr>
+
+              <!-- Service-wise Breakdown -->
+              <div class="mb-3">
+                <h6 class="fw-semibold mb-3">Service Charges</h6>
+
+               {% for s in services %}
+                      <div class="border rounded p-3 mb-3">
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                          <strong>
+                            {{ s.servicecenter_services.servicetype.servicetype_name }}
+                          </strong>
+                          <strong class="text-success">
+                            ₹ {{ s.final_amount }}
+                          </strong>
+                        </div>
+
+                        <div class="ps-2" style="font-size: 13px;">
+                          <div class="d-flex justify-content-between text-muted">
+                            <span>Base Price</span>
+                            <span>₹ {{ s.base_amount }}</span>
+                          </div>
+
+                          <div class="d-flex justify-content-between text-muted">
+                            <span>Labour Charge</span>
+                            <span>₹ {{ s.labour_charge }}</span>
+                          </div>
+
+                          <div class="d-flex justify-content-between text-muted">
+                            <span>Parts Charge</span>
+                            <span>₹ {{ s.parts_charge }}</span>
+                          </div>
+                        </div>
+
+                      </div>
+                    {% endfor %}
+
+              </div>
+
+              <hr>
+
+              <!-- Total -->
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold fs-5">Total Payable</span>
+                <span class="fw-bold fs-4 text-success">
+                  ₹ {{ total_amount }}
+                </span>
+              </div>
+
+              <div class="text-muted mt-1" style="font-size: 12px;">
+                Includes base price, labour, parts and tax.
+              </div>
+
+            </div>
+
+            <!-- Actions -->
+            <button class="btn btn-secondary w-100 py-3 mb-3" type="submit">
+              Pay Now
+              
+            </button>
+
+            <button
+              class="btn btn-light w-100 py-3"
+              type="button"
+              onclick="window.location='{% url 'User:myservicerequest' %}'">
+              Cancel
+            </button>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% if msg %}
+<script>
+  alert("{{msg}}");
+  window.location = "{% url 'User:myservicerequest' %}";
+</script>
+{% endif %}
+
+{% endblock content %}

@@ -1,0 +1,128 @@
+{% extends 'Guest/Head.html' %}
+{% block content %}
+
+<!-- Service Center Registration Start -->
+<div class="container-fluid bg-secondary booking my-5 wow fadeInUp" data-wow-delay="0.1s">
+  <div class="container">
+    <div class="row gx-5">
+
+      <!-- Left Content -->
+      <div class="col-lg-6 py-5">
+        <div class="py-5">
+          <h1 class="text-white mb-4">Register Your Service Center</h1>
+          <p class="text-white mb-0">
+            Create your service center profile to receive bookings, manage customer requests, and showcase your
+            brand with logo and license verification. Fill in the details to get started.
+          </p>
+          <div class="mt-4 text-white-50">
+            <small>
+              Tip: Use an official email and a reachable contact number to avoid approval delays.
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Form Card -->
+      <div class="col-lg-6">
+        <div class="bg-primary h-100 d-flex flex-column justify-content-center text-center p-5 wow zoomIn" data-wow-delay="0.6s">
+          <h1 class="text-white mb-4">Service Center Registration</h1>
+
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row g-3 text-start">
+
+              <div class="col-12 col-sm-6">
+                <label class="form-label text-white">Center Name</label>
+                <input type="text" name="txt_name" class="form-control border-0" placeholder="Enter center name" style="height: 55px;" required>
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <label class="form-label text-white">E-mail</label>
+                <input type="email" name="txt_email" class="form-control border-0" placeholder="Enter email address" style="height: 55px;" required>
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <label class="form-label text-white">Contact Number</label>
+                <input type="text" name="txt_contact" class="form-control border-0" placeholder="Enter contact number" style="height: 55px;" required>
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <label class="form-label text-white">District</label>
+                <select name="sel_district" id="sel_district" class="form-select border-0" style="height: 55px;" required>
+                  <option value="" selected>Select district</option>
+                  {% for i in districtdata %}
+                    <option value="{{i.id}}">{{i.district_name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <label class="form-label text-white">Place</label>
+                <select name="sel_place" id="sel_place" class="form-select border-0" style="height: 55px;" required>
+                  <option value="" selected>----select place----</option>
+                </select>
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <label class="form-label text-white">Logo</label>
+                <input type="file" name="file_logo" class="form-control border-0" style="height: 55px; padding-top: 14px;" required>
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <label class="form-label text-white">License</label>
+                <input type="file" name="file_license" class="form-control border-0" style="height: 55px; padding-top: 14px;" required>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label text-white">Address</label>
+                <textarea name="txt_address" class="form-control border-0" placeholder="Enter full address" rows="3" required></textarea>
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <label class="form-label text-white">Password</label>
+                <input type="password" name="txt_password" class="form-control border-0" placeholder="Create password" style="height: 55px;" required>
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <label class="form-label text-white">Confirm Password</label>
+                <input type="password" name="confirm_pass" class="form-control border-0" placeholder="Re-enter password" style="height: 55px;" required>
+              </div>
+
+              <div class="col-12 mt-2">
+                <button class="btn btn-secondary w-100 py-3" type="submit">Submit Registration</button>
+              </div>
+
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Service Center Registration End -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+  $('#sel_district').change(function () {
+    var did = $(this).val();
+    var ur = "{% url 'Guest:AjaxPlace' %}";
+    $.ajax({
+      url: ur,
+      data: { did: did },
+      success: function (data) {
+        $('#sel_place').html(data);
+      }
+    });
+  });
+</script>
+
+{% if msg %}
+<script>
+  alert("{{msg}}");
+</script>
+{% endif %}
+
+{% endblock content %}

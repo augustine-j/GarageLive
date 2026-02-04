@@ -1,0 +1,1179 @@
+{% extends 'User/Head_User.html' %}
+{% block content %}
+
+<style>
+:root{
+  --bg:#0a0e27;
+  --card:#141b2d;
+  --border:rgba(255,255,255,.08);
+  --text:#eef0f4;
+  --muted:#7a8294;
+  --accent:#f0a500;
+  --green:#20c9b0;
+  --blue:#4a9eff;
+  --red:#ff4757;
+  --purple:#a855f7;
+  --orange:#f2994a;
+}
+
+.svc-wrap{
+  background:linear-gradient(135deg, var(--bg) 0%, #0d1321 100%);
+  min-height:100vh;
+  padding:30px 20px 60px;
+  color:var(--text);
+}
+
+.svc-container{
+  max-width:1200px;
+  margin:auto;
+}
+
+/* HEADER */
+.hero{
+  text-align:center;
+  padding:10px 10px 30px;
+  position:relative;
+}
+
+.hero::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:600px;
+  height:300px;
+  background:radial-gradient(circle, rgba(240,165,0,.08), transparent 70%);
+  pointer-events:none;
+  z-index:0;
+}
+
+.hero h1{
+  margin:0 0 12px;
+  font-size:clamp(32px, 4vw, 48px);
+  font-weight:800;
+  background:linear-gradient(135deg, var(--accent) 0%, #ffd700 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  position:relative;
+  z-index:1;
+}
+
+.hero p{
+  margin:0 auto;
+  max-width:680px;
+  font-size:15px;
+  color:rgba(238,240,244,.65);
+  line-height:1.6;
+  position:relative;
+  z-index:1;
+}
+
+/* FILTERS */
+.filters{
+  margin:0 auto 28px;
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+  position:relative;
+  z-index:1;
+}
+
+.fbtn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  height:42px;
+  padding:0 18px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.04);
+  color:var(--text);
+  font-weight:700;
+  font-size:13px;
+  cursor:pointer;
+  user-select:none;
+  transition:all .3s ease;
+}
+
+.fbtn:hover{
+  background:rgba(255,255,255,.08);
+  border-color:rgba(255,255,255,.15);
+  transform:translateY(-2px);
+}
+
+.fbtn.active{
+  background:linear-gradient(135deg, rgba(240,165,0,.2), rgba(255,215,0,.15));
+  border-color:rgba(240,165,0,.4);
+  color:var(--accent);
+  box-shadow:0 4px 15px rgba(240,165,0,.2);
+}
+
+.fcount{
+  font-size:11px;
+  font-weight:800;
+  padding:4px 10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.1);
+  min-width:28px;
+  text-align:center;
+}
+
+.fbtn.active .fcount{
+  background:rgba(240,165,0,.3);
+  color:#fff;
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:24px;
+  margin-top:20px;
+}
+
+/* CARD */
+.cardx{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:0 8px 32px rgba(0,0,0,.3);
+  transition:transform .3s, box-shadow .3s;
+  position:relative;
+}
+
+.cardx::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:4px;
+  background:linear-gradient(90deg, var(--accent), var(--green));
+  opacity:0;
+  transition:opacity .3s;
+}
+
+.cardx:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 48px rgba(240,165,0,.15);
+}
+
+.cardx:hover::before{
+  opacity:1;
+}
+
+/* CARD HEAD */
+.card-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+  padding:24px 24px 18px;
+}
+
+.title-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-width:0;
+  flex:1;
+}
+
+.card-title{
+  font-size:20px;
+  font-weight:700;
+  margin:0;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.sub{
+  font-size:13px;
+  color:var(--muted);
+  margin:0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.sub span{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+
+.sub span::before{
+  content:"•";
+  color:rgba(255,255,255,.2);
+}
+
+.sub span:first-child::before{
+  display:none;
+}
+
+/* BADGE */
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 16px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:700;
+  white-space:nowrap;
+  border:1px solid;
+  flex-shrink:0;
+  position:relative;
+}
+
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  flex-shrink:0;
+}
+
+.ico{
+  width:16px;
+  height:16px;
+  display:inline-block;
+  flex-shrink:0;
+}
+
+/* Badge variants */
+.badge.success{
+  background:linear-gradient(135deg, rgba(32,201,176,.2), rgba(32,201,176,.1));
+  border-color:rgba(32,201,176,.4);
+  color:var(--green);
+  box-shadow:0 4px 15px rgba(32,201,176,.15);
+}
+
+.badge.success .dot{
+  background:var(--green);
+  box-shadow:0 0 0 3px rgba(32,201,176,.2);
+}
+
+.badge.warning{
+  background:rgba(242,153,74,.15);
+  border-color:rgba(242,153,74,.35);
+  color:var(--orange);
+}
+
+.badge.warning .dot{
+  background:var(--orange);
+}
+
+.badge.danger{
+  background:rgba(255,71,87,.15);
+  border-color:rgba(255,71,87,.35);
+  color:var(--red);
+}
+
+.badge.danger .dot{
+  background:var(--red);
+}
+
+.badge.info{
+  background:rgba(74,158,255,.15);
+  border-color:rgba(74,158,255,.35);
+  color:var(--blue);
+}
+
+.badge.info .dot{
+  background:var(--blue);
+}
+
+/* Pulse animation */
+.badge.pulse::after{
+  content:"";
+  position:absolute;
+  inset:-6px;
+  border-radius:999px;
+  background:radial-gradient(circle, currentColor, transparent 65%);
+  opacity:.15;
+  z-index:-1;
+  animation:pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse{
+  0%, 100%{transform:scale(.95); opacity:.1;}
+  50%{transform:scale(1.1); opacity:.2;}
+}
+
+/* CARD BODY */
+.card-body{
+  display:grid;
+  grid-template-columns:1.4fr .6fr;
+  gap:24px;
+  padding:0 24px 24px;
+  align-items:start;
+}
+
+.panel{
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:20px;
+  background:rgba(255,255,255,.02);
+}
+
+/* META */
+.meta{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.kv{
+  padding:14px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:rgba(255,255,255,.02);
+  min-width:0;
+  transition:all .3s;
+}
+
+.kv:hover{
+  background:rgba(255,255,255,.04);
+  border-color:rgba(255,255,255,.15);
+}
+
+.kv small{
+  display:block;
+  color:var(--muted);
+  font-weight:700;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  margin-bottom:6px;
+}
+
+.kv div{
+  font-weight:600;
+  font-size:13px;
+  color:var(--text);
+}
+
+/* COMPLAINT BUTTON */
+.btn-view{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  height:38px;
+  padding:0 16px;
+  border-radius:12px;
+  font-weight:700;
+  font-size:13px;
+  border:1px solid rgba(255,71,87,.35);
+  background:rgba(255,71,87,.12);
+  color:var(--red);
+  cursor:pointer;
+  transition:all .3s;
+}
+
+.btn-view:hover{
+  background:rgba(255,71,87,.18);
+  border-color:rgba(255,71,87,.45);
+  transform:translateY(-1px);
+}
+
+/* TRACK */
+.track{
+  margin-top:18px;
+  padding:18px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.02);
+}
+
+.track-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.track-top h3{
+  margin:0;
+  font-size:14px;
+  font-weight:700;
+  color:var(--text);
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+
+.pct{
+  font-weight:700;
+  color:var(--accent);
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.bar{
+  height:10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.05);
+  overflow:hidden;
+  border:1px solid var(--border);
+  margin-bottom:16px;
+}
+
+.bar>div{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg, var(--accent), var(--green));
+  border-radius:999px;
+  transition:width .6s ease;
+  box-shadow:0 0 15px rgba(240,165,0,.4);
+  position:relative;
+}
+
+.bar>div::after{
+  content:"";
+  position:absolute;
+  right:-4px;
+  top:50%;
+  transform:translateY(-50%);
+  width:8px;
+  height:8px;
+  background:#fff;
+  border-radius:50%;
+  box-shadow:0 0 0 3px var(--green);
+}
+
+/* STEPPER */
+.stepper{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin-bottom:14px;
+}
+
+.stepper .step{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:rgba(255,255,255,.15);
+  border:2px solid rgba(255,255,255,.1);
+  transition:all .4s;
+}
+
+.stepper .step.done{
+  background:var(--green);
+  border-color:var(--green);
+  box-shadow:0 0 15px rgba(32,201,176,.4);
+}
+
+.stepper .rail{
+  flex:1;
+  height:4px;
+  border-radius:999px;
+  background:rgba(255,255,255,.05);
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.05);
+}
+
+.stepper .rail>div{
+  height:100%;
+  width:0%;
+  background:var(--green);
+  transition:width .6s ease;
+  box-shadow:0 0 10px rgba(32,201,176,.3);
+}
+
+.smallnote{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:600;
+  margin:0;
+}
+
+.smallnote strong{
+  color:var(--accent);
+  font-weight:700;
+}
+
+/* VEHICLE */
+.vehicle{
+  border:1px solid var(--border);
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 8px 24px rgba(0,0,0,.2);
+  background:rgba(255,255,255,.02);
+  transition:transform .3s;
+}
+
+.vehicle:hover{
+  transform:scale(1.02);
+}
+
+.vehicle img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  display:block;
+  background:rgba(255,255,255,.05);
+}
+
+.veh-foot{
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.veh-foot strong{
+  font-size:15px;
+  font-weight:700;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.veh-foot span{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:600;
+}
+
+/* FOOTER */
+.foot{
+  padding:18px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  border-top:1px solid var(--border);
+  background:rgba(255,255,255,.02);
+  flex-wrap:wrap;
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.act{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  height:40px;
+  padding:0 18px;
+  border-radius:12px;
+  font-weight:700;
+  font-size:13px;
+  text-decoration:none;
+  border:1px solid;
+  transition:all .3s;
+  white-space:nowrap;
+}
+
+.act.primary{
+  background:linear-gradient(135deg, var(--accent), #ffa500);
+  border-color:var(--accent);
+  color:#000;
+  box-shadow:0 4px 15px rgba(240,165,0,.25);
+}
+
+.act.primary:hover{
+  box-shadow:0 6px 25px rgba(240,165,0,.4);
+  transform:translateY(-2px);
+}
+
+.act.secondary{
+  background:rgba(255,255,255,.05);
+  border-color:var(--border);
+  color:var(--text);
+}
+
+.act.secondary:hover{
+  background:rgba(255,255,255,.08);
+  border-color:rgba(255,255,255,.2);
+}
+
+.act.success{
+  background:rgba(32,201,176,.15);
+  border-color:rgba(32,201,176,.35);
+  color:var(--green);
+}
+
+.act.success:hover{
+  background:rgba(32,201,176,.22);
+  border-color:rgba(32,201,176,.45);
+  transform:translateY(-1px);
+}
+
+/* MODAL */
+.modal-backdropx{
+  position:fixed;
+  inset:0;
+  background:rgba(10,14,39,.85);
+  backdrop-filter:blur(8px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  padding:20px;
+  animation:fadeIn .3s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0;}
+  to{opacity:1;}
+}
+
+.modal-backdropx.show{
+  display:flex;
+}
+
+.drawer{
+  width:min(680px, 100%);
+  background:var(--card);
+  border-radius:20px;
+  border:1px solid var(--border);
+  box-shadow:0 24px 80px rgba(0,0,0,.6);
+  overflow:hidden;
+  transform:scale(.95);
+  animation:pop .3s ease forwards;
+}
+
+@keyframes pop{
+  to{transform:scale(1);}
+}
+
+.drawer-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  padding:20px 24px;
+  border-bottom:1px solid var(--border);
+  background:rgba(240,165,0,.08);
+}
+
+.drawer-title{
+  margin:0;
+  font-weight:700;
+  font-size:18px;
+  color:var(--text);
+}
+
+.drawer-sub{
+  margin:6px 0 0;
+  font-size:13px;
+  color:var(--muted);
+  font-weight:600;
+}
+
+.drawer-close{
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.05);
+  border-radius:10px;
+  height:36px;
+  padding:0 16px;
+  font-weight:700;
+  font-size:13px;
+  color:var(--text);
+  cursor:pointer;
+  transition:all .3s;
+}
+
+.drawer-close:hover{
+  background:rgba(255,255,255,.1);
+  border-color:rgba(255,255,255,.2);
+}
+
+.drawer-body{
+  padding:24px;
+  max-height:60vh;
+  overflow:auto;
+}
+
+.drawer-body p{
+  margin:0;
+  white-space:pre-line;
+  color:rgba(238,240,244,.8);
+  font-weight:500;
+  line-height:1.7;
+  font-size:14px;
+}
+
+/* RESPONSIVE */
+@media (max-width:860px){
+  .card-body{
+    grid-template-columns:1fr;
+  }
+  
+  .meta{
+    grid-template-columns:1fr;
+  }
+  
+  .vehicle img{
+    height:240px;
+  }
+  
+  .foot{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  
+  .actions{
+    width:100%;
+  }
+  
+  .act{
+    flex:1;
+    min-width:120px;
+  }
+}
+
+@media (max-width:500px){
+  .svc-wrap{
+    padding:20px 12px 40px;
+  }
+  
+  .hero h1{
+    font-size:28px;
+  }
+  
+  .filters{
+    gap:8px;
+  }
+  
+  .fbtn{
+    height:38px;
+    padding:0 14px;
+    font-size:12px;
+  }
+  
+  .card-head,
+  .card-body,
+  .foot{
+    padding-left:18px;
+    padding-right:18px;
+  }
+}
+</style>
+
+<div class="svc-wrap">
+  <div class="svc-container">
+
+    <div class="hero">
+      <h1>🚗 Service Request Tracking</h1>
+      <p>Track each service request with real-time status updates, progress indicators, and detailed work notes.</p>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filters" id="filters">
+      <button type="button" class="fbtn active" data-filter="all">
+        All <span class="fcount" id="cnt-all">0</span>
+      </button>
+      <button type="button" class="fbtn" data-filter="inprogress">
+        In Progress <span class="fcount" id="cnt-inprogress">0</span>
+      </button>
+      <button type="button" class="fbtn" data-filter="completed">
+        Completed <span class="fcount" id="cnt-completed">0</span>
+      </button>
+      <button type="button" class="fbtn" data-filter="pending">
+        Pending <span class="fcount" id="cnt-pending">0</span>
+      </button>
+      <button type="button" class="fbtn" data-filter="rejected">
+        Rejected <span class="fcount" id="cnt-rejected">0</span>
+      </button>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="grid" id="grid">
+        {% for i in data %}
+        <div class="cardx card-item" data-status="{{ i.booking_status }}" data-index="{{ forloop.counter }}">
+
+          <div class="card-head">
+            <div class="title-wrap">
+              <p class="card-title">{{ forloop.counter }}. {{ i.servicecenter.servicecenter_name }}</p>
+              <p class="sub">
+                <span>{{ i.servicecenter.servicecenter_email }}</span>
+                <span>{{ i.servicecenter.servicecenter_contact }}</span>
+                <span>Due: {{ i.booking_todate }}</span>
+              </p>
+            </div>
+
+            <!-- Badge -->
+            <div class="badge
+              {% if i.booking_status == 2 %}danger
+              {% elif i.booking_status == 0 %}warning pulse
+              {% elif i.booking_status == 1 or i.booking_status == 5 or i.booking_status == 9 or i.booking_status == 12 %}success
+              {% else %}info pulse
+              {% endif %}
+            ">
+              <span class="dot"></span>
+
+              <!-- Icon -->
+              <span class="ico" aria-hidden="true">
+                {% if i.booking_status == 0 %}
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 7v6l4 2"></path>
+                  </svg>
+                {% elif i.booking_status == 2 %}
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M15 9l-6 6M9 9l6 6"></path>
+                  </svg>
+                {% elif i.booking_status == 6 or i.booking_status == 7 %}
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14.7 6.3a4.5 4.5 0 0 0-6.4 5.6L3 17.2V21h3.8l5.3-5.3a4.5 4.5 0 0 0 2.6-9.4z"></path>
+                  </svg>
+                {% elif i.booking_status == 9 or i.booking_status == 12 %}
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 6L9 17l-5-5"></path>
+                  </svg>
+                {% else %}
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 10v7"></path>
+                    <path d="M12 7h.01"></path>
+                  </svg>
+                {% endif %}
+              </span>
+
+              <span>
+                {% if i.booking_status == 0 %}Booking Pending
+                {% elif i.booking_status == 1 %}Booking Accepted
+                {% elif i.booking_status == 2 %}Booking Rejected
+                {% elif i.booking_status == 3 %}Work Started
+                {% elif i.booking_status == 4 %}Diagnosis Started
+                {% elif i.booking_status == 5 %}Diagnosis Completed
+                {% elif i.booking_status == 6 %}Repair In Progress
+                {% elif i.booking_status == 7 %}Parts Replaced
+                {% elif i.booking_status == 8 %}Vehicle Being Tested
+                {% elif i.booking_status == 9 %}Service Completed
+                {% elif i.booking_status == 10 %}Out For Delivery
+                {% elif i.booking_status == 11 %}Payment Due
+                {% elif i.booking_status == 12 %}Service Completed
+                {% else %}Unknown Status
+                {% endif %}
+              </span>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="panel">
+
+              <!-- Meta -->
+              <div class="meta">
+                <div class="kv">
+                  <small>Services</small>
+                  <div style="white-space: normal; line-height: 1.6;">
+                    {% for bs in i.services %}
+                      • {{ bs.servicecenter_services.servicetype.servicetype_name }}<br>
+                    {% empty %}
+                      No services selected
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <div class="kv">
+                  <small>Vehicle</small>
+                  <div>{{i.vehicle.model.brand.brand_name}} {{ i.vehicle.model.model_name }} - {{ i.vehicle.vehicle_number }}</div>
+                </div>
+                
+                <div class="kv">
+                  <small>To Date</small>
+                  <div>{{ i.booking_todate }}</div>
+                </div>
+                
+                <div class="kv">
+                  <small>Request ID</small>
+                  <div>#{{ i.id }}</div>
+                </div>
+              </div>
+
+              <!-- Complaint button -->
+              {% if i.booking_complaints %}
+              <div style="margin-top:16px; display:flex; align-items:center; gap:12px;">
+                <button
+                  type="button"
+                  class="btn-view"
+                  data-open-complaint="1"
+                  data-title="{{ i.servicecenter.servicecenter_name }}"
+                  data-ref="#{{ i.id }}"
+                  data-complaint="{{ i.booking_complaints|escapejs }}"
+                >
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 8v4M12 16h.01"></path>
+                  </svg>
+                  View Complaint
+                </button>
+              </div>
+              {% endif %}
+
+              <!-- Track -->
+              <div class="track">
+                <div class="track-top">
+                  <h3>Service Progress</h3>
+                  <div class="pct" id="pct-{{ forloop.counter }}">0% completed</div>
+                </div>
+
+                <div class="bar"><div id="bar-{{ forloop.counter }}"></div></div>
+
+                <div class="stepper">
+                  <div class="step" id="s1-{{ forloop.counter }}"></div>
+                  <div class="rail"><div id="r1-{{ forloop.counter }}"></div></div>
+                  <div class="step" id="s2-{{ forloop.counter }}"></div>
+                  <div class="rail"><div id="r2-{{ forloop.counter }}"></div></div>
+                  <div class="step" id="s3-{{ forloop.counter }}"></div>
+                  <div class="rail"><div id="r3-{{ forloop.counter }}"></div></div>
+                  <div class="step" id="s4-{{ forloop.counter }}"></div>
+                  <div class="rail"><div id="r4-{{ forloop.counter }}"></div></div>
+                  <div class="step" id="s5-{{ forloop.counter }}"></div>
+                  <div class="rail"><div id="r5-{{ forloop.counter }}"></div></div>
+                  <div class="step" id="s6-{{ forloop.counter }}"></div>
+                </div>
+
+                <p class="smallnote" style="margin-top:14px;">
+                  Current status:
+                  <strong>
+                    {% if i.booking_status == 0 %}Booking Pending
+                    {% elif i.booking_status == 1 %}Booking Accepted
+                    {% elif i.booking_status == 2 %}Booking Rejected
+                    {% elif i.booking_status == 3 %}Work Started
+                    {% elif i.booking_status == 4 %}Diagnosis Started
+                    {% elif i.booking_status == 5 %}Diagnosis Completed
+                    {% elif i.booking_status == 6 %}Repair In Progress
+                    {% elif i.booking_status == 7 %}Parts Replaced
+                    {% elif i.booking_status == 8 %}Vehicle Being Tested
+                    {% elif i.booking_status == 9 %}Service Completed
+                    {% elif i.booking_status == 10 %}Out For Delivery
+                    {% elif i.booking_status == 11 %}Payment Due
+                    {% elif i.booking_status == 12 %}Service Completed
+                    {% else %}Unknown Status
+                    {% endif %}
+                  </strong>
+                </p>
+              </div>
+            </div>
+
+            <div class="vehicle">
+              <img src="{{ i.vehicle.vehicle_photo.url }}" alt="Vehicle photo">
+              <div class="veh-foot">
+                <strong>{{i.vehicle.model.brand.brand_name}} {{ i.vehicle.model.model_name }}</strong>
+                <span>{{ i.vehicle.vehicle_number }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="foot">
+            <p class="smallnote">Work notes update as the service progresses</p>
+
+            <div class="actions">
+              <a class="act primary" href="{% url 'User:worknote' i.id %}">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                View Notes
+              </a>
+              
+              {% if i.booking_status > 11 %}
+              <a class="act secondary" href="{% url 'User:invoice' i.id %}">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                View Invoice
+              </a>
+              {% endif %}
+              
+              {% if i.booking_status == 11 %}
+              <a class="act success" href="{% url 'User:payment' i.id %}">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="5" width="20" height="14" rx="2"/>
+                  <path d="M2 10h20"/>
+                </svg>
+                Pay Amount
+              </a>
+              {% endif %}
+            </div>
+          </div>
+
+        </div>
+        {% empty %}
+          <div class="cardx">
+            <div class="card-head">
+              <div class="title-wrap">
+                <p class="card-title">No service requests found</p>
+                <p class="sub">Your bookings will appear here once you create a service request.</p>
+              </div>
+              <div class="badge info">
+                <span class="dot"></span>
+                <span>Empty</span>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<!-- Complaint Modal -->
+<div class="modal-backdropx" id="complaintModal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="drawer">
+    <div class="drawer-head">
+      <div>
+        <p class="drawer-title" id="cmTitle">Complaint Details</p>
+        <p class="drawer-sub" id="cmSub">—</p>
+      </div>
+      <button type="button" class="drawer-close" id="cmClose">Close</button>
+    </div>
+    <div class="drawer-body">
+      <p id="cmBody"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Progress + stepper rendering
+  (function () {
+    const cards = document.querySelectorAll('.card-item[data-status][data-index]');
+    cards.forEach((card) => {
+      const status = parseInt(card.getAttribute('data-status') || '0', 10);
+      const idx = parseInt(card.getAttribute('data-index') || '1', 10);
+
+      const clamped = Math.max(0, Math.min(12, status));
+      const percent = Math.round((clamped / 12) * 100);
+
+      const pctEl = document.getElementById(`pct-${idx}`);
+      const barEl = document.getElementById(`bar-${idx}`);
+      if (pctEl) pctEl.textContent = `${percent}% completed`;
+      if (barEl) {
+        setTimeout(() => {
+          barEl.style.width = `${percent}%`;
+        }, 300);
+      }
+
+      const dotsDone = Math.max(1, Math.ceil((clamped / 12) * 6));
+      for (let i = 1; i <= 6; i++) {
+        const dot = document.getElementById(`s${i}-${idx}`);
+        if (dot) dot.classList.toggle('done', i <= dotsDone);
+      }
+
+      const railPct = (clamped / 12) * 100;
+      const rails = [
+        document.getElementById(`r1-${idx}`),
+        document.getElementById(`r2-${idx}`),
+        document.getElementById(`r3-${idx}`),
+        document.getElementById(`r4-${idx}`),
+        document.getElementById(`r5-${idx}`)
+      ];
+      rails.forEach((r, i) => {
+        if (!r) return;
+        const segStart = i * 20;
+        const fill = Math.max(0, Math.min(20, railPct - segStart)) / 20 * 100;
+        setTimeout(() => {
+          r.style.width = `${fill}%`;
+        }, 400 + i * 100);
+      });
+    });
+  })();
+
+  // Complaint modal
+  (function(){
+    const modal = document.getElementById('complaintModal');
+    const title = document.getElementById('cmTitle');
+    const sub = document.getElementById('cmSub');
+    const body = document.getElementById('cmBody');
+    const closeBtn = document.getElementById('cmClose');
+
+    function openModal(data){
+      title.textContent = `Complaint Details`;
+      sub.textContent = `${data.title || ''} • ${data.ref || ''}`.trim();
+      body.textContent = data.complaint || '';
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(){
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('click', function(e){
+      const btn = e.target.closest('[data-open-complaint="1"]');
+      if (btn){
+        openModal({
+          title: btn.getAttribute('data-title'),
+          ref: btn.getAttribute('data-ref'),
+          complaint: btn.getAttribute('data-complaint')
+        });
+      }
+      if (e.target === modal) closeModal();
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+  })();
+
+  // Filter bar
+  (function(){
+    const buttons = Array.from(document.querySelectorAll('#filters .fbtn'));
+    const cards = Array.from(document.querySelectorAll('.card-item[data-status]'));
+
+    function bucket(status){
+      const s = parseInt(status || '0', 10);
+      if (s === 2) return 'rejected';
+      if (s === 0) return 'pending';
+      if (s === 9 || s === 12) return 'completed';
+      return 'inprogress';
+    }
+
+    // counts
+    const counts = { all: cards.length, inprogress: 0, completed: 0, pending: 0, rejected: 0 };
+    cards.forEach(c => { counts[bucket(c.getAttribute('data-status'))]++; });
+
+    const setText = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    setText('cnt-all', counts.all);
+    setText('cnt-inprogress', counts.inprogress);
+    setText('cnt-completed', counts.completed);
+    setText('cnt-pending', counts.pending);
+    setText('cnt-rejected', counts.rejected);
+
+    function apply(filter){
+      cards.forEach(c => {
+        const b = bucket(c.getAttribute('data-status'));
+        const show = (filter === 'all') || (b === filter);
+        c.style.display = show ? '' : 'none';
+      });
+      buttons.forEach(b => b.classList.toggle('active', b.getAttribute('data-filter') === filter));
+    }
+
+    buttons.forEach(b => b.addEventListener('click', () => apply(b.getAttribute('data-filter'))));
+  })();
+</script>
+
+{% if msg %}
+<script>
+  alert("{{msg}}");
+  window.location = "{% url 'User:myservicerequest' %}";
+</script>
+{% endif %}
+
+{% endblock content %}

@@ -1,0 +1,282 @@
+{% extends 'Technician/Head_tech.html' %}
+{% block content %}
+
+<style>
+  td.action-cell{ white-space: nowrap; }
+
+  .vehicle-thumb{
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,.10);
+    background: #fff;
+  }
+
+  .complaint-cell{ min-width: 260px; max-width: 340px; }
+  .complaint-box{
+    background: #f8f9fa;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: .875rem;
+    line-height: 1.3;
+    color: #343a40;
+
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    word-break: break-word;
+    transition: all .15s ease-in-out;
+  }
+  .complaint-box:hover{
+    background: #fff;
+    border-color: rgba(0,0,0,.14);
+    box-shadow: 0 6px 18px rgba(0,0,0,.08);
+    -webkit-line-clamp: 6;
+  }
+
+  .meta-muted{ font-size: .85rem; color: #6c757d; }
+</style>
+
+<div class="main-panel">
+  <div class="content-wrapper">
+
+    <div class="row">
+      <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div>
+                <h4 class="card-title mb-1">Assigned Jobs</h4>
+                <p class="card-description mb-0">Update job progress and add work notes</p>
+              </div>
+            </div>
+
+            <form method="post">
+              {% csrf_token %}
+
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead>
+                    <tr>
+                      <th style="width:70px;">S.No</th>
+                      <th>Customer</th>
+                      <th>Contact</th>
+                      <th style="width:120px;">To Date</th>
+                      <th style="width:340px;">Complaint</th>
+                      <th>Service Type</th>
+                      <th>Vehicle</th>
+                      <th style="width:110px;">Image</th>
+                      <th class="text-center" style="width:210px;">Status / Action</th>
+                      <th class="text-center" style="width:160px;">Notes</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {% for i in data %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+
+                      <td>
+                        <div class="fw-semibold">{{ i.user.user_name }}</div>
+                        <div class="meta-muted">{{ i.user.user_email }}</div>
+                      </td>
+
+                      <td>{{ i.user.contact_number }}</td>
+                      <td>{{ i.booking_todate }}</td>
+
+                      <td style="max-width: 240px;">
+                          {% if i.booking_complaints %}
+                            <button
+                              type="button"
+                              class="btn btn-sm btn-outline-danger"
+                              data-bs-toggle="modal"
+                              data-bs-target="#complaintModal"
+                              data-complaint="{{ i.booking_complaints|escapejs }}"
+                              data-user="{{ i.user.user_name }}"
+                              data-booking="#{{ i.id }}"
+                            >
+                              View
+                            </button>
+                          {% else %}
+                            <span class="text-muted">—</span>
+                          {% endif %}
+                      </td>
+
+
+                      <td style="max-width:220px;">
+                          <div class="d-flex flex-wrap gap-1">
+                            {% for bs in i.services %}
+                              <span class="badge bg-light text-dark border">
+                                {{ bs.servicecenter_services.servicetype.servicetype_name }}
+                              </span>
+                            {% empty %}
+                              <span class="text-muted">No services</span>
+                            {% endfor %}
+                          </div>
+                        </td>
+
+
+                      <td>
+                        <div class="fw-semibold">{{ i.vehicle.model.model_name }}</div>
+                        <div class="meta-muted">{{ i.vehicle.vehicle_number }}</div>
+                      </td>
+
+                      <td>
+                        <a href="{{ i.vehicle.vehicle_photo.url }}" target="_blank" title="View vehicle photo">
+                          <img src="{{ i.vehicle.vehicle_photo.url }}" alt="Vehicle" class="vehicle-thumb">
+                        </a>
+                      </td>
+
+                      <td class="text-center action-cell">
+                        {% if i.booking_status == 1 %}
+                          <a href="{% url 'Technician:startwork' i.id %}" class="btn btn-sm btn-outline-primary">
+                            Start Work
+                          </a>
+
+                        {% elif i.booking_status == 3 %}
+                          <a href="{% url 'Technician:start_diagnosis' i.id %}" class="btn btn-sm btn-outline-primary">
+                            Start Diagnosis
+                          </a>
+
+                        {% elif i.booking_status == 4 %}
+                          <a href="{% url 'Technician:diagnosis_completed' i.id %}" class="btn btn-sm btn-outline-primary">
+                            Diagnosis Completed
+                          </a>
+
+                        {% elif i.booking_status == 5 %}
+                          <a href="{% url 'Technician:repair_progress' i.id %}" class="btn btn-sm btn-outline-primary">
+                            Repair in Progress
+                          </a>
+
+                        {% elif i.booking_status == 6 %}
+                          <a href="{% url 'Technician:parts_replaced' i.id %}" class="btn btn-sm btn-outline-primary">
+                            Parts Replaced
+                          </a>
+
+                       {% elif i.booking_status == 7 %}
+                            <a href="{% url 'Technician:update_service_cost' i.id %}"
+                              class="btn btn-sm btn-outline-warning">
+                              Add / Update Service Cost
+                            </a>
+
+                            <a href="{% url 'Technician:testing_QA' i.id %}"
+                              class="btn btn-sm btn-outline-primary">
+                              Move to Testing
+                            </a>
+                          
+
+
+                        {% elif i.booking_status == 8 %}
+                          <a href="{% url 'Technician:service_completed' i.id %}" class="btn btn-sm btn-outline-primary">
+                            Service Completed
+                          </a>
+                 
+
+                        {% elif i.booking_status == 9 %}
+                          <a href="{% url 'Technician:out_delivery' i.id %}" class="btn btn-sm btn-outline-primary">
+                            Out For Delivery
+                          </a>
+
+                        {% elif i.booking_status == 11 %}
+                          <span class="badge badge-success">Bill Generated</span>
+
+                        {% elif i.booking_status == 12 %}
+                          <span class="badge badge-success">Service Completed</span>
+                          
+              
+
+                        {% else %}
+                          <span class="badge badge-info">Completed</span>
+                        {% endif %}
+                      </td>
+
+                      <td class="text-center action-cell">
+                        <a href="{% url 'Technician:workdescription' i.id %}" class="btn btn-sm btn-light">
+                          Add/View Note
+                        </a>
+                      </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                      <td colspan="10" class="text-center text-muted py-4">
+                        No assigned jobs found.
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+
+                </table>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="complaintModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Customer Complaint</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-1 fw-semibold" id="complaintMeta"></p>
+        <hr>
+        <p id="complaintText" class="mb-0" style="white-space: pre-line;"></p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+{% if msg %}
+<script>
+  alert("{{ msg }}");
+  window.location = "{% url 'Technician:assigned_jobs' %}";
+</script>
+
+
+
+
+{% endif %}
+
+
+
+<script>
+  const complaintModal = document.getElementById('complaintModal');
+  complaintModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const complaint = button.getAttribute('data-complaint');
+    const user = button.getAttribute('data-user');
+    const booking = button.getAttribute('data-booking');
+
+    document.getElementById('complaintMeta').innerText =
+      user + ' • Booking ' + booking;
+
+    document.getElementById('complaintText').innerText = complaint;
+  });
+</script>
+
+{% endblock content %}

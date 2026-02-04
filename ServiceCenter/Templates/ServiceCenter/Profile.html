@@ -1,0 +1,196 @@
+{% extends 'ServiceCenter/Head_service.html' %}
+{% block content %}
+
+<style>
+  /* Profile page styling (clean service-center look) */
+  .profile-avatar{
+    width: 86px;
+    height: 86px;
+    border-radius: 18px;
+    object-fit: cover;
+    border: 1px solid rgba(0,0,0,.10);
+    background: #fff;
+  }
+  .doc-thumb{
+    width: 90px;
+    height: 90px;
+    border-radius: 16px;
+    object-fit: cover;
+    border: 1px solid rgba(0,0,0,.10);
+    background: #fff;
+  }
+  .kv-label{
+    font-size: .78rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: #6c757d;
+    margin-bottom: 6px;
+  }
+  .kv-value{
+    background: #f8f9fa;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 14px;
+    padding: 12px 14px;
+    color: #212529;
+    line-height: 1.35;
+    word-break: break-word;
+  }
+  .addr-box{
+    background: #f8f9fa;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 14px;
+    padding: 12px 14px;
+    min-height: 74px;
+    color: #212529;
+    line-height: 1.35;
+    white-space: pre-wrap;
+  }
+  .info-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 992px){
+    .info-grid{ grid-template-columns: 1fr; }
+  }
+  .action-row{ gap: 10px; }
+</style>
+
+<div class="main-panel">
+  <div class="content-wrapper">
+
+    <div class="row">
+      <div class="col-lg-10 mx-auto grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+
+            <!-- Header -->
+            <div class="d-flex align-items-center justify-content-between flex-wrap mb-3">
+              <div class="d-flex align-items-center">
+                <div class="me-3">
+                  <img src="{{ Data.servicecenter_logo.url }}" alt="logo" class="profile-avatar">
+                </div>
+                <div>
+                  <h4 class="card-title mb-1">{{ Data.servicecenter_name }}</h4>
+                  <p class="card-description mb-0">
+                    {{ Data.place.district.district_name }} • {{ Data.place.place_name }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="d-flex action-row mt-2 mt-md-0">
+                <a href="{% url 'ServiceCenter:editprofile' %}" class="btn btn-outline-primary">
+                  Edit Profile
+                </a>
+                <a href="{% url 'ServiceCenter:changepassword' %}" class="btn btn-outline-warning">
+                  Change Password
+                </a>
+              </div>
+            </div>
+
+            <hr>
+
+            <form method="post">
+              {% csrf_token %}
+
+              <!-- Info Grid -->
+              <div class="info-grid mt-3">
+
+                <div>
+                  <div class="kv-label">Email</div>
+                  <div class="kv-value">{{ Data.servicecenter_email }}</div>
+                </div>
+
+                <div>
+                  <div class="kv-label">Contact</div>
+                  <div class="kv-value">{{ Data.servicecenter_contact }}</div>
+                </div>
+
+                <div>
+                  <div class="kv-label">District</div>
+                  <div class="kv-value">{{ Data.place.district.district_name }}</div>
+                </div>
+
+                <div>
+                  <div class="kv-label">Place</div>
+                  <div class="kv-value">{{ Data.place.place_name }}</div>
+                </div>
+
+                <div>
+                  <div class="kv-label">Date of Join</div>
+                  <div class="kv-value">{{ Data.servicecenter_regdate }}</div>
+                </div>
+
+                <div>
+                  <div class="kv-label">Account Status</div>
+                  <div class="kv-value">
+                    {% if Data.servicecenter_status == 1 %}
+                      <span class="badge badge-success">Verified</span>
+                    {% elif Data.servicecenter_status == 2 %}
+                      <span class="badge badge-danger">Rejected</span>
+                    {% else %}
+                      <span class="badge badge-warning">Pending</span>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div style="grid-column: 1 / -1;">
+                  <div class="kv-label">Address</div>
+                  <div class="addr-box">{{ Data.servicecenter_address }}</div>
+                </div>
+
+              </div>
+
+              <!-- Documents -->
+              <div class="row mt-4">
+                <div class="col-md-6 mb-3">
+                  <div class="kv-label">Logo</div>
+                  <div class="kv-value d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                      <img src="{{ Data.servicecenter_logo.url }}" alt="logo" class="doc-thumb me-3">
+                      <div>
+                        <div class="fw-semibold">Service Center Logo</div>
+                        <div class="text-muted" style="font-size:.85rem;">Click to view full image</div>
+                      </div>
+                    </div>
+                    <a href="{{ Data.servicecenter_logo.url }}" target="_blank" class="btn btn-sm btn-light">
+                      View
+                    </a>
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <div class="kv-label">License Proof</div>
+                  <div class="kv-value d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                      <img src="{{ Data.servicecenter_license.url }}" alt="license" class="doc-thumb me-3">
+                      <div>
+                        <div class="fw-semibold">License Document</div>
+                        <div class="text-muted" style="font-size:.85rem;">Click to view full image</div>
+                      </div>
+                    </div>
+                    <a href="{{ Data.servicecenter_license.url }}" target="_blank" class="btn btn-sm btn-light">
+                      View
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% if msg %}
+<script>
+  alert("{{ msg }}");
+  window.location = "{% url 'ServiceCenter:profile' %}";
+</script>
+{% endif %}
+
+{% endblock content %}
