@@ -44,40 +44,32 @@
           </div>
 
           <!-- Status Filter Pills -->
-<div class="d-flex flex-wrap gap-2 mb-3" id="statusFilters">
 
-  <button class="btn btn-sm btn-outline-warning active"
-          data-status="all">
-    All <span class="badge bg-warning ms-1" id="cnt-all">0</span>
-  </button>
+<div id="statusFilters" class="d-flex flex-wrap gap-2 mb-3">       
+                    <button type="button" class="btn btn-sm btn-outline-warning active" data-status="all">
+                      All <span class="badge bg-warning ms-1" id="cnt-all">0</span>
+                    </button>
 
-  <button class="btn btn-sm btn-outline-danger"
-          data-status="0">
-    Pending <span class="badge bg-danger ms-1" id="cnt-pending">0</span>
-  </button>
+                  <button type="button" class="btn btn-sm btn-outline-danger" data-status="pending">
+                    Pending <span class="badge bg-danger ms-1" id="cnt-pending">0</span>
+                  </button>
 
-  <button class="btn btn-sm btn-outline-success"
-          data-status="1">
-    Accepted <span class="badge bg-success ms-1" id="cnt-accepted">0</span>
-  </button>
+                  <button type="button" class="btn btn-sm btn-outline-success" data-status="accepted">
+                    Accepted <span class="badge bg-success ms-1" id="cnt-accepted">0</span>
+                  </button>
 
-  <button class="btn btn-sm btn-outline-info"
-          data-status="inprogress">
-    In Progress <span class="badge bg-info ms-1" id="cnt-inprogress">0</span>
-  </button>
+                  <button type="button" class="btn btn-sm btn-outline-info" data-status="inprogress">
+                    In Progress <span class="badge bg-info ms-1" id="cnt-inprogress">0</span>
+                  </button>
 
-  <button class="btn btn-sm btn-outline-success"
-          data-status="5">
-    Completed <span class="badge bg-success ms-1" id="cnt-completed">0</span>
-  </button>
+                  <button type="button" class="btn btn-sm btn-outline-success" data-status="completed">
+                    Completed <span class="badge bg-success ms-1" id="cnt-completed">0</span>
+                  </button>
 
-  <button class="btn btn-sm btn-outline-secondary"
-          data-status="2">
-    Rejected <span class="badge bg-secondary ms-1" id="cnt-rejected">0</span>
-  </button>
-
-</div>
-
+                  <button type="button" class="btn btn-sm btn-outline-dark" data-status="rejected">
+                    Rejected <span class="badge bg-danger ms-1" id="cnt-rejected">0</span>
+                  </button>
+              </div>
 
           <form method="post">
             {% csrf_token %}
@@ -101,7 +93,10 @@
 
                 <tbody>
                   {% for i in services %}
-                  <tr data-status="{{ i.booking.breakdown_status }}">
+                 
+                 <tr data-status="{% if i.booking.breakdown_status == 0 %}pending{% elif i.booking.breakdown_status == 2 %}rejected{% elif i.booking.breakdown_status == 5 or i.billing_status %}completed{% elif i.booking.breakdown_status == 1 and i.progress_step == 0 %}accepted{% elif i.booking.breakdown_status == 1 and i.progress_step > 0 %}inprogress{% else %}unknown{% endif %}">
+
+
 
 
                     <td class="fw-semibold">{{ forloop.counter }}</td>
@@ -290,27 +285,13 @@
   </div>
 </div>
 
-<!-- Client-side filtering -->
-<script>
-  (function () {
-    const search = document.getElementById("bdSearch");
-    const table = document.getElementById("bdTable");
-    if (!search || !table) return;
-
-    search.addEventListener("keyup", function () {
-      const q = this.value.toLowerCase().trim();
-      table.querySelectorAll("tbody tr").forEach(row => {
-        row.style.display = row.innerText.toLowerCase().includes(q) ? "" : "none";
-      });
-    });
-  })();
-</script>
-
-
 <script>
 (function () {
+  const searchInput = document.getElementById("bdSearch");
   const rows = Array.from(document.querySelectorAll("#bdTable tbody tr"));
-  const filterButtons = document.querySelectorAll("#statusFilters button");
+  const buttons = document.querySelectorAll("#statusFilters button");
+
+  let activeStatus = "all";
 
   const counters = {
     all: 0,
@@ -321,61 +302,53 @@
     rejected: 0
   };
 
- function bucket(status) {
-  status = parseInt(status);
-
-  if (status === 0) return "pending";
-  if (status === 2) return "rejected";
-  if (status === 5) return "completed";
-
-  // ✅ EVERYTHING ELSE IS IN PROGRESS
-  if ([1, 3, 4].includes(status)) return "inprogress";
-
-  return "all";
-}
-
-
-  // Count statuses
+  // 🔹 INITIAL COUNT (RUNS ON PAGE LOAD)
   rows.forEach(row => {
+    const st = row.dataset.status;
     counters.all++;
-    const key = bucket(row.dataset.status);
-    counters[key]++;
+    if (counters[st] !== undefined) {
+      counters[st]++;
+    }
   });
 
-  // Update badges
-  document.getElementById("cnt-all").innerText = counters.all;
-  document.getElementById("cnt-pending").innerText = counters.pending;
-  document.getElementById("cnt-accepted").innerText = counters.accepted;
-  document.getElementById("cnt-inprogress").innerText = counters.inprogress;
-  document.getElementById("cnt-completed").innerText = counters.completed;
-  document.getElementById("cnt-rejected").innerText = counters.rejected;
+  // 🔹 UPDATE BADGES
+  Object.keys(counters).forEach(key => {
+    const badge = document.getElementById(`cnt-${key}`);
+    if (badge) {
+      badge.innerText = counters[key];
+    }
+  });
 
-  // Filtering logic
-  filterButtons.forEach(btn => {
+  function applyFilters() {
+    const q = searchInput.value.toLowerCase().trim();
+
+    rows.forEach(row => {
+      const matchesSearch = row.innerText.toLowerCase().includes(q);
+      const matchesStatus =
+        activeStatus === "all" ||
+        row.dataset.status === activeStatus;
+
+      row.style.display = (matchesSearch && matchesStatus) ? "" : "none";
+    });
+  }
+
+  // 🔹 STATUS BUTTONS
+  buttons.forEach(btn => {
     btn.addEventListener("click", function () {
-
-      filterButtons.forEach(b => b.classList.remove("active"));
+      buttons.forEach(b => b.classList.remove("active"));
       this.classList.add("active");
 
-      const filter = this.dataset.status;
-
-      rows.forEach(row => {
-        const rowStatus = row.dataset.status;
-        const rowBucket = bucket(rowStatus);
-
-        if (filter === "all") {
-          row.style.display = "";
-        } else if (filter === "inprogress") {
-          row.style.display = (rowBucket === "inprogress") ? "" : "none";
-        } else {
-          row.style.display = (rowStatus === filter) ? "" : "none";
-        }
-      });
+      activeStatus = this.dataset.status;
+      applyFilters();
     });
   });
 
+  // 🔹 SEARCH
+  searchInput.addEventListener("keyup", applyFilters);
 })();
 </script>
+
+
 
 {% if msg %}
 <script>

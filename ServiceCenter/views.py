@@ -69,7 +69,7 @@ def changepassword(request):
                 return render(request,"ServiceCenter/ChangePassword.html",{'msg':"Passwords dont match"})
             
         else:
-            return render(request,"ServiceCenter/ChangePassword.html")
+            return render(request,"ServiceCenter/ChangePassword.html",{'Data':changepass})
 
 
 
@@ -95,7 +95,7 @@ def technician(request):
                 technician_photo=photo,technician_password=password,servicecenter=servicecenter)
                 return render(request,"ServiceCenter/Technician.html",{'msg':"Technician Added"})
         else:
-            return render(request,"ServiceCenter/Technician.html",{'data':techniciandata})
+            return render(request,"ServiceCenter/Technician.html",{'data':techniciandata,'Data':servicecenter})
 
 
 def deltechnician(request,did):
@@ -109,6 +109,7 @@ def myservices(request):
       return redirect("Guest:Login")
      else:
         servicetype=tbl_servicetype.objects.all()
+        servicecenter=tbl_servicecenter.objects.get(id=request.session['cid'])
         myservices=tbl_servicecenterservices.objects.filter(servicecenter=request.session['cid'])
         if request.method=="POST":
             service_type=tbl_servicetype.objects.get(id=request.POST.get("sel_servicetype"))
@@ -117,7 +118,7 @@ def myservices(request):
             tbl_servicecenterservices.objects.create(servicetype=service_type,servicecenter=servicecenter,base_amount=base_amount)
             return render(request,"ServiceCenter/MyServices.html",{'msg':"Service added"})
         else:
-            return render(request,"ServiceCenter/MyServices.html",{'data':servicetype,'myservices':myservices})
+            return render(request,"ServiceCenter/MyServices.html",{'data':servicetype,'myservices':myservices,'Data':servicecenter})
 
 
 
@@ -125,6 +126,7 @@ def editmy_services(request, sid):
     editservice = tbl_servicecenterservices.objects.get(id=sid)
     servicetype = tbl_servicetype.objects.all()   
     myservices = tbl_servicecenterservices.objects.filter(servicecenter=request.session['cid']) 
+    servicecenter=tbl_servicecenter.objects.get(id=request.session['cid'])
     if request.method == "POST":
         base_amount = request.POST.get("base_amount")
         editservice.base_amount = base_amount
@@ -134,7 +136,7 @@ def editmy_services(request, sid):
         return render(request, "ServiceCenter/MyServices.html", {
             'editservice': editservice,
             'data': servicetype,        
-            'myservices': myservices    
+            'myservices': myservices,'Data':servicecenter    
         })
 
         
@@ -151,10 +153,11 @@ def service_requests(request):
     if 'cid' not in request.session:
       return redirect("Guest:Login")
     else:
+        servicecenter=tbl_servicecenter.objects.get(id=request.session['cid'])
         bookingdata=tbl_booking.objects.filter(servicecenter_id=request.session['cid']).order_by('-id')
         for booking in bookingdata:
             booking.services=tbl_booking_services.objects.filter(booking=booking)
-        return render(request,"ServiceCenter/ServiceRequest.html",{'data':bookingdata})
+        return render(request,"ServiceCenter/ServiceRequest.html",{'data':bookingdata,'Data': servicecenter})
 
 
 
@@ -174,8 +177,9 @@ def rejectrequest(request,rid):
 
 def assign_technician(request,bid):
     technician_data=tbl_technician.objects.filter(servicecenter=request.session['cid'])
+    servicecenter=tbl_servicecenter.objects.get(id=request.session['cid'])
     busy_ids = tbl_booking.objects.filter(booking_status__in=[1, 3, 4, 5, 6, 7, 8]).values_list('technician_id', flat=True)
-    return render(request,"ServiceCenter/AssignTechnician.html",{'data':technician_data,'bid':bid,'busy_ids': list(busy_ids),'mode': 'service'})
+    return render(request,"ServiceCenter/AssignTechnician.html",{'data':technician_data,'bid':bid,'busy_ids': list(busy_ids),'mode': 'service','Data':servicecenter})
 
 def assignjob(request,tid,bid):
     technician=tbl_technician.objects.get(id=tid)
@@ -224,6 +228,7 @@ def logout(request):
 
 
 def breakdown_requests(request):
+    servicecenter=tbl_servicecenter.objects.get(id=request.session['cid'])
     services = tbl_breakdown_booking_services.objects.filter(
         booking__servicecenter_id=request.session['cid']
     ).select_related(
@@ -238,7 +243,7 @@ def breakdown_requests(request):
     return render(
         request,
         "ServiceCenter/Breakdown.html",
-        {"services": services}
+        {"services": services,'Data': servicecenter}
     )
 
 
@@ -253,16 +258,17 @@ def rejectbreakdown(request,rid):
     data=tbl_breakdownassist.objects.get(id=rid)
     data.breakdown_status=2
     data.save()
-    return render(request,"ServiceCenter/Breakdown.html",{'msg':"Request Accepted"})
+    return render(request,"ServiceCenter/Breakdown.html",{'msg':"Request Rejected"})
 
 
 def breakdown_technician(request,btid):
     technician_data=tbl_technician.objects.filter(servicecenter=request.session['cid'])
+    servicecenter=tbl_servicecenter.objects.get(id=request.session['cid'])
     busy_ids = tbl_breakdown_booking_services.objects.filter(
     booking__technician__isnull=False,
     billing_status=False).values_list('booking__technician_id',flat=True).distinct()
 
-    return render(request,"ServiceCenter/AssignTechnician.html",{'data':technician_data,'btid':btid,'busy_ids': list(busy_ids),'mode': 'breakdown'})
+    return render(request,"ServiceCenter/AssignTechnician.html",{'data':technician_data,'btid':btid,'busy_ids': list(busy_ids),'mode': 'breakdown','Data':servicecenter})
 
 def assign_breakdown(request,tid,btid):
     technician=tbl_technician.objects.get(id=tid)
@@ -282,6 +288,7 @@ def my_breakdown_services(request):
 
     servicetypes = tbl_breakdown_servicetype.objects.all()
     myservices = tbl_servicecenter_breakdown_services.objects.filter(servicecenter=request.session['cid'])
+    servicecenter=tbl_servicecenter.objects.get(id=request.session['cid'])
 
     if request.method == "POST":
         servicetype = tbl_breakdown_servicetype.objects.get(id=request.POST.get("sel_servicetype"))
@@ -299,13 +306,14 @@ def my_breakdown_services(request):
     return render(request,"ServiceCenter/MyBreakdownServices.html",
         {
             'data': servicetypes,
-            'myservices': myservices
+            'myservices': myservices,'Data': servicecenter
         }
     )
 
 
 def edit_breakdown_service(request, sid):
     editservice = tbl_servicecenter_breakdown_services.objects.get(id=sid)
+    servicecenter=tbl_servicecenter.objects.get(id=request.session['cid'])
 
     if request.method == "POST":
         editservice.base_amount = request.POST.get("base_amount")
@@ -319,7 +327,8 @@ def edit_breakdown_service(request, sid):
         {
             'editservice': editservice,
             'data': servicetypes,
-            'myservices': myservices
+            'myservices': myservices,
+            'Data': servicecenter
         }
     )
 

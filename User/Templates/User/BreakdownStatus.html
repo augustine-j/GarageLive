@@ -508,6 +508,7 @@
     <div class="bd-status status-{{ i.booking.breakdown_status }}">
       {% if i.booking.breakdown_status == 0 %}Pending
       {% elif i.booking.breakdown_status == 1 %}Accepted
+      {% elif i.booking.breakdown_status == 2 %}Rejected
       {% elif i.booking.breakdown_status == 3 %}On the way
       {% elif i.booking.breakdown_status == 4 %}In progress
       {% elif i.booking.breakdown_status == 5 %}Completed
@@ -689,6 +690,18 @@ document.querySelectorAll('.bd-card').forEach(card => {
     el.innerHTML = `
       <div class="bd-track-dot"></div>
       <div class="bd-track-label">Waiting for service center approval</div>
+    `;
+    stepsWrap.appendChild(el);
+    return; // ⛔ EXIT – nothing else runs
+  }
+
+
+  if (status === 2) {
+    const el = document.createElement('div');
+    el.className = 'bd-track-step active';
+    el.innerHTML = `
+      <div class="bd-track-dot"></div>
+      <div class="bd-track-label">Rejected by service center</div>
     `;
     stepsWrap.appendChild(el);
     return; // ⛔ EXIT – nothing else runs

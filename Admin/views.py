@@ -30,14 +30,7 @@ def district(request):
             return render(request,"Admin/District.html",{'districtdata':districtdata,'greeting':greeting})
 
 
-def category(request):
-    categorydata=tbl_category.objects.all()
-    if request.method=="POST":
-        category=request.POST.get("txt_name")
-        tbl_category.objects.create(category_name=category)
-        return render(request,"Admin/Category.html",{'msg':"Category inserted"})
-    else:
-        return render(request,"Admin/Category.html",{'categorydata':categorydata})
+
 
 
 def AdminRegistration(request):
@@ -62,9 +55,7 @@ def deldistrict(request,did):
     tbl_district.objects.get(id=did).delete()
     return redirect("Admin:District")
 
-def delcategory(request,did):
-    tbl_category.objects.get(id=did).delete()
-    return redirect("Admin:Category")
+
 
 def delregistration(request,did):
     tbl_AdminRegistration.objects.get(id=did).delete()
@@ -82,15 +73,7 @@ def editdistrict(request,eid):
         return render(request,"Admin/District.html",{'editdata':editdata})
 
 
-def editcategory(request,eid):
-    editdata=tbl_category.objects.get(id=eid)
-    if request.method=="POST":
-        category=request.POST.get("txt_name")
-        editdata.category_name=category
-        editdata.save()
-        return redirect("Admin:Category")
-    else:
-        return render(request,"Admin/Category.html",{'editdata':editdata})
+
     
 
 def editregistration(request,eid):
@@ -147,139 +130,21 @@ def delplace(request,did):
     return redirect("Admin:Place")
 
 
-def department(request):
-    deptdata=tbl_department.objects.all()
-    if request.method=="POST":
-        department=request.POST.get("dept_name")
-        tbl_department.objects.create(department_name=department)
-        return render(request,"Admin/Department.html",{'msg':"Data inserted"})
-    else:
-        return render(request,"Admin/Department.html",{'deptdata':deptdata})
+
     
-def editdepartment(request,eid):
-    editdept=tbl_department.objects.get(id=eid)
-    if request.method=="POST":
-        dept=request.POST.get("dept_name")
-        editdept.department_name=dept
-        editdept.save()
-        return redirect("Admin:Department")
-    else:
-        return render(request,"Admin/Department.html",{'editdept':editdept})
-
-def deldepartment(request,did):
-    tbl_department.objects.get(id=did).delete()
-    return redirect("Admin:Department")
-
-def designation(request):
-    desidata=tbl_designation.objects.all()
-    if request.method=="POST":
-        designation=request.POST.get("txt_designation")
-        tbl_designation.objects.create(designation_name=designation)
-        return render(request,"Admin/Designation.html",{'msg':"Data inserted"})
-    else:
-        return render(request,"Admin/Designation.html",{'desidata':desidata})
-
-
-def editdesignation(request,eid):
-    editdesi=tbl_designation.objects.get(id=eid)
-
-    if request.method=="POST":
-        designation=request.POST.get("txt_designation")
-        editdesi.designation_name=designation
-        editdesi.save()
-        return redirect("Admin:Designation")
-    else:
-        return render(request,"Admin/Designation.html",{'editdesi':editdesi})
-
-
-def deldesignation(request,did):
-    tbl_designation.objects.get(id=did).delete()
-    return redirect("Admin:Designation")
 
 
 
-def employee(request):
-    deptdat=tbl_department.objects.all()
-    desidata=tbl_designation.objects.all()
-    empdata=tbl_employee.objects.all()
-    if request.method=="POST":
-        name=request.POST.get("txt_name")
-        gender=request.POST.get("gender")
-        contact=request.POST.get("txt_num")
-        doj=request.POST.get("txt_doj")
-        department=tbl_department.objects.get(id=request.POST.get("select_department"))
-        designation=tbl_designation.objects.get(id=request.POST.get("select_designation"))
-        salary=request.POST.get("txt_salary")
-        tbl_employee.objects.create(employee_name=name,employee_gender=gender,employee_contact=contact,employee_doj=doj,
-        department=department,designation=designation,employee_salary=salary)
-        return render(request,"Admin/Employee.html",{'msg':"Data inserted"})
-
-    else:
-        return render(request,"Admin/Employee.html",{'deptdata':deptdat,'desidata':desidata,'empdata':empdata})
-
-
-def editemployee(request,eid):
-    deptdata=tbl_department.objects.all()
-    desidata=tbl_designation.objects.all()
-    editemp=tbl_employee.objects.get(id=eid)
-    if request.method=="POST":
-        department=tbl_department.objects.get(id=request.POST.get("select_department"))
-        designation=tbl_designation.objects.get(id=request.POST.get("select_designation"))
-        name=request.POST.get("txt_name")
-        gender=request.POST.get("gender")
-        contact=request.POST.get("txt_num")
-        doj=request.POST.get("txt_doj")
-        salary=request.POST.get("txt_salary")
-        editemp.employee_name=name
-        editemp.employee_gender=gender
-        editemp.employee_contact=contact
-        editemp.employee_doj=doj
-        editemp.employee_salary=salary
-        editemp.department=department
-        editemp.designation=designation
-        editemp.save()
-        return redirect("Admin:Employee")
-    else:
-        return render(request,"Admin/Employee.html",{'deptdata':deptdata,'desidata':desidata,'editemp':editemp})
-
-
-def delemployee(request,did):
-    tbl_employee.objects.get(id=did).delete()
-    return redirect("Admin:Employee")
 
 
 
-def subcategory(request):
-    categorydata=tbl_category.objects.all()
-    subcategory=tbl_subcategory.objects.all()
-    if request.method=="POST":
-        category=tbl_category.objects.get(id=request.POST.get("select_category"))
-        subcategory=request.POST.get("txt_sub")
-        tbl_subcategory.objects.create(subcategory_name=subcategory,category=category)
-
-        return render(request,"Admin/Subcategory.html",{'msg':"data inserted"})
-    else:
-        return render(request,"Admin/Subcategory.html",{'categorydata':categorydata,'subcategory':subcategory})
-
-
-def editsubcategory(request,eid):
-    categorydata=tbl_category.objects.all()
-    editsubcategory=tbl_subcategory.objects.get(id=eid)
-    if request.method=="POST":
-        category=tbl_category.objects.get(id=request.POST.get("select_category"))
-        subcategory=request.POST.get("txt_sub")
-        editsubcategory.subcategory_name=subcategory
-        editsubcategory.category=category
-        editsubcategory.save()
-        return redirect("Admin:Subcategory")
-    else:
-        return render(request,"Admin/Subcategory.html",{'categorydata':categorydata,'editsubcategory':editsubcategory})
 
 
 
-def delsubcategory(request,did):
-    tbl_subcategory.objects.get(id=did).delete()
-    return redirect("Admin:Subcategory")
+
+
+
+
 
 
 def sellerview(request):

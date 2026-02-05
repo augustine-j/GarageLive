@@ -5,33 +5,20 @@ app_name="Admin"
 
 urlpatterns = [
     path('District/',views.district,name="District"),
-    path('Category/',views.category,name="Category"),
+    
     path('AdminRegistration/',views.AdminRegistration,name="AdminRegistration"),
     path('deldistrict/<int:did>',views.deldistrict,name="deldistrict"),
-    path('delcategory/<int:did>',views.delcategory,name="delcategory"),
+    
     path('delregistration/<int:did>',views.delregistration,name="delregistration"),
     path('editdistrict/<int:eid>',views.editdistrict,name="editdistrict"),
-    path('editcategory/<int:eid>',views.editcategory,name="editcategory"),
+    
     path('editregistration/<int:eid>',views.editregistration,name="editregistration"),
     path('Place/',views.place,name="Place"),
     path('editplace/<int:eid>',views.editplace,name="editplace"),
     path('delplace/<int:did>',views.delplace,name="delplace"),
 
-    path('Department/',views.department,name="Department"),
-    path('editdepartment/<int:eid>',views.editdepartment,name="editdepartment"),
-    path('deldepartment/<int:did>',views.deldepartment,name="deldepartment"),
 
-    path('Designation',views.designation,name="Designation"),
-    path('editdesignation/<int:eid>',views.editdesignation,name="editdesignation"),
-    path('deldesignation/<int:did>',views.deldesignation,name="deldesignation"),
-    
-    path('Employee',views.employee,name="Employee"),
-    path('editemployee/<int:eid>',views.editemployee,name="editemployee"),
-    path('delemployee/<int:did>',views.delemployee,name="delemployee"),
-    
-    path('Subcategory',views.subcategory,name="Subcategory"),
-    path('editsubcategory/<int:eid>',views.editsubcategory,name="editsubcategory"),
-    path('delsubcategory/<int:did>',views.delsubcategory,name="delsubcategory"),
+
     
     path('SellerView/',views.sellerview,name="SellerView"),
     path('UserList/',views.userview,name="UserView"),

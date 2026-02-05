@@ -1006,7 +1006,7 @@
               <div class="track">
                 <div class="track-top">
                   <h3>Service Progress</h3>
-                  <div class="pct" id="pct-{{ forloop.counter }}">0% completed</div>
+                  
                 </div>
 
                 <div class="bd-track-timeline">
@@ -1138,22 +1138,36 @@
   };
 
   // Progress + animated timeline rendering
-  (function () {
-    const cards = document.querySelectorAll('.card-item[data-status][data-index]');
-    
-    cards.forEach((card) => {
-      const status = parseInt(card.getAttribute('data-status') || '0', 10);
-      const idx = parseInt(card.getAttribute('data-index') || '1', 10);
+ // Progress + animated timeline rendering
+(function () {
+  const cards = document.querySelectorAll('.card-item[data-status][data-index]');
+  
+  cards.forEach((card) => {
+    const status = parseInt(card.getAttribute('data-status') || '0', 10);
+    const idx = parseInt(card.getAttribute('data-index') || '1', 10);
 
-      const clamped = Math.max(0, Math.min(12, status));
-      const percent = Math.round((clamped / 12) * 100);
+    // Update percentage text
+    //const pctEl = document.getElementById(`pct-${idx}`);
+    const progressBar = document.getElementById(`track-progress-${idx}`);
+    const wrap = document.getElementById(`track-steps-${idx}`);
 
-      // Update percentage text
-      const pctEl = document.getElementById(`pct-${idx}`);
-      if (pctEl) pctEl.textContent = `${percent}% completed`;
+    // Define different workflows based on status
+    let steps;
+    let currentStep = 0;
+    let percent = 0;
 
-      // Create timeline steps based on status
-      const steps = [
+    if (status === 2) {
+      // REJECTED WORKFLOW
+      steps = [
+        {label: "Booking", status: [0]},
+        {label: "Rejected", status: [2]},
+        
+      ];
+      currentStep = 1; // Rejected
+      
+    } else {
+      // NORMAL WORKFLOW
+      steps = [
         {label: "Booking", status: [0, 1]},
         {label: "Work Started", status: [3]},
         {label: "Diagnosis", status: [4, 5]},
@@ -1162,61 +1176,74 @@
         {label: "Completed", status: [9, 10, 11, 12]}
       ];
 
-      const wrap = document.getElementById(`track-steps-${idx}`);
-      const progressBar = document.getElementById(`track-progress-${idx}`);
-      
-      if (wrap) {
-        wrap.innerHTML = "";
-
-        // Determine current step
-        let currentStep = 0;
-        for (let i = 0; i < steps.length; i++) {
-          if (steps[i].status.includes(status)) {
-            currentStep = i;
-            break;
-          }
-        }
-
-        steps.forEach((stepData, stepIdx) => {
-          const el = document.createElement('div');
-          el.className = "bd-track-step";
-          
-          if (stepIdx < currentStep) el.classList.add("done");
-          if (stepIdx === currentStep) el.classList.add("active");
-          
-          const checkSvg = `<svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-          </svg>`;
-          
-          el.innerHTML = `
-            <div class="bd-track-dot">
-              ${stepIdx < currentStep ? checkSvg : ''}
-            </div>
-            <div class="bd-track-label">${stepData.label}</div>
-          `;
-          
-          wrap.appendChild(el);
-        });
-        
-        // Animate progress bar from 0% to current progress
-        let progressPercent = 0;
-        if (currentStep > 0 && steps.length > 1) {
-          // Calculate progress to reach the current step
-          progressPercent = ((currentStep) / (steps.length - 1)) * 100;
-        }
-        
-        if (progressBar) {
-          // Start from 0
-          progressBar.style.width = '0%';
-          // Animate to target percentage
-          setTimeout(() => {
-            progressBar.style.width = progressPercent + '%';
-          }, 300);
+      // Find current step
+      for (let i = 0; i < steps.length; i++) {
+        if (steps[i].status.includes(status)) {
+          currentStep = i;
+          break;
         }
       }
-    });
-  })();
 
+      // Calculate percentage based on status
+      const clamped = Math.max(0, Math.min(12, status));
+      percent = Math.round((clamped / 12) * 100);
+    }
+
+    // Update percentage text
+    //if (pctEl) pctEl.textContent = `${percent}% completed`;
+
+    // Render timeline steps
+    if (wrap) {
+      wrap.innerHTML = "";
+
+      steps.forEach((stepData, stepIdx) => {
+        const el = document.createElement('div');
+        el.className = "bd-track-step";
+        
+        if (stepIdx < currentStep) el.classList.add("done");
+        if (stepIdx === currentStep) el.classList.add("active");
+        
+        const checkSvg = `<svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        </svg>`;
+        
+        // For rejected workflow, use X icon for rejected step
+        const rejectSvg = `<svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>`;
+        
+        let iconHtml = '';
+        if (stepIdx < currentStep) {
+          iconHtml = checkSvg;
+        } else if (stepIdx === currentStep && status === 2 && stepData.label === "Rejected") {
+          iconHtml = rejectSvg;
+        }
+        
+        el.innerHTML = `
+          <div class="bd-track-dot">
+            ${iconHtml}
+          </div>
+          <div class="bd-track-label">${stepData.label}</div>
+        `;
+        
+        wrap.appendChild(el);
+      });
+      
+      // Animate progress bar
+      let progressPercent = 0;
+      if (currentStep > 0 && steps.length > 1) {
+        progressPercent = ((currentStep) / (steps.length - 1)) * 100;
+      }
+      
+      if (progressBar) {
+        progressBar.style.width = '0%';
+        setTimeout(() => {
+          progressBar.style.width = progressPercent + '%';
+        }, 300);
+      }
+    }
+  });
+})();
   // Complaint modal
   (function(){
     const modal = document.getElementById('complaintModal');
