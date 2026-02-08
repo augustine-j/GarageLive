@@ -30,6 +30,7 @@
                     <th>#</th>
                     <th>Customer</th>
                     <th>Breakdown Service</th>
+                    <th>Complaint</th>
                     <th>Vehicle</th>
                     <th>Status</th>
                     <th class="text-center">Action</th>
@@ -51,6 +52,13 @@
   <td>
     <span class="badge bg-warning text-dark">
       {{ i.servicecenter_breakdown_service.servicetype.servicetype_name }}
+    </span>
+  </td>
+
+  <!-- Complaint -->
+  <td>
+    <span class="badge bg-warning text-dark">
+    {{ i.booking.breakdown_complaint }}
     </span>
   </td>
 
