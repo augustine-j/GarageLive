@@ -50,7 +50,14 @@
       <span id="greeting"></span>, 
       <span class="text-black fw-bold">{{data.servicecenter_name}}</span>
     </h1>
-    <h3 class="welcome-sub-text">Your performance summary this week</h3>
+    <h3 class="welcome-sub-text">
+    Today:
+    <strong>{{ todays_bookings }}</strong> bookings •
+    <strong>{{ pending_requests }}</strong> pending requests •
+    <strong>{{ active_jobs }}</strong> active jobs
+  </h3>
+    
+
   </li>
 </ul>
 
@@ -1121,4 +1128,9 @@
 </body>
 
 </html>
+
+
+
+
+
 

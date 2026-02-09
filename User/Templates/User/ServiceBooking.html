@@ -420,18 +420,18 @@
 
           <form method="post">
             {% csrf_token %}
+          <!-- Date Selection -->
+          <div class="form-group">
+            <label class="form-label">Service Date</label>
+            <input
+              type="date"
+              name="txt_date"
+              class="form-control-custom"
+              required
+              min="{{ today }}"
+            >
+          </div>
 
-            <!-- Date Selection -->
-            <div class="form-group">
-              <label class="form-label">Service Date</label>
-              <input
-                type="date"
-                name="txt_date"
-                class="form-control-custom"
-                required
-                min="{{ today }}"
-              >
-            </div>
 
             <!-- Service Selection -->
             <div class="form-group">

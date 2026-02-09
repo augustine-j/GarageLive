@@ -32,6 +32,7 @@ urlpatterns = [
     path('breakdown_status/',views.breakdown_status,name="breakdown_status"),
     path("breakdown-payment/<int:bs_id>/",views.breakdown_payment,name="breakdown_payment"),
     path("breakdown-invoice/<int:bs_id>/",views.breakdown_invoice,name="breakdown_invoice"),
+    path('feedback/<int:bid>',views.feedback,name="feedback"),
 
 
     

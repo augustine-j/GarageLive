@@ -7,6 +7,7 @@ from ServiceCenter.models import *
 from Technician.models import *
 from decimal import Decimal
 from django.db.models import Sum
+from datetime import date
 
 
 
@@ -140,6 +141,10 @@ def servicebooking(request,sid):
         servicecenter=tbl_servicecenter.objects.get(id=sid)
         servicetype=tbl_servicecenterservices.objects.filter(servicecenter_id=sid)
         vehicle_data=tbl_vehicle.objects.filter(user_id=request.session['uid'])
+        today = date.today().isoformat()
+        
+
+
         if request.method=="POST":
             todate=request.POST.get("txt_date")
             complaint=request.POST.get("txt_complaint")
@@ -156,7 +161,7 @@ def servicebooking(request,sid):
                 base_amount=sc_service.base_amount)
 
             return render(request,"User/HomePage.html",{'msg':"Service Booked"})
-        return render(request,"User/ServiceBooking.html",{'data':servicetype,'vehicle_data':vehicle_data,'greeting':greeting})
+        return render(request,"User/ServiceBooking.html",{'data':servicetype,'vehicle_data':vehicle_data,'greeting':greeting,'today':today})
 
 
 
@@ -402,6 +407,47 @@ def breakdown_invoice(request, bs_id):
     })
 
 
+
+def feedback(request, bid):
+    
+    booking = tbl_booking.objects.get( id=bid, user_id=request.session['uid'])
+
+    greeting = tbl_user.objects.get(id=request.session['uid'])
+
+    # prevent duplicate feedback (optional but good)
+    if tbl_feedback.objects.filter(booking=booking).exists():
+        return render(
+            request,
+            "User/HomePage.html",
+            {'msg': "Feedback already submitted"}
+        )
+
+    if request.method == "POST":
+        rating = request.POST.get("rating")
+        feedback_content = request.POST.get("feedback_content")
+
+        tbl_feedback.objects.create(
+            booking=booking,
+            user=greeting,
+            servicecenter=booking.servicecenter,
+            rating=rating,
+            feedback_content=feedback_content
+        )
+
+        return render(
+            request,
+            "User/MyServiceRequest.html",
+            {'msg': "Feedback Submitted Successfully"}
+        )
+
+    return render(
+        request,
+        "User/Feedback.html",
+        {
+            "booking": booking,
+            'greeting': greeting
+        }
+    )
 
 
 

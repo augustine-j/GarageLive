@@ -75,3 +75,22 @@ class tbl_breakdown_booking_services(models.Model):
 
 
     
+class tbl_feedback(models.Model):
+    RATING_CHOICES = (
+        (1, 'Very Bad'),
+        (2, 'Bad'),
+        (3, 'Average'),
+        (4, 'Good'),
+        (5, 'Excellent'),
+    )
+
+    feedback_content = models.TextField()
+    rating = models.PositiveSmallIntegerField(choices=RATING_CHOICES)
+    feedback_date = models.DateTimeField(auto_now_add=True)
+
+    user = models.ForeignKey(tbl_user,on_delete=models.CASCADE,related_name='feedbacks')
+    servicecenter = models.ForeignKey(tbl_servicecenter,on_delete=models.CASCADE,related_name='feedbacks')
+    booking = models.OneToOneField(tbl_booking,on_delete=models.CASCADE,related_name='feedback')
+
+    def __str__(self):
+        return f"{self.servicecenter} - {self.rating}⭐"

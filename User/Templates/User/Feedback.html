@@ -1,0 +1,202 @@
+{% extends 'User/Head_User.html' %}
+{% block content %}
+
+
+<style>
+    .star-rating {
+  font-size: 32px;
+  cursor: pointer;
+}
+
+.star {
+  color: #ddd;
+  transition: color 0.2s;
+}
+
+.star.active {
+  color: gold;
+}
+
+.star:hover,
+.star:hover ~ .star {
+  color: #ddd;
+}
+
+</style>
+
+<!-- Feedback Registration -->
+<div class="container-fluid bg-secondary booking my-5 wow fadeInUp" data-wow-delay="0.1s">
+  <div class="container">
+    <div class="row gx-5">
+
+      <!-- Left Info Panel -->
+      <div class="col-lg-6 py-5">
+        <div class="py-5">
+          <h1 class="text-white mb-4">Share your service feedback</h1>
+          <p class="text-white mb-0">
+            Your feedback helps us improve service quality and helps other users
+            choose the best service center.
+          </p>
+
+          <div class="mt-4 p-4 bg-primary bg-opacity-25 rounded">
+            <h5 class="text-white mb-2">Feedback Guidelines</h5>
+            <ul class="text-white-50 mb-0 ps-3">
+              <li>Rate your overall service experience.</li>
+              <li>Be honest and constructive.</li>
+              <li>Feedback is allowed only after service completion.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Form Panel -->
+      <div class="col-lg-6">
+        <div class="bg-primary h-100 d-flex flex-column justify-content-center text-center p-5 wow zoomIn" data-wow-delay="0.6s">
+          <h1 class="text-white mb-4">Submit Feedback</h1>
+
+          <form method="post">
+            {% csrf_token %}
+
+            <div class="row g-3">
+
+              <!-- Star Rating -->
+<div class="col-12 text-start">
+  <label class="text-white fw-semibold mb-2">Rating</label>
+
+  <div class="star-rating">
+    <input type="hidden" name="rating" id="rating" required>
+
+    <span class="star" data-value="1">★</span>
+    <span class="star" data-value="2">★</span>
+    <span class="star" data-value="3">★</span>
+    <span class="star" data-value="4">★</span>
+    <span class="star" data-value="5">★</span>
+  </div>
+
+  <small class="text-white-50">Click on stars to rate</small>
+</div>
+
+              <!-- Feedback Content -->
+              <div class="col-12">
+                <textarea
+                  name="feedback_content"
+                  class="form-control border-0"
+                  placeholder="Write your feedback here..."
+                  rows="6"
+                  required
+                ></textarea>
+              </div>
+
+              <!-- Submit -->
+              <div class="col-12">
+                <button class="btn btn-secondary w-100 py-3" type="submit">
+                  Submit Feedback
+                </button>
+              </div>
+
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Feedback List -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="bg-white rounded shadow p-4">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <h3 class="mb-0">My Feedback</h3>
+            <small class="text-muted">Total: {{ feedbacks|length }}</small>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th style="width:70px;">Sno</th>
+                  <th style="min-width:200px;">Service Center</th>
+                  <th style="width:120px;">Rating</th>
+                  <th style="min-width:300px;">Feedback</th>
+                  <th style="min-width:150px;">Date</th>
+                  <th style="width:120px;">Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for f in feedbacks %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+
+                  <td class="fw-semibold">
+                    {{ f.servicecenter.servicecenter_name }}
+                  </td>
+
+                  <td>
+                    <span class="fw-semibold text-warning">
+                      {{ f.rating }} ★
+                    </span>
+                  </td>
+
+                  <td style="white-space: normal;">
+                    {{ f.feedback_content }}
+                  </td>
+
+                  <td>{{ f.feedback_date }}</td>
+
+                  <td>
+                    <a href="{% url 'User:delfeedback' f.id %}"
+                       class="btn btn-outline-danger btn-sm w-100"
+                       onclick="return confirm('Delete this feedback?');">
+                      Delete
+                    </a>
+                  </td>
+                </tr>
+
+                {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-4">
+                    No feedback submitted yet.
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- Feedback End -->
+
+{% if msg %}
+<script>
+  alert("{{ msg }}");
+</script>
+{% endif %}
+
+
+<script>
+  const stars = document.querySelectorAll(".star");
+  const ratingInput = document.getElementById("rating");
+
+  stars.forEach((star) => {
+    star.addEventListener("click", () => {
+      const value = star.getAttribute("data-value");
+      ratingInput.value = value;
+
+      stars.forEach(s => s.classList.remove("active"));
+      for (let i = 0; i < value; i++) {
+        stars[i].classList.add("active");
+      }
+    });
+  });
+</script>
+
+
+{% endblock content %}

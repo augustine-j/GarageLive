@@ -12,4 +12,6 @@ urlpatterns = [
     
 
     path('indexpage/',views.indexpage,name="indexpage"),
+    path('',views.indexpage,name="indexpage"),
+
 ]

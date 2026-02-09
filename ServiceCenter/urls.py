@@ -35,6 +35,12 @@ urlpatterns = [
      path('edit-breakdown-service/<int:sid>/',views.edit_breakdown_service,name='edit_breakdown_service'),
 
      path('delete-breakdown-service/<int:did>/',views.delete_breakdown_service,name='delete_breakdown_service'),
+     
+     
+
+
+     
+
 
      
 

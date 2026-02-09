@@ -257,21 +257,23 @@ def complaint(request):
      else:
         complaintdata=tbl_complaint.objects.filter(complaint_status=0)
         replied=tbl_complaint.objects.filter(complaint_status=1)
+        greeting=tbl_AdminRegistration.objects.get(id=request.session['aid'])
 
-        return render(request,"Admin/viewcomplaint.html",{'Data':complaintdata,'replied':replied})
+        return render(request,"Admin/viewcomplaint.html",{'Data':complaintdata,'replied':replied,'greeting':greeting})
 
 
 def reply(request,cid):
 
     compdata=tbl_complaint.objects.get(id=cid)
+    greeting=tbl_AdminRegistration.objects.get(id=request.session['aid'])
     if request.method=="POST":
         reply=request.POST.get("txt_reply")
         compdata.complaint_reply=reply
         compdata.complaint_status=1
         compdata.save()
-        return render(request,"Admin/viewcomplaint.html",{'msg':"Reply Added"})
+        return render(request,"Admin/viewcomplaint.html",{'msg':"Reply Added",'greeting':greeting})
     else:
-        return render(request,"Admin/Reply.html")
+        return render(request,"Admin/Reply.html",{'greeting':greeting})
 
 
 

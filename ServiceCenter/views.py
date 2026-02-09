@@ -4,6 +4,11 @@ from ServiceCenter.models import *
 from Admin.models import *
 from User.models import *
 from decimal import Decimal
+from datetime import date, timedelta
+from django.db.models import Count
+
+
+
 
 # Create your views here.
 
@@ -12,7 +17,18 @@ def homepage(request):
       return redirect("Guest:Login")
      else:
         centerdata=tbl_servicecenter.objects.get(id=request.session['cid'])
-        return render(request,"ServiceCenter/HomePage.html",{'data':centerdata})
+
+        today = date.today()
+        today_bookings = tbl_booking.objects.filter(servicecenter=centerdata,booking_date=today).count()
+
+        pending_requests = tbl_booking.objects.filter(servicecenter=centerdata,booking_status=0).count()
+
+        active_jobs = tbl_booking.objects.filter(servicecenter=centerdata,booking_status__gte=1, booking_status__lt=12).count()
+
+
+
+
+        return render(request,"ServiceCenter/HomePage.html",{'data':centerdata,'today_bookings':today_bookings,'pending_requests':pending_requests,'active_jobs':active_jobs})
 
 
 
@@ -336,5 +352,6 @@ def edit_breakdown_service(request, sid):
 def delete_breakdown_service(request, did):
     tbl_servicecenter_breakdown_services.objects.get(id=did).delete()
     return redirect("ServiceCenter:my_breakdown_services")
+
 
 

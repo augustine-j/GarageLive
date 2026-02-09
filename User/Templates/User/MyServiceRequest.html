@@ -1079,6 +1079,43 @@
                 Pay Amount
               </a>
               {% endif %}
+
+
+              {% if i.booking_status >= 11 %}
+                {% if not i.feedback %}
+                  <a class="act success" href="{% url 'User:feedback' i.id %}">
+                    ⭐ Give Feedback
+                  </a>
+                {% else %}
+                  <!-- Stars -->
+                  <span class="act secondary" style="cursor:default;">
+                    {% for star in "12345" %}
+                      {% if forloop.counter <= i.feedback.rating %}
+                        <span style="color:gold;">★</span>
+                      {% else %}
+                        <span style="color:#ccc;">★</span>
+                      {% endif %}
+                    {% endfor %}
+                  </span>
+
+                  <!-- View Feedback Button -->
+                  <button
+                    type="button"
+                    class="act secondary"
+                    data-open-feedback="1"
+                    data-center="{{ i.servicecenter.servicecenter_name }}"
+                    data-rating="{{ i.feedback.rating }}"
+                    data-content="{{ i.feedback.feedback_content|escapejs }}">
+                    👁 View Feedback
+                  </button>
+                {% endif %}
+              {% endif %}
+
+
+
+
+
+              
             </div>
           </div>
 
@@ -1118,6 +1155,26 @@
     </div>
   </div>
 </div>
+
+<!-- Feedback Modal -->
+<div class="modal-backdropx" id="feedbackModal">
+  <div class="drawer">
+    <div class="drawer-head">
+      <div>
+        <p class="drawer-title">My Feedback</p>
+        <p class="drawer-sub" id="fbCenter"></p>
+      </div>
+      <button type="button" class="drawer-close" id="fbClose">Close</button>
+    </div>
+
+    <div class="drawer-body">
+      <p id="fbRating" style="font-size:20px;"></p>
+      <p id="fbContent"></p>
+    </div>
+  </div>
+</div>
+
+
 
 <script>
   // Status labels mapping
@@ -1382,6 +1439,39 @@
     location.reload();
   }, 9000); // 9 seconds
 </script>
+
+
+
+
+<script>
+  (function () {
+    const modal = document.getElementById("feedbackModal");
+    const closeBtn = document.getElementById("fbClose");
+
+    document.addEventListener("click", function (e) {
+      const btn = e.target.closest('[data-open-feedback="1"]');
+      if (!btn) return;
+
+      document.getElementById("fbCenter").textContent = btn.dataset.center;
+
+      const rating = parseInt(btn.dataset.rating);
+      let stars = "";
+      for (let i = 1; i <= 5; i++) {
+        stars += i <= rating ? "★" : "☆";
+      }
+      document.getElementById("fbRating").textContent = stars;
+
+      document.getElementById("fbContent").textContent = btn.dataset.content;
+
+      modal.classList.add("show");
+    });
+
+    closeBtn.addEventListener("click", () => {
+      modal.classList.remove("show");
+    });
+  })();
+</script>
+
 
 {% if msg %}
 <script>

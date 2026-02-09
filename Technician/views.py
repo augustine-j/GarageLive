@@ -22,7 +22,8 @@ def profile(request):
       return redirect("Guest:Login")
      else:
         technician=tbl_technician.objects.get(id=request.session['tid'])
-        return render(request,"Technician/Profile.html",{'data':technician})
+        greeting=tbl_technician.objects.get(id=request.session['tid'])
+        return render(request,"Technician/Profile.html",{'data':technician,'greeting':greeting})
 
 
 def editprofile(request):
@@ -30,6 +31,7 @@ def editprofile(request):
       return redirect("Guest:Login")
      else:
         editprofile=tbl_technician.objects.get(id=request.session['tid'])
+        greeting=tbl_technician.objects.get(id=request.session['tid'])
         if request.method=="POST":
             name=request.POST.get("txt_name")
             email=request.POST.get("txt_email")
@@ -42,7 +44,7 @@ def editprofile(request):
             editprofile.save()
             return render(request,"Technician/Profile.html",{'msg':"Record Updated"})
         else:
-            return render(request,"Technician/EditProfile.html",{'data':editprofile})
+            return render(request,"Technician/EditProfile.html",{'data':editprofile},{'greeting':greeting})
 
 
 def changepassword(request):
@@ -50,6 +52,7 @@ def changepassword(request):
       return redirect("Guest:Login")
      else:
         changepass=tbl_technician.objects.get(id=request.session['tid'])
+        greeting=tbl_technician.objects.get(id=request.session['tid'])
         dbpass=changepass.technician_password
         if request.method=="POST":
             old=request.POST.get("txt_password")
@@ -65,7 +68,7 @@ def changepassword(request):
             else:
                 return render(request,"Technician/ChangePassword.html",{'msg':"Passwords doesn't match"})
         else:
-            return render(request,"Technician/ChangePassword.html")
+            return render(request,"Technician/ChangePassword.html",{'greeting':greeting})
 
 
 
@@ -74,11 +77,12 @@ def assigned_jobs(request):
     if 'tid' not in request.session:
       return redirect("Guest:Login")
     else:
+        greeting=tbl_technician.objects.get(id=request.session['tid'])
         jobdata=tbl_booking.objects.filter(technician=request.session['tid']).order_by('-id') 
         for booking in jobdata:
             booking.services = tbl_booking_services.objects.filter(booking=booking)
 
-        return render(request,"Technician/Jobs.html",{'data':jobdata})
+        return render(request,"Technician/Jobs.html",{'data':jobdata,'greeting':greeting})
 
 
 def startwork(request,sid):
@@ -139,6 +143,7 @@ def out_delivery(request,did):
 
 
 def workdescription(request,bid):
+    greeting=tbl_technician.objects.get(id=request.session['tid'])
     bookingdata=tbl_booking.objects.get(id=bid)    
     notes=tbl_workedescription.objects.filter(booking=bookingdata)
     if request.method=="POST":
@@ -147,7 +152,7 @@ def workdescription(request,bid):
         return render(request,"Technician/Jobs.html",{'msg':"Note Added"})
 
     else:
-        return render(request,"Technician/WorkDescription.html",{'notes':notes})
+        return render(request,"Technician/WorkDescription.html",{'notes':notes,'greeting':greeting})
 
 
 
@@ -160,7 +165,7 @@ def logout(request):
 def update_service_cost(request, booking_id):
 
     booking = tbl_booking.objects.get(id=booking_id)
-
+    greeting=tbl_technician.objects.get(id=request.session['tid'])
     services = tbl_booking_services.objects.filter(booking=booking)
     if booking.booking_status >= 10:
         return redirect("Technician:assigned_jobs")
@@ -190,7 +195,7 @@ def update_service_cost(request, booking_id):
         "Technician/ServiceCost.html",
         {
             "booking": booking,
-            "services": services
+            "services": services,'greeting':greeting
         }
     )
 
@@ -200,9 +205,9 @@ def update_service_cost(request, booking_id):
 def breakdown_jobs(request):
     if 'tid' not in request.session:
         return redirect("Guest:Login")
-
+    greeting=tbl_technician.objects.get(id=request.session['tid'])
     data = tbl_breakdown_booking_services.objects.filter(booking__technician_id=request.session['tid']).order_by('-id')
-    return render(request, "Technician/BreakdownJobs.html", {'data': data})
+    return render(request, "Technician/BreakdownJobs.html", {'data': data,'greeting':greeting})
 
 
 def update_breakdown_step(request, sid):
@@ -214,6 +219,7 @@ def update_breakdown_step(request, sid):
 
 def update_breakdown_charge(request, bs_id):
     bs = tbl_breakdown_booking_services.objects.get(id=bs_id)
+    greeting=tbl_technician.objects.get(id=request.session['tid'])
     if bs.progress_step < 1:
         return redirect("Technician:breakdown_jobs")
 
@@ -229,7 +235,7 @@ def update_breakdown_charge(request, bs_id):
         return redirect("Technician:breakdown_jobs")
 
     return render(request, "Technician/UpdateBreakdownCharge.html", {
-        "data": bs
+        "data": bs,'greeting':greeting
     })
 
 

@@ -1,23 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reply</title>
-</head>
-<body>
-    <form method="post">
-        <center><h1>Reply Form </h1></center>
-        {% csrf_token %}
-        <table border="1" align="center"><tr>
-            <td>Reply</td>
-            <td><textarea name="txt_reply" rows="10" cols="30"></textarea></td>
-        </tr>
-        <tr>
-            <td colspan="2" align="center"><input type="submit" value="submit"></td>
-            
-        </tr></table>
-    </form>
-</body>
-</html>
+{% extends 'Admin/Head_admin.html' %}
+{% block content %}
 
+<style>
+  .reply-textarea {
+    min-height: 220px;      /* 👈 increased height */
+    resize: vertical;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .reply-textarea:focus {
+    border-color: #4b49ac;
+    box-shadow: 0 0 0 0.15rem rgba(75, 73, 172, 0.25);
+  }
+</style>
+
+<div class="container-xxl py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 grid-margin stretch-card">
+      <div class="card shadow-sm">
+        <div class="card-body px-4 py-4">
+
+          <!-- Header -->
+          <div class="text-center mb-4">
+            <h4 class="card-title mb-1">Reply to Complaint</h4>
+            <p class="card-description mb-0">
+              Write a clear and professional response for the user.
+            </p>
+          </div>
+
+          <form method="post">
+            {% csrf_token %}
+
+            <!-- Reply Field -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold mb-2">
+                Reply Message
+              </label>
+
+              <textarea
+                name="txt_reply"
+                class="form-control reply-textarea"
+                placeholder="Type your detailed reply here..."
+                required
+              ></textarea>
+
+              <small class="text-muted d-block mt-2">
+                Make sure the response is clear and helpful.
+              </small>
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex justify-content-end gap-2">
+              <a href="{% url 'Admin:complaint' %}" class="btn btn-outline-secondary px-4">
+                Cancel
+              </a>
+
+              <button type="submit" class="btn btn-primary px-4">
+                Send Reply
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

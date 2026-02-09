@@ -20,6 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('', include('Guest.urls')),  # 👈 DEFAULT HOMEPAGE
     path('admin/', admin.site.urls),
     path('Basics/',include('Basics.urls')),
     path('Admin/',include('Admin.urls')),
