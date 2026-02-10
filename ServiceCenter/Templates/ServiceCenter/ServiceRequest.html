@@ -81,6 +81,7 @@
                 <thead>
                   <tr>
                     <th style="width:70px;">Sno</th>
+                    <th style="width:220px;">Booking ID</th>
                     <th>User</th>
                     <th>Contact</th>
                     <th>Booking Date</th>
@@ -99,7 +100,8 @@
                   <tr data-status="{{ i.booking_status }}">
 
                     <td class="fw-semibold">{{ forloop.counter }}</td>
-
+                    <td class="fw-semibold">#{{ i.id }}</td>
+                      
                     <td>
                       <div class="d-flex flex-column">
                         <span class="fw-semibold">{{ i.user.user_name }}</span>

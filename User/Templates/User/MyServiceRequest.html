@@ -1099,15 +1099,22 @@
                   </span>
 
                   <!-- View Feedback Button -->
-                  <button
+                  {% if i.booking_status >= 9 and i.feedback %}
+                            <button
                     type="button"
                     class="act secondary"
                     data-open-feedback="1"
+                    data-id="{{ i.feedback.id }}"
+                    data-edit-url="{% url 'User:edit_feedback' i.feedback.id %}"
+                    data-delete-url="{% url 'User:delete_feedback' i.feedback.id %}"
                     data-center="{{ i.servicecenter.servicecenter_name }}"
                     data-rating="{{ i.feedback.rating }}"
                     data-content="{{ i.feedback.feedback_content|escapejs }}">
                     👁 View Feedback
                   </button>
+
+                    {% endif %}
+
                 {% endif %}
               {% endif %}
 
@@ -1156,9 +1163,12 @@
   </div>
 </div>
 
+
+
 <!-- Feedback Modal -->
 <div class="modal-backdropx" id="feedbackModal">
   <div class="drawer">
+
     <div class="drawer-head">
       <div>
         <p class="drawer-title">My Feedback</p>
@@ -1168,13 +1178,55 @@
     </div>
 
     <div class="drawer-body">
-      <p id="fbRating" style="font-size:20px;"></p>
-      <p id="fbContent"></p>
+
+      <!-- VIEW MODE -->
+      <div id="fbView">
+        <p id="fbRating" style="font-size:22px;"></p>
+        <p id="fbContent"></p>
+
+        <div style="margin-top:20px; display:flex; gap:10px;">
+          <button type="button" class="btn btn-outline-warning btn-sm" id="fbEditBtn">
+            ✏ Edit
+          </button>
+
+          <a id="fbDelete"
+             class="btn btn-outline-danger btn-sm"
+             onclick="return confirm('Delete this feedback?');">
+            🗑 Delete
+          </a>
+        </div>
+      </div>
+
+      <!-- EDIT MODE -->
+      <form id="fbEditForm" method="post" style="display:none;">
+        {% csrf_token %}
+
+        <input type="hidden" name="rating" id="editRating">
+
+        <div style="font-size:28px; margin-bottom:10px;">
+          <span class="estar" data-val="1">★</span>
+          <span class="estar" data-val="2">★</span>
+          <span class="estar" data-val="3">★</span>
+          <span class="estar" data-val="4">★</span>
+          <span class="estar" data-val="5">★</span>
+        </div>
+
+        <textarea
+          name="feedback_content"
+          id="editContent"
+          class="form-control"
+          rows="4"
+          required></textarea>
+
+        <div style="margin-top:15px; display:flex; gap:10px;">
+          <button type="submit" class="btn btn-success btn-sm">💾 Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="fbCancelBtn">❌ Cancel</button>
+        </div>
+      </form>
+
     </div>
   </div>
 </div>
-
-
 
 <script>
   // Status labels mapping
@@ -1434,43 +1486,88 @@
   })();
 </script>
 
-<script>
-  setTimeout(function () {
-    location.reload();
-  }, 9000); // 9 seconds
-</script>
+
 
 
 
 
 <script>
-  (function () {
-    const modal = document.getElementById("feedbackModal");
-    const closeBtn = document.getElementById("fbClose");
+(function () {
+  const modal = document.getElementById("feedbackModal");
+  const closeBtn = document.getElementById("fbClose");
 
-    document.addEventListener("click", function (e) {
-      const btn = e.target.closest('[data-open-feedback="1"]');
-      if (!btn) return;
+  const viewBox = document.getElementById("fbView");
+  const editForm = document.getElementById("fbEditForm");
 
-      document.getElementById("fbCenter").textContent = btn.dataset.center;
+  const editBtn = document.getElementById("fbEditBtn");
+  const cancelBtn = document.getElementById("fbCancelBtn");
 
-      const rating = parseInt(btn.dataset.rating);
-      let stars = "";
-      for (let i = 1; i <= 5; i++) {
-        stars += i <= rating ? "★" : "☆";
-      }
-      document.getElementById("fbRating").textContent = stars;
+  const ratingText = document.getElementById("fbRating");
+  const contentText = document.getElementById("fbContent");
 
-      document.getElementById("fbContent").textContent = btn.dataset.content;
+  const editRating = document.getElementById("editRating");
+  const editContent = document.getElementById("editContent");
 
-      modal.classList.add("show");
+  const stars = document.querySelectorAll(".estar");
+
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest('[data-open-feedback="1"]');
+    if (!btn) return;
+
+    const fid = btn.dataset.id;
+    const rating = parseInt(btn.dataset.rating);
+
+    // view mode
+    viewBox.style.display = "block";
+    editForm.style.display = "none";
+
+    // stars display
+    let s = "";
+    for (let i = 1; i <= 5; i++) s += i <= rating ? "★" : "☆";
+    ratingText.textContent = s;
+    contentText.textContent = btn.dataset.content;
+
+    // fill edit form
+    editRating.value = rating;
+    editContent.value = btn.dataset.content;
+    highlightStars(rating);
+
+   editForm.action = btn.dataset.editUrl;
+   document.getElementById("fbDelete").href = btn.dataset.deleteUrl;
+
+
+    document.getElementById("fbCenter").textContent = btn.dataset.center;
+    modal.classList.add("show");
+  });
+
+  editBtn.onclick = () => {
+    viewBox.style.display = "none";
+    editForm.style.display = "block";
+  };
+
+  cancelBtn.onclick = () => {
+    editForm.style.display = "none";
+    viewBox.style.display = "block";
+  };
+
+  stars.forEach(star => {
+    star.onclick = () => {
+      const val = star.dataset.val;
+      editRating.value = val;
+      highlightStars(val);
+    };
+  });
+
+  function highlightStars(val) {
+    stars.forEach(s => {
+      s.style.color = s.dataset.val <= val ? "gold" : "#ccc";
     });
+  }
 
-    closeBtn.addEventListener("click", () => {
-      modal.classList.remove("show");
-    });
-  })();
+  closeBtn.onclick = () => modal.classList.remove("show");
+})();
 </script>
+
 
 
 {% if msg %}

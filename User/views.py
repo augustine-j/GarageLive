@@ -453,3 +453,20 @@ def feedback(request, bid):
 
     
 
+def edit_feedback(request, fid):
+    feedback = tbl_feedback.objects.get(id=fid,user_id=request.session['uid'])
+
+    if request.method == "POST":
+        feedback.rating = request.POST.get("rating")
+        feedback.feedback_content = request.POST.get("feedback_content")
+        feedback.save()
+        return redirect("User:myservicerequest")
+
+
+def delete_feedback(request, fid):
+    feedback = tbl_feedback.objects.get(
+        id=fid,
+        user_id=request.session['uid']
+    )
+    feedback.delete()
+    return redirect("User:myservicerequest")

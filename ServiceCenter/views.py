@@ -6,6 +6,8 @@ from User.models import *
 from decimal import Decimal
 from datetime import date, timedelta
 from django.db.models import Count
+from django.db.models import Q
+
 
 
 
@@ -23,7 +25,8 @@ def homepage(request):
 
         pending_requests = tbl_booking.objects.filter(servicecenter=centerdata,booking_status=0).count()
 
-        active_jobs = tbl_booking.objects.filter(servicecenter=centerdata,booking_status__gte=1, booking_status__lt=12).count()
+        active_jobs = tbl_booking.objects.filter(servicecenter=centerdata).filter(Q(booking_status=1) | Q(booking_status__gte=3, booking_status__lt=12)).count()
+
 
 
 
@@ -355,3 +358,8 @@ def delete_breakdown_service(request, did):
 
 
 
+
+def view_feedback(request):
+    servicecenter=tbl_servicecenter.objects.get(id=request.session['cid'])
+    feedbacks=tbl_feedback.objects.filter(servicecenter=servicecenter)
+    return render(request,"ServiceCenter/Feedback.html",{'feedbacks': feedbacks,'Data': servicecenter}) 
