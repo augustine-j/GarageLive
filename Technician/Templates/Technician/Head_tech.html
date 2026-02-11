@@ -165,7 +165,7 @@
           </a>
           <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
             <div class="dropdown-header text-center">
-              <img class="img-md rounded-circle" src="{{ greeting.technician_photo.url }}" alt="Profile image">
+              <img class="img-xs rounded-circle" src="{{ greeting.technician_photo.url }}" alt="Profile image">
               <p class="mb-1 mt-3 font-weight-semibold">{{greeting.technician_name}}</p>
               <p class="fw-light text-muted mb-0">{{greeting.technician_email}}</p>
             </div>
@@ -429,5 +429,34 @@
 <script src="{% static 'Technician/js/dashboard.js' %}"></script>
 <script src="{% static 'Technician/js/Chart.roundedBarCharts.js' %}"></script>
 <!-- End custom js for this page -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const body = document.body;
+    const toggleBtn = document.querySelector('[data-bs-toggle="minimize"]');
+
+    // 🔹 Apply saved state on load
+    const savedState = localStorage.getItem("sidebarState");
+    if (savedState === "collapsed") {
+        body.classList.add("sidebar-icon-only");
+    }
+
+    // 🔹 Save state when toggled
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", function () {
+            setTimeout(function () {
+                if (body.classList.contains("sidebar-icon-only")) {
+                    localStorage.setItem("sidebarState", "collapsed");
+                } else {
+                    localStorage.setItem("sidebarState", "expanded");
+                }
+            }, 300);
+        });
+    }
+
+});
+</script>
+
 </body>
 </html>

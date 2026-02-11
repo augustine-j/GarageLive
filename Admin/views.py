@@ -7,6 +7,11 @@ from django.utils import timezone
 from datetime import date
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth
+from django.utils import timezone
+from django.http import JsonResponse
+
 
 # Create your views here.
 def district(request):
@@ -147,96 +152,61 @@ def delplace(request,did):
 
 
 
-def sellerview(request):
-    seller=tbl_seller.objects.all()
-    acceptedlist=tbl_seller.objects.filter(seller_status=1)
-    rejectedlist=tbl_seller.objects.filter(seller_status=2)
-    return render(request,"Admin/SellerList.html",{'seller':seller,'acceptedlist':acceptedlist,'rejectedlist':rejectedlist})
+
 
 
 def userview(request):
      if 'aid' not in request.session:
       return redirect("Guest:Login")
      else:
-        users=tbl_user.objects.filter(user_status=0)
+        users=tbl_user.objects.all()
         greeting=tbl_AdminRegistration.objects.get(id=request.session['aid'])
-        acceptedusers=tbl_user.objects.filter(user_status=1)
-        rejectedusers=tbl_user.objects.filter(user_status=2)
-        return render(request,"Admin/UserList.html",{'users':users,'acceptedusers':acceptedusers,'rejectedusers':rejectedusers,'greeting':greeting})
+        #acceptedusers=tbl_user.objects.filter(user_status=1)
+        #rejectedusers=tbl_user.objects.filter(user_status=2)
+        return render(request,"Admin/UserList.html",{'users':users,'greeting':greeting})
 
 
         
-def acceptseller(request,aid):
-    data=tbl_seller.objects.get(id=aid)
-    data.seller_status=1
-    data.save()
-    return render(request,'Admin/SellerList.html',{'msg':"accepted"})
-
-def rejectseller(request,rid):
-    data=tbl_seller.objects.get(id=rid)
-    data.seller_status=2
-    data.save()
-    return render(request,'Admin/SellerList.html',{'msg':"rejected"})        
 
 
-def acceptuser(request,aid):
-    data=tbl_user.objects.get(id=aid)
-    data.user_status=1
-    data.save()
-    email=data.user_email
-    subject = "Welcome to GarageLive 🚗"
-    message = (
-        "Dear User,\n\n"
-        "Welcome to GarageLive!\n\n"
-        "Your account has been successfully verified and approved by our admin team. "
-        "You can now log in and start using all the features of GarageLive, including:\n\n"
-        "• Booking vehicle services\n"
-        "• Tracking service status\n"
-        "• Managing your vehicle details\n"
-        "• Easy communication with service centers\n\n"
-        "If you face any issues or have questions, feel free to contact our support team.\n\n"
-        "We’re excited to have you onboard!\n\n"
-        "Warm regards,\n"
-        "GarageLive Team"
-    )
+        
 
-    send_mail(
-        subject,
-        message,
-        settings.EMAIL_HOST_USER,
-        [email],
-        fail_silently=False,
-    )
+
+#def acceptuser(request,aid):
+    #data=tbl_user.objects.get(id=aid)
+    #data.user_status=1
+    #data.save()
     
-    return render(request,'Admin/UserList.html',{'msg':"accepted"})
+    
+    #return render(request,'Admin/UserList.html',{'msg':"accepted"})
 
-def rejectuser(request,rid):
-    data=tbl_user.objects.get(id=rid)
-    data.user_status=2
-    data.save()
-    email=data.user_email
-    subject = "GarageLive Account Verification Status"
-    message = (
-        "Dear User,\n\n"
-        "Thank you for registering with GarageLive.\n\n"
-        "After reviewing your details, we regret to inform you that your account "
-        "could not be approved at this time due to one or more of the following reasons:\n\n"
-        "1. Identity verification was not sufficient.\n"
-        "2. Required documents were missing or unclear.\n\n"
-        "You may reapply by submitting valid proof of identity. "
-        "Once submitted, your account will be reviewed and approved within 2–3 working days.\n\n"
-        "If you believe this was a mistake, please contact our support team.\n\n"
-        "Regards,\n"
-        "GarageLive Team"
-    )
-    send_mail(
-        subject,
-        message,
-        settings.EMAIL_HOST_USER,
-        [email],
-        fail_silently=False,
-    )
-    return render(request,'Admin/UserList.html',{'msg':"rejected"})
+#def rejectuser(request,rid):
+    #data=tbl_user.objects.get(id=rid)
+    #data.user_status=2
+    #data.save()
+    #email=data.user_email
+    #subject = "GarageLive Account Verification Status"
+    #message = (
+    #    "Dear User,\n\n"
+        #"Thank you for registering with GarageLive.\n\n"
+        #"After reviewing your details, we regret to inform you that your account "
+        #"could not be approved at this time due to one or more of the following reasons:\n\n"
+        #"1. Identity verification was not sufficient.\n"
+        #"2. Required documents were missing or unclear.\n\n"
+        #"You may reapply by submitting valid proof of identity. "
+        #"Once submitted, your account will be reviewed and approved within 2–3 working days.\n\n"
+       # "If you believe this was a mistake, please contact our support team.\n\n"
+        #"Regards,\n"
+        #"GarageLive Team"
+   # )
+    #send_mail(
+       # subject,
+       # message,
+        #settings.EMAIL_HOST_USER,
+        #[email],
+        #fail_silently=False,
+    #)
+    #return render(request,'Admin/UserList.html',{'msg':"rejected"})
 
 
 
@@ -247,7 +217,11 @@ def adminhome(request):
       return redirect("Guest:Login")
      else:
         admindata=tbl_AdminRegistration.objects.get(id=request.session['aid'])
-        return render(request,"Admin/AdminHome.html",{'Data':admindata})
+        pending_complaints=tbl_complaint.objects.filter(complaint_status=0).count()
+        pending_centers=tbl_servicecenter.objects.filter(servicecenter_status=0).count()
+        users=tbl_user.objects.count()
+        servicecenters=tbl_servicecenter.objects.count()
+        return render(request,"Admin/AdminHome.html",{'Data':admindata,'pending_complaints':pending_complaints,'pending_centers':pending_centers,'users':users,'servicecenters':servicecenters})
 
 
 
@@ -515,3 +489,95 @@ def del_breakdown_servicetype(request, did):
 
     tbl_breakdown_servicetype.objects.get(id=did).delete()
     return render(request,"Admin/BreakdownServiceType.html",{'msg': "Breakdown Service Type Deleted"})
+
+
+
+from django.db.models import Sum
+from Guest.models import tbl_servicecenter
+from Admin.models import tbl_commision
+
+def admin_commison(request):
+
+    if 'aid' not in request.session:
+        return redirect("Guest:Login")
+
+    greeting = tbl_AdminRegistration.objects.get(id=request.session['aid'])
+
+    servicecenters = tbl_servicecenter.objects.all()
+
+    data = []
+
+    for sc in servicecenters:
+        sc_commissions = tbl_commision.objects.filter(servicecenter=sc).order_by('-id')
+
+        total = sc_commissions.aggregate(total=Sum('admin_commision'))['total'] or 0
+
+        if sc_commissions.exists():
+            data.append({
+                'servicecenter': sc,
+                'commissions': sc_commissions,
+                'total': total
+            })
+    overall_total = tbl_commision.objects.aggregate(total=Sum('admin_commision'))['total'] or 0
+
+    return render(request,"Admin/Commission.html",{'data': data,'greeting': greeting,'overall_total': overall_total})
+
+
+
+
+
+
+def admin_commission_chart(request):
+
+    if 'aid' not in request.session:
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+
+    now = timezone.now()
+    first_day = now.replace(day=1)
+    
+    # Get last day of month
+    if now.month == 12:
+        next_month = now.replace(year=now.year+1, month=1, day=1)
+    else:
+        next_month = now.replace(month=now.month+1, day=1)
+
+    # Filter only current month records
+    commissions = tbl_commision.objects.filter(
+        created_at__gte=first_day,
+        created_at__lt=next_month
+    )
+
+    # Prepare week buckets
+    weeks = {
+        "Week 1": {"service": 0, "breakdown": 0},
+        "Week 2": {"service": 0, "breakdown": 0},
+        "Week 3": {"service": 0, "breakdown": 0},
+        "Week 4": {"service": 0, "breakdown": 0},
+        "Week 5": {"service": 0, "breakdown": 0},
+    }
+
+    for c in commissions:
+        day = c.created_at.day
+        week_number = (day - 1) // 7 + 1
+        week_key = f"Week {week_number}"
+
+        if c.booking_type == 1:
+            weeks[week_key]["service"] += float(c.admin_commision)
+        elif c.booking_type == 2:
+            weeks[week_key]["breakdown"] += float(c.admin_commision)
+
+    # Remove empty Week 5 if not used
+    labels = list(weeks.keys())
+    service_values = [weeks[w]["service"] for w in labels]
+    breakdown_values = [weeks[w]["breakdown"] for w in labels]
+
+    
+
+    overall_total = sum(service_values) + sum(breakdown_values)
+
+    return JsonResponse({
+        "labels": labels,
+        "service": service_values,
+        "breakdown": breakdown_values,
+        "overall_total": overall_total,
+    })

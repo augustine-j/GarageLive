@@ -104,9 +104,9 @@
         </li>
       </ul>
 
-      <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
-        <span class="mdi mdi-menu"></span>
-      </button>
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+          <span class="mdi mdi-menu"></span>
+        </button>
     </div>
   </nav>
   <!-- NAVBAR END -->
@@ -388,5 +388,36 @@
 <script src="{% static 'ServiceCenter/js/dashboard.js' %}"></script>
 <script src="{% static 'ServiceCenter/js/Chart.roundedBarCharts.js' %}"></script>
 <!-- End custom js for this page -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const body = document.body;
+    const toggleBtn = document.querySelector('[data-bs-toggle="minimize"]');
+
+    // 🔹 Apply saved state on load
+    const savedState = localStorage.getItem("sidebarState");
+    if (savedState === "collapsed") {
+        body.classList.add("sidebar-icon-only");
+    }
+
+    // 🔹 Save state when toggled
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", function () {
+            setTimeout(function () {
+                if (body.classList.contains("sidebar-icon-only")) {
+                    localStorage.setItem("sidebarState", "collapsed");
+                } else {
+                    localStorage.setItem("sidebarState", "expanded");
+                }
+            }, 300);
+        });
+    }
+
+});
+</script>
+
 </body>
 </html>
+
+

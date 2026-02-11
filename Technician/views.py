@@ -220,6 +220,8 @@ def update_breakdown_step(request, sid):
 def update_breakdown_charge(request, bs_id):
     bs = tbl_breakdown_booking_services.objects.get(id=bs_id)
     greeting=tbl_technician.objects.get(id=request.session['tid'])
+    
+
     if bs.progress_step < 1:
         return redirect("Technician:breakdown_jobs")
 
@@ -231,6 +233,23 @@ def update_breakdown_charge(request, bs_id):
         bs.progress_step += 1
         bs.billing_status = True
         bs.save()
+
+        total_amount=bs.final_amount
+        breakdown_booking=bs.booking
+        servicecenter=breakdown_booking.servicecenter
+
+        if not tbl_commision.objects.filter(booking_type=2,booking_id=breakdown_booking.id).exists():
+            admin_amount=total_amount * Decimal('0.05')
+
+            tbl_commision.objects.create(
+                servicecenter=servicecenter,
+                booking_type=2,
+                booking_id=breakdown_booking.id,
+                admin_commision=admin_amount,
+            )
+            
+
+        
 
         return redirect("Technician:breakdown_jobs")
 

@@ -53,3 +53,12 @@ class tbl_model(models.Model):
     
 class tbl_breakdown_servicetype(models.Model):
     servicetype_name = models.CharField(max_length=100)
+
+
+
+class tbl_commision(models.Model):
+    servicecenter=models.ForeignKey('Guest.tbl_servicecenter',on_delete=models.CASCADE)
+    booking_type=models.IntegerField(choices=[(1,'Service Booking'),(2,'Breakdown Assistance')])
+    booking_id=models.IntegerField()
+    admin_commision=models.DecimalField(max_digits=10,decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)

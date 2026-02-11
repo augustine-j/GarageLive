@@ -225,6 +225,8 @@ def generate_bill(request, bid):
     if request.method == "POST":
         booking.booking_status = 11  
         booking.save()
+        admin_amount=total_amount*Decimal('0.05')
+        tbl_commision.objects.create(servicecenter=booking.servicecenter,booking_type=1,booking_id=booking.id,admin_commision=admin_amount)
 
         return redirect("ServiceCenter:service_request")
 

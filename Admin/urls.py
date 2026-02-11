@@ -20,12 +20,11 @@ urlpatterns = [
 
 
     
-    path('SellerView/',views.sellerview,name="SellerView"),
+
     path('UserList/',views.userview,name="UserView"),
-    path('acceptseller/<int:aid>',views.acceptseller,name="acceptseller"),
-    path('rejectseller/<int:rid>',views.rejectseller,name="rejectseller"),
-    path('acceptuser/<int:aid>',views.acceptuser,name="acceptuser"),
-    path('rejectuser/<int:rid>',views.rejectuser,name="rejectuser"),
+
+    #path('acceptuser/<int:aid>',views.acceptuser,name="acceptuser"),
+    #path('rejectuser/<int:rid>',views.rejectuser,name="rejectuser"),
     
     path('AdminHome/',views.adminhome,name="AdminHome"),
 
@@ -54,6 +53,8 @@ urlpatterns = [
     path("breakdown-servicetype/", views.breakdown_servicetype, name="breakdown_servicetype"),
     path("breakdown-servicetype/edit/<int:eid>/", views.edit_breakdown_servicetype, name="edit_breakdown_servicetype"),
     path("breakdown-servicetype/delete/<int:did>/", views.del_breakdown_servicetype, name="del_breakdown_servicetype"),
+    path("admin-commission/", views.admin_commison, name="admin_commison"),
+    path('commission-chart/', views.admin_commission_chart, name='commission_chart'),
 
     
 ]

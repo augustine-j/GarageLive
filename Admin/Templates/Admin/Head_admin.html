@@ -66,20 +66,13 @@
             <span id="greeting"></span>,
             <span class="text-black fw-bold">{{ greeting.admin_name }}</span>
           </h1>
-          <h3 class="welcome-sub-text">Your performance summary this week</h3>
+         
         </li>
       </ul>
 
       <ul class="navbar-nav ms-auto">
         
-        <li class="nav-item d-none d-lg-block">
-          <div id="datepicker-popup" class="input-group date datepicker navbar-date-picker">
-            <span class="input-group-addon input-group-prepend border-right">
-              <span class="icon-calendar input-group-text calendar-icon"></span>
-            </span>
-            <input type="text" class="form-control">
-          </div>
-        </li>
+        
 
        
 
@@ -297,14 +290,14 @@
 
         <li class="nav-item">
           <a class="nav-link" href="{% url 'Admin:servicetype' %}">
-            <i class="menu-icon mdi mdi-format-list-bulleted"></i>
+            <i class="menu-icon fa-solid fa-list-check"></i>
             <span class="menu-title">Service Type</span>
           </a>
         </li>
 
           <li class="nav-item">
   <a class="nav-link" href="{% url 'Admin:breakdown_servicetype' %}">
-    <i class="menu-icon mdi mdi-format-list-bulleted"></i>
+    <i class="menu-icon fa-solid fa-screwdriver-wrench"></i>
     <span class="menu-title">Breakdown Service Type</span>
   </a>
 </li>
@@ -331,6 +324,13 @@
             <span class="menu-title">Complaint</span>
           </a>
         </li>
+       <li class="nav-item">
+            <a class="nav-link" href="{% url 'Admin:admin_commison' %}">
+              <i class="menu-icon fa-solid fa-hand-holding-dollar"></i>
+              <span class="menu-title">Commission Revenue</span>
+            </a>
+          </li>
+
 
 
        
@@ -370,6 +370,34 @@
   if (g) g.textContent = getGreeting();
 </script>
 
+ <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const body = document.body;
+    const toggleBtn = document.querySelector('[data-bs-toggle="minimize"]');
+
+    // 🔹 Apply saved state on load
+    const savedState = localStorage.getItem("sidebarState");
+    if (savedState === "collapsed") {
+        body.classList.add("sidebar-icon-only");
+    }
+
+    // 🔹 Save state when toggled
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", function () {
+            setTimeout(function () {
+                if (body.classList.contains("sidebar-icon-only")) {
+                    localStorage.setItem("sidebarState", "collapsed");
+                } else {
+                    localStorage.setItem("sidebarState", "expanded");
+                }
+            }, 300);
+        });
+    }
+
+});
+</script>
+
 <!-- plugins:js -->
 <script src="{% static 'Admin/vendors/js/vendor.bundle.base.js' %}"></script>
 <!-- endinject -->
@@ -392,5 +420,7 @@
 <script src="{% static 'Admin/js/dashboard.js' %}"></script>
 <script src="{% static 'Admin/js/Chart.roundedBarCharts.js' %}"></script>
 <!-- End custom js for this page -->
+
+
 </body>
 </html>
