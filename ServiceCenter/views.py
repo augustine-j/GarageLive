@@ -7,6 +7,11 @@ from decimal import Decimal
 from datetime import date, timedelta
 from django.db.models import Count
 from django.db.models import Q
+from django.http import JsonResponse
+import calendar
+from django.db.models import Sum
+from collections import defaultdict
+
 
 
 
@@ -19,19 +24,52 @@ def homepage(request):
       return redirect("Guest:Login")
      else:
         centerdata=tbl_servicecenter.objects.get(id=request.session['cid'])
-
         today = date.today()
-        today_bookings = tbl_booking.objects.filter(servicecenter=centerdata,booking_date=today).count()
-
-        pending_requests = tbl_booking.objects.filter(servicecenter=centerdata,booking_status=0).count()
-
+       
+        
         active_jobs = tbl_booking.objects.filter(servicecenter=centerdata).filter(Q(booking_status=1) | Q(booking_status__gte=3, booking_status__lt=12)).count()
+        active_breakdown_jobs=tbl_breakdownassist.objects.filter(servicecenter=centerdata, breakdown_status=1).count()
+        
+        pending_service_approvals=tbl_booking.objects.filter(servicecenter=centerdata, booking_status=0).count()
+        pending_breakdown_approvals=tbl_breakdownassist.objects.filter(servicecenter=centerdata, breakdown_status=0).count()
+        customer_feedback_count = tbl_feedback.objects.filter(servicecenter=centerdata,feedback_date__month=today.month,feedback_date__year=today.year).count()
+        technicians = tbl_technician.objects.filter(servicecenter=centerdata)
+        busy_ids=get_busy_technician_ids(centerdata)
+
+        service_completed = tbl_booking.objects.filter(
+        servicecenter=centerdata,
+        booking_status=12,   # completed service
+        technician__isnull=False).values('technician').annotate(total=Count('id'))
+
+        breakdown_completed = tbl_breakdownassist.objects.filter(
+        servicecenter=centerdata,
+        breakdown_status=2,  # completed breakdown
+        technician__isnull=False).values('technician').annotate(total=Count('id'))
+        completed_map = defaultdict(int)
+        for item in service_completed:
+            completed_map[item['technician']] += item['total']
+
+        for item in breakdown_completed:
+            completed_map[item['technician']] += item['total']
+        technician_status_list = []
+        for tech in technicians:
+            technician_status_list.append({
+            "technician": tech,
+            "is_busy": tech.id in busy_ids,
+            "total_completed": completed_map.get(tech.id, 0)})
+        
+        technician_status_list = sorted(
+        technician_status_list,
+        key=lambda x: x['total_completed'],
+        reverse=True)
 
 
 
 
 
-        return render(request,"ServiceCenter/HomePage.html",{'data':centerdata,'today_bookings':today_bookings,'pending_requests':pending_requests,'active_jobs':active_jobs})
+        return render(request,"ServiceCenter/HomePage.html",{'data':centerdata,
+        'active_jobs':active_jobs,'pending_service_approvals':pending_service_approvals,'pending_breakdown_approvals':pending_breakdown_approvals,'customer_feedback_count':customer_feedback_count,
+        'active_breakdown_jobs':active_breakdown_jobs,"technician_status_list": technician_status_list})
 
 
 
@@ -197,7 +235,7 @@ def rejectrequest(request,rid):
 def assign_technician(request,bid):
     technician_data=tbl_technician.objects.filter(servicecenter=request.session['cid'])
     servicecenter=tbl_servicecenter.objects.get(id=request.session['cid'])
-    busy_ids = tbl_booking.objects.filter(booking_status__in=[1, 3, 4, 5, 6, 7, 8]).values_list('technician_id', flat=True)
+    busy_ids = get_busy_technician_ids(servicecenter)
     return render(request,"ServiceCenter/AssignTechnician.html",{'data':technician_data,'bid':bid,'busy_ids': list(busy_ids),'mode': 'service','Data':servicecenter})
 
 def assignjob(request,tid,bid):
@@ -285,11 +323,31 @@ def rejectbreakdown(request,rid):
 def breakdown_technician(request,btid):
     technician_data=tbl_technician.objects.filter(servicecenter=request.session['cid'])
     servicecenter=tbl_servicecenter.objects.get(id=request.session['cid'])
-    busy_ids = tbl_breakdown_booking_services.objects.filter(
-    booking__technician__isnull=False,
-    billing_status=False).values_list('booking__technician_id',flat=True).distinct()
+    busy_ids = get_busy_technician_ids(servicecenter)
 
     return render(request,"ServiceCenter/AssignTechnician.html",{'data':technician_data,'btid':btid,'busy_ids': list(busy_ids),'mode': 'breakdown','Data':servicecenter})
+
+
+def get_busy_technician_ids(servicecenter):
+
+    # Busy from Service Bookings
+    busy_service_ids = tbl_booking.objects.filter(
+        servicecenter=servicecenter,
+        booking_status__in=[1,2,3],  # active statuses
+        technician__isnull=False
+    ).values_list('technician_id', flat=True)
+
+    # Busy from Breakdown Jobs
+    busy_breakdown_ids = tbl_breakdownassist.objects.filter(
+        servicecenter=servicecenter,
+        breakdown_status=1,
+        technician__isnull=False
+    ).values_list('technician_id', flat=True)
+
+    return set(busy_service_ids) | set(busy_breakdown_ids)
+
+
+
 
 def assign_breakdown(request,tid,btid):
     technician=tbl_technician.objects.get(id=tid)
@@ -365,3 +423,127 @@ def view_feedback(request):
     servicecenter=tbl_servicecenter.objects.get(id=request.session['cid'])
     feedbacks=tbl_feedback.objects.filter(servicecenter=servicecenter)
     return render(request,"ServiceCenter/Feedback.html",{'feedbacks': feedbacks,'Data': servicecenter}) 
+
+
+
+def chart_homepage(request):
+    servicecenter_id = request.session.get('cid')
+
+    if not servicecenter_id:
+        return JsonResponse({"days": [], "service": [], "breakdown": []})
+
+    today = date.today()
+    year = today.year
+    month = today.month
+
+    first_day = date(year, month, 1)
+    last_day = date(year, month, calendar.monthrange(year, month)[1])
+
+    labels = []
+    service_counts = []
+    breakdown_counts = []
+
+    # Pre-fetch all data for the month (reduces DB queries)
+    service_bookings = tbl_booking.objects.filter(
+        servicecenter_id=servicecenter_id,
+        booking_date__range=(first_day, last_day)
+    ).values_list('booking_date', flat=True)
+
+    breakdown_bookings = tbl_breakdownassist.objects.filter(
+        servicecenter_id=servicecenter_id,
+        breakdown_date__range=(first_day, last_day)
+    ).values_list('breakdown_date', flat=True)
+
+    # Convert to sets for faster lookups
+    service_dates = list(service_bookings)
+    breakdown_dates = list(breakdown_bookings)
+
+    current_start = first_day
+    week_number = 1
+
+    while current_start <= last_day:
+        current_end = min(current_start + timedelta(days=6), last_day)
+        
+        labels.append(f"Week {week_number}")
+
+        # Count bookings in the current week range
+        service_count = sum(1 for d in service_dates if current_start <= d <= current_end)
+        breakdown_count = sum(1 for d in breakdown_dates if current_start <= d <= current_end)
+
+        service_counts.append(service_count)
+        breakdown_counts.append(breakdown_count)
+
+        current_start = current_end + timedelta(days=1)
+        week_number += 1
+
+    return JsonResponse({
+        "days": labels,
+        "service": service_counts,
+        "breakdown": breakdown_counts
+    })
+
+
+
+def weekly_income_chart(request):
+
+    servicecenter_id = request.session.get('cid')
+
+    if not servicecenter_id:
+        return JsonResponse({"weeks": [], "service": [], "breakdown": []})
+
+    today = date.today()
+    year = today.year
+    month = today.month
+
+    first_day = date(year, month, 1)
+    last_day = date(year, month, calendar.monthrange(year, month)[1])
+
+    labels = []
+    service_income = []
+    breakdown_income = []
+
+    current_start = first_day
+    week_number = 1
+
+    while current_start <= last_day:
+
+        current_end = current_start + timedelta(days=6)
+        if current_end > last_day:
+            current_end = last_day
+
+        labels.append(f"Week {week_number}")
+
+        # Service Income
+        service_total = tbl_booking_services.objects.filter(
+            booking__servicecenter_id=servicecenter_id,
+            booking__booking_date__range=(current_start, current_end)
+        ).aggregate(total=Sum('final_amount'))['total'] or 0
+
+        # Breakdown Income
+        breakdown_total = tbl_breakdown_booking_services.objects.filter(
+            booking__servicecenter_id=servicecenter_id,
+            booking__breakdown_date__range=(current_start, current_end)
+        ).aggregate(total=Sum('final_amount'))['total'] or 0
+
+        service_income.append(float(service_total))
+        breakdown_income.append(float(breakdown_total))
+
+        current_start = current_end + timedelta(days=1)
+        week_number += 1
+        total_service_income = sum(service_income)
+        total_breakdown_income = sum(breakdown_income)
+
+
+    return JsonResponse({
+        "weeks": labels,
+        "service": service_income,
+        "breakdown": breakdown_income,
+        "total_service": float(total_service_income),
+        "total_breakdown": float(total_breakdown_income)
+    })
+
+
+
+
+
+

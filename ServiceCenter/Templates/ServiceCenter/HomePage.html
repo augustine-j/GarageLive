@@ -23,11 +23,12 @@
   <link rel="stylesheet" href="{% static 'ServiceCenter/css/vertical-layout-light/style.css'%}">
   <!-- endinject -->
   <link rel="shortcut icon" href="{% static 'ServiceCenter/images/favicon.png'%}" />
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 </head>
+
 <body>
-  <div class="container-scroller"> 
+  <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
     <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
       <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
@@ -40,65 +41,76 @@
           <a class="navbar-brand brand-logo" href="{% url 'ServiceCenter:HomePage' %}">
             <img src="{% static 'ServiceCenter/images/GarageLive_logo.png'%}" alt="logo" />
           </a>
-         
+
         </div>
       </div>
-      <div class="navbar-menu-wrapper d-flex align-items-top"> 
-       <ul class="navbar-nav">
-  <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
-    <h1 class="welcome-text">
-      <span id="greeting"></span>, 
-      <span class="text-black fw-bold">{{data.servicecenter_name}}</span>
-    </h1>
-    <h3 class="welcome-sub-text">
-    Today:
-    <strong>{{ todays_bookings }}</strong> bookings •
-    <strong>{{ pending_requests }}</strong> pending requests •
-    <strong>{{ active_jobs }}</strong> active jobs
-  </h3>
-    
+      <div class="navbar-menu-wrapper d-flex align-items-top">
+        <ul class="navbar-nav">
+          <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
+            <h1 class="welcome-text">
+              <span id="greeting"></span>,
+              <span class="text-black fw-bold">{{data.servicecenter_name}}</span>
+            </h1>
+            <h5 class="welcome-sub-text text-muted mb-0">
+              Today:
 
-  </li>
-</ul>
 
-<script>
-  function getGreeting() {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good Morning";
-    else if (hour < 18) return "Good Afternoon";
-    else return "Good Evening";
-  }
 
-  document.getElementById("greeting").textContent = getGreeting();
-</script>
-        <ul class="navbar-nav ms-auto">
-          
-          <li class="nav-item d-none d-lg-block">
-            <div id="datepicker-popup" class="input-group date datepicker navbar-date-picker">
-              <span class="input-group-addon input-group-prepend border-right">
-                <span class="icon-calendar input-group-text calendar-icon"></span>
+
+
+
+              <span>
+                <strong class="text-success">{{ active_jobs }}</strong>
+                active service jobs
               </span>
-              <input type="text" class="form-control">
-            </div>
+
+              <span class="mx-2">•</span>
+
+              <span>
+                <strong class="text-danger">{{ active_breakdown_jobs }}</strong>
+                active breakdown jobs
+              </span>
+            </h5>
+
+
+
           </li>
-         
+        </ul>
+
+        <script>
+          function getGreeting() {
+            const hour = new Date().getHours();
+            if (hour < 12) return "Good Morning";
+            else if (hour < 18) return "Good Afternoon";
+            else return "Good Evening";
+          }
+
+          document.getElementById("greeting").textContent = getGreeting();
+        </script>
+        <ul class="navbar-nav ms-auto">
+
+
+
           <li class="nav-item dropdown d-none d-lg-block user-dropdown">
             <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-              <img class="img-xs rounded-circle" src="{{ data.servicecenter_logo.url }}"  alt="Profile image"> </a>
+              <img class="img-xs rounded-circle" src="{{ data.servicecenter_logo.url }}" alt="Profile image"> </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
               <div class="dropdown-header text-center">
-                 <img class="img-xs rounded-circle" src="{{ data.servicecenter_logo.url }}"  alt="Profile image">
+                <img class="img-xs rounded-circle" src="{{ data.servicecenter_logo.url }}" alt="Profile image">
                 <p class="mb-1 mt-3 font-weight-semibold">{{data.servicecenter_name}}</p>
                 <p class="fw-light text-muted mb-0">{{data.servicecenter_email}}</p>
               </div>
-              <a class="dropdown-item" href="{% url 'ServiceCenter:profile' %}"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile </a>
-              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
-              
-              <a class="dropdown-item" href="{% url 'ServiceCenter:logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+              <a class="dropdown-item" href="{% url 'ServiceCenter:profile' %}"><i
+                  class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile </a>
+
+
+              <a class="dropdown-item" href="{% url 'ServiceCenter:logout' %}"><i
+                  class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
             </div>
           </li>
         </ul>
-        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+          data-bs-toggle="offcanvas">
           <span class="mdi mdi-menu"></span>
         </button>
       </div>
@@ -111,8 +123,12 @@
         <div id="theme-settings" class="settings-panel">
           <i class="settings-close ti-close"></i>
           <p class="settings-heading">SIDEBAR SKINS</p>
-          <div class="sidebar-bg-options selected" id="sidebar-light-theme"><div class="img-ss rounded-circle bg-light border me-3"></div>Light</div>
-          <div class="sidebar-bg-options" id="sidebar-dark-theme"><div class="img-ss rounded-circle bg-dark border me-3"></div>Dark</div>
+          <div class="sidebar-bg-options selected" id="sidebar-light-theme">
+            <div class="img-ss rounded-circle bg-light border me-3"></div>Light
+          </div>
+          <div class="sidebar-bg-options" id="sidebar-dark-theme">
+            <div class="img-ss rounded-circle bg-dark border me-3"></div>Dark
+          </div>
           <p class="settings-heading mt-2">HEADER SKINS</p>
           <div class="color-tiles mx-0 px-4">
             <div class="tiles success"></div>
@@ -128,14 +144,17 @@
         <i class="settings-close ti-close"></i>
         <ul class="nav nav-tabs border-top" id="setting-panel" role="tablist">
           <li class="nav-item">
-            <a class="nav-link active" id="todo-tab" data-bs-toggle="tab" href="#todo-section" role="tab" aria-controls="todo-section" aria-expanded="true">TO DO LIST</a>
+            <a class="nav-link active" id="todo-tab" data-bs-toggle="tab" href="#todo-section" role="tab"
+              aria-controls="todo-section" aria-expanded="true">TO DO LIST</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" id="chats-tab" data-bs-toggle="tab" href="#chats-section" role="tab" aria-controls="chats-section">CHATS</a>
+            <a class="nav-link" id="chats-tab" data-bs-toggle="tab" href="#chats-section" role="tab"
+              aria-controls="chats-section">CHATS</a>
           </li>
         </ul>
         <div class="tab-content" id="setting-content">
-          <div class="tab-pane fade show active scroll-wrapper" id="todo-section" role="tabpanel" aria-labelledby="todo-section">
+          <div class="tab-pane fade show active scroll-wrapper" id="todo-section" role="tabpanel"
+            aria-labelledby="todo-section">
             <div class="add-items d-flex px-3 mb-0">
               <form class="form w-100">
                 <div class="form-group d-flex">
@@ -219,7 +238,8 @@
             </div>
             <ul class="chat-list">
               <li class="list active">
-                <div class="profile"><img src="{% static 'ServiceCenter/images/faces/face1.jpg'%}" alt="image"><span class="online"></span></div>
+                <div class="profile"><img src="{% static 'ServiceCenter/images/faces/face1.jpg'%}" alt="image"><span
+                    class="online"></span></div>
                 <div class="info">
                   <p>Thomas Douglas</p>
                   <p>Available</p>
@@ -227,7 +247,8 @@
                 <small class="text-muted my-auto">19 min</small>
               </li>
               <li class="list">
-                <div class="profile"><img src="{% static 'ServiceCenter/images/faces/face2.jpg'%}" alt="image"><span class="offline"></span></div>
+                <div class="profile"><img src="{% static 'ServiceCenter/images/faces/face2.jpg'%}" alt="image"><span
+                    class="offline"></span></div>
                 <div class="info">
                   <div class="wrapper d-flex">
                     <p>Catherine</p>
@@ -238,7 +259,8 @@
                 <small class="text-muted my-auto">23 min</small>
               </li>
               <li class="list">
-                <div class="profile"><img src="{% static 'ServiceCenter/images/faces/face3.jpg'%}" alt="image"><span class="online"></span></div>
+                <div class="profile"><img src="{% static 'ServiceCenter/images/faces/face3.jpg'%}" alt="image"><span
+                    class="online"></span></div>
                 <div class="info">
                   <p>Daniel Russell</p>
                   <p>Available</p>
@@ -246,7 +268,8 @@
                 <small class="text-muted my-auto">14 min</small>
               </li>
               <li class="list">
-                <div class="profile"><img src="{% static 'ServiceCenter/images/faces/face4.jpg'%}" alt="image"><span class="offline"></span></div>
+                <div class="profile"><img src="{% static 'ServiceCenter/images/faces/face4.jpg'%}" alt="image"><span
+                    class="offline"></span></div>
                 <div class="info">
                   <p>James Richardson</p>
                   <p>Away</p>
@@ -254,7 +277,8 @@
                 <small class="text-muted my-auto">2 min</small>
               </li>
               <li class="list">
-                <div class="profile"><img src="{% static 'ServiceCenter/images/faces/face5.jpg'%}" alt="image"><span class="online"></span></div>
+                <div class="profile"><img src="{% static 'ServiceCenter/images/faces/face5.jpg'%}" alt="image"><span
+                    class="online"></span></div>
                 <div class="info">
                   <p>Madeline Kennedy</p>
                   <p>Available</p>
@@ -262,7 +286,8 @@
                 <small class="text-muted my-auto">5 min</small>
               </li>
               <li class="list">
-                <div class="profile"><img src="{% static 'ServiceCenter/images/faces/face6.jpg'%}" alt="image"><span class="online"></span></div>
+                <div class="profile"><img src="{% static 'ServiceCenter/images/faces/face6.jpg'%}" alt="image"><span
+                    class="online"></span></div>
                 <div class="info">
                   <p>Sarah Graves</p>
                   <p>Available</p>
@@ -284,15 +309,15 @@
               <span class="menu-title">Dashboard</span>
             </a>
           </li>
-           <li class="nav-item nav-category">Manage</li>
-           <li class="nav-item">
+          <li class="nav-item nav-category">Manage</li>
+          <li class="nav-item">
             <a class="nav-link" href="{% url 'ServiceCenter:profile' %}">
               <i class="menu-icon fa-solid fa-user-circle"></i>
               <span class="menu-title">My Profile</span>
             </a>
           </li>
 
-           <li class="nav-item">
+          <li class="nav-item">
             <a class="nav-link" href="{% url 'ServiceCenter:myservices' %}">
               <i class="menu-icon fa-solid fa-briefcase"></i>
               <span class="menu-title">My Services</span>
@@ -306,7 +331,7 @@
             </a>
           </li>
 
-           <li class="nav-item">
+          <li class="nav-item">
             <a class="nav-link" href="{% url 'ServiceCenter:service_request' %}">
               <i class="menu-icon fa-solid fa-clipboard-list"></i>
               <span class="menu-title">Service Requests</span>
@@ -327,10 +352,10 @@
               <span class="menu-title">Breakdown Requests</span>
             </a>
           </li>
-          
 
 
-         <li class="nav-item nav-category">View</li>
+
+          <li class="nav-item nav-category">View</li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'ServiceCenter:view_feedback' %}">
               <i class="menu-icon fa-solid fa-file-contract"></i>
@@ -346,86 +371,112 @@
             <div class="col-sm-12">
               <div class="home-tab">
                 <div class="d-sm-flex align-items-center justify-content-between border-bottom">
-                 
-                  
+
+
                 </div>
                 <div class="tab-content tab-content-basic">
-                  <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview"> 
-                   
+                  <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
+
                     <div class="row">
+
+                      <!-- LEFT SIDE (Chart Section) -->
                       <div class="col-lg-8 d-flex flex-column">
-                        <div class="row flex-grow">
-                          <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
-                            <div class="card card-rounded">
-                              <div class="card-body">
-                                <div class="d-sm-flex justify-content-between align-items-start">
-                                  <div>
-                                   <h4 class="card-title card-title-dash">Performance Line Chart</h4>
-                                   <h5 class="card-subtitle card-subtitle-dash">Lorem Ipsum is simply dummy text of the printing</h5>
-                                  </div>
-                                  <div id="performance-line-legend"></div>
-                                </div>
-                                <div class="chartjs-wrapper mt-5">
-                                  <canvas id="performaneLine"></canvas>
-                                </div>
+
+                        <div class="card card-rounded mb-4">
+                          <div class="card-body">
+
+                            <div class="d-sm-flex justify-content-between align-items-start">
+                              <div>
+                                <h4 class="card-title card-title-dash">
+                                  Current Month Bookings
+                                </h4>
+                                <h5 class="card-subtitle card-subtitle-dash">
+                                  Service vs Breakdown bookings (This Month)
+                                </h5>
                               </div>
+                              <div id="performance-line-legend"></div>
                             </div>
+
+                            <div class="chartjs-wrapper mt-4" style="position: relative; height: 420px;"
+>
+                              <canvas id="performaneLine"></canvas>
+                            </div>
+
                           </div>
                         </div>
+
                       </div>
+
+
+                      <!-- RIGHT SIDE (Quick Alerts Section) -->
                       <div class="col-lg-4 d-flex flex-column">
-                        <div class="row flex-grow">
-                          <div class="col-md-6 col-lg-12 grid-margin stretch-card">
-                            <div class="card bg-primary card-rounded">
-                              <div class="card-body pb-0">
-                                <h4 class="card-title card-title-dash text-white mb-4">Status Summary</h4>
-                                <div class="row">
-                                  <div class="col-sm-4">
-                                    <p class="status-summary-ight-white mb-1">Closed Value</p>
-                                    <h2 class="text-info">357</h2>
-                                  </div>
-                                  <div class="col-sm-8">
-                                    <div class="status-summary-chart-wrapper pb-4">
-                                      <canvas id="status-summary"></canvas>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="col-md-6 col-lg-12 grid-margin stretch-card">
-                            <div class="card card-rounded">
-                              <div class="card-body">
-                                <div class="row">
-                                  <div class="col-sm-6">
-                                    <div class="d-flex justify-content-between align-items-center mb-2 mb-sm-0">
-                                      <div class="circle-progress-width">
-                                        <div id="totalVisitors" class="progressbar-js-circle pr-2"></div>
-                                      </div>
-                                      <div>
-                                        <p class="text-small mb-2">Total Visitors</p>
-                                        <h4 class="mb-0 fw-bold">26.80%</h4>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class="col-sm-6">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                      <div class="circle-progress-width">
-                                        <div id="visitperday" class="progressbar-js-circle pr-2"></div>
-                                      </div>
-                                      <div>
-                                        <p class="text-small mb-2">Visits per day</p>
-                                        <h4 class="mb-0 fw-bold">9065</h4>
-                                      </div>
-                                    </div>
+
+                        <div class="card card-rounded mb-4">
+                          <div class="card-body">
+
+                            <h4 class="card-title mb-4">Quick Alerts</h4>
+
+                            <div class="list-group">
+
+                              <!-- Pending Service Approvals -->
+                              <a href="{% url 'ServiceCenter:service_request' %}"
+                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+
+                                <div>
+                                  <strong>Pending Service Approvals</strong>
+                                  <div class="text-muted small">
+                                    service requests awaiting approval
                                   </div>
                                 </div>
-                              </div>
+
+                                <span class="badge bg-primary rounded-pill">
+                                  {{ pending_service_approvals }}
+                                </span>
+                              </a>
+
+                              <!-- Pending Breakdown Approvals -->
+                              <a href="{% url 'ServiceCenter:breakdownrequest' %}"
+                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+
+                                <div>
+                                  <strong>Pending Breakdown Approvals</strong>
+                                  <div class="text-muted small">
+                                    Emergency breakdown requests
+                                  </div>
+                                </div>
+
+                                <span class="badge bg-info rounded-pill">
+                                  {{ pending_breakdown_approvals }}
+                                </span>
+                              </a>
+
+                              <!-- Customer Feedback -->
+                              <a href="{% url 'ServiceCenter:view_feedback' %}"
+                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+
+                                <div>
+                                  <strong>Customer Feedback</strong>
+                                  <div class="text-muted small">
+                                    Customer reviews & ratings
+                                  </div>
+                                </div>
+
+                                <span class="badge bg-warning text-dark rounded-pill">
+                                  {{ customer_feedback_count }}
+                                </span>
+                              </a>
+
                             </div>
+
                           </div>
                         </div>
+
                       </div>
+
                     </div>
+
+
+
                     <div class="row">
                       <div class="col-lg-8 d-flex flex-column">
                         <div class="row flex-grow">
@@ -434,575 +485,106 @@
                               <div class="card-body">
                                 <div class="d-sm-flex justify-content-between align-items-start">
                                   <div>
-                                    <h4 class="card-title card-title-dash">Market Overview</h4>
-                                   <p class="card-subtitle card-subtitle-dash">Lorem ipsum dolor sit amet consectetur adipisicing elit</p>
-                                  </div>
-                                  <div>
-                                    <div class="dropdown">
-                                      <button class="btn btn-secondary dropdown-toggle toggle-dark btn-lg mb-0 me-0" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> This month </button>
-                                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                                        <h6 class="dropdown-header">Settings</h6>
-                                        <a class="dropdown-item" href="#">Action</a>
-                                        <a class="dropdown-item" href="#">Another action</a>
-                                        <a class="dropdown-item" href="#">Something else here</a>
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="#">Separated link</a>
+                                    <h4 class="card-title card-title-dash">Weekly Income Overview</h4>
+                                    <p class="card-subtitle card-subtitle-dash">
+                                      Service vs Breakdown revenue (Current Month)
+                                    </p>
+
+                                    <div class="row mt-4 g-4">
+
+                                      <!-- Service Income Card -->
+                                      <div class="col-md-6">
+                                        <div class="p-4 border rounded bg-light h-100 text-center">
+                                          <h6 class="text-muted mb-2 text-uppercase small">
+                                            Total Service Income
+                                          </h6>
+                                          <h2 id="totalServiceIncome" class="fw-bold text-primary mb-0"
+                                            style="font-size: 28px;">
+                                            ₹0
+                                          </h2>
+                                        </div>
                                       </div>
+
+                                      <!-- Breakdown Income Card -->
+                                      <div class="col-md-6">
+                                        <div class="p-4 border rounded bg-light h-100 text-center">
+                                          <h6 class="text-muted mb-2 text-uppercase small">
+                                            Total Breakdown Income
+                                          </h6>
+                                          <h2 id="totalBreakdownIncome" class="fw-bold text-info mb-0"
+                                            style="font-size: 28px;">
+                                            ₹0
+                                          </h2>
+                                        </div>
+                                      </div>
+
                                     </div>
+
+
                                   </div>
+
                                 </div>
-                                <div class="d-sm-flex align-items-center mt-1 justify-content-between">
-                                  <div class="d-sm-flex align-items-center mt-4 justify-content-between"><h2 class="me-2 fw-bold">$36,2531.00</h2><h4 class="me-2">USD</h4><h4 class="text-success">(+1.37%)</h4></div>
-                                  <div class="me-3"><div id="marketing-overview-legend"></div></div>
-                                </div>
-                                <div class="chartjs-bar-wrapper mt-3">
+
+                                <div class="chartjs-bar-wrapper mt-3" style="position: relative; height: 350px;">
                                   <canvas id="marketingOverview"></canvas>
                                 </div>
+
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div class="row flex-grow">
-                          <div class="col-12 grid-margin stretch-card">
-                            <div class="card card-rounded table-darkBGImg">
-                              <div class="card-body">
-                                <div class="col-sm-8">
-                                  <h3 class="text-white upgrade-info mb-0">
-                                    Enhance your <span class="fw-bold">Campaign</span> for better outreach
-                                  </h3>
-                                  <a href="#" class="btn btn-info upgrade-btn">Upgrade Account!</a>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row flex-grow">
-                          <div class="col-12 grid-margin stretch-card">
-                            <div class="card card-rounded">
-                              <div class="card-body">
-                                <div class="d-sm-flex justify-content-between align-items-start">
-                                  <div>
-                                    <h4 class="card-title card-title-dash">Pending Requests</h4>
-                                   <p class="card-subtitle card-subtitle-dash">You have 50+ new requests</p>
-                                  </div>
-                                  <div>
-                                    <button class="btn btn-primary btn-lg text-white mb-0 me-0" type="button"><i class="mdi mdi-account-plus"></i>Add new member</button>
-                                  </div>
-                                </div>
-                                <div class="table-responsive  mt-1">
-                                  <table class="table select-table">
-                                    <thead>
-                                      <tr>
-                                        <th>
-                                          <div class="form-check form-check-flat mt-0">
-                                            <label class="form-check-label">
-                                              <input type="checkbox" class="form-check-input" aria-checked="false"><i class="input-helper"></i></label>
-                                          </div>
-                                        </th>
-                                        <th>Customer</th>
-                                        <th>Company</th>
-                                        <th>Progress</th>
-                                        <th>Status</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      <tr>
-                                        <td>
-                                          <div class="form-check form-check-flat mt-0">
-                                            <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input" aria-checked="false"><i class="input-helper"></i></label>
-                                          </div>
-                                        </td>
-                                        <td>
-                                          <div class="d-flex ">
-                                            <img src="{% static 'ServiceCenter/images/faces/face1.jpg'%}" alt="">
-                                            <div>
-                                              <h6>Brandon Washington</h6>
-                                              <p>Head admin</p>
-                                            </div>
-                                          </div>
-                                        </td>
-                                        <td>
-                                          <h6>Company name 1</h6>
-                                          <p>company type</p>
-                                        </td>
-                                        <td>
-                                          <div>
-                                            <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
-                                              <p class="text-success">79%</p>
-                                              <p>85/162</p>
-                                            </div>
-                                            <div class="progress progress-md">
-                                              <div class="progress-bar bg-success" role="progressbar" style="width: 85%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                                            </div>
-                                          </div>
-                                        </td>
-                                        <td><div class="badge badge-opacity-warning">In progress</div></td>
-                                      </tr>
-                                      <tr>
-                                        <td>
-                                          <div class="form-check form-check-flat mt-0">
-                                            <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input" aria-checked="false"><i class="input-helper"></i></label>
-                                          </div>
-                                        </td>
-                                        <td>
-                                          <div class="d-flex">
-                                            <img src="{% static 'ServiceCenter/images/faces/face2.jpg'%}" alt="">
-                                            <div>
-                                              <h6>Laura Brooks</h6>
-                                              <p>Head admin</p>
-                                            </div>
-                                          </div>
-                                        </td>
-                                        <td>
-                                          <h6>Company name 1</h6>
-                                          <p>company type</p>
-                                        </td>
-                                        <td>
-                                          <div>
-                                            <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
-                                              <p class="text-success">65%</p>
-                                              <p>85/162</p>
-                                            </div>
-                                            <div class="progress progress-md">
-                                              <div class="progress-bar bg-success" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
-                                            </div>
-                                          </div>
-                                        </td>
-                                        <td><div class="badge badge-opacity-warning">In progress</div></td>
-                                      </tr>
-                                      <tr>
-                                        <td>
-                                          <div class="form-check form-check-flat mt-0">
-                                            <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input" aria-checked="false"><i class="input-helper"></i></label>
-                                          </div>
-                                        </td>
-                                        <td>
-                                          <div class="d-flex">
-                                            <img src="{% static 'ServiceCenter/images/faces/face3.jpg'%}" alt="">
-                                            <div>
-                                              <h6>Wayne Murphy</h6>
-                                              <p>Head admin</p>
-                                            </div>
-                                          </div>
-                                        </td>
-                                        <td>
-                                          <h6>Company name 1</h6>
-                                          <p>company type</p>
-                                        </td>
-                                        <td>
-                                          <div>
-                                            <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
-                                              <p class="text-success">65%</p>
-                                              <p>85/162</p>
-                                            </div>
-                                            <div class="progress progress-md">
-                                              <div class="progress-bar bg-warning" role="progressbar" style="width: 38%" aria-valuenow="38" aria-valuemin="0" aria-valuemax="100"></div>
-                                            </div>
-                                          </div>
-                                        </td>
-                                        <td><div class="badge badge-opacity-warning">In progress</div></td>
-                                      </tr>
-                                      <tr>
-                                        <td>
-                                          <div class="form-check form-check-flat mt-0">
-                                            <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input" aria-checked="false"><i class="input-helper"></i></label>
-                                          </div>
-                                        </td>
-                                        <td>
-                                          <div class="d-flex">
-                                            <img src="{% static 'ServiceCenter/images/faces/face4.jpg'%}" alt="">
-                                            <div>
-                                              <h6>Matthew Bailey</h6>
-                                              <p>Head admin</p>
-                                            </div>
-                                          </div>
-                                        </td>
-                                        <td>
-                                          <h6>Company name 1</h6>
-                                          <p>company type</p>
-                                        </td>
-                                        <td>
-                                          <div>
-                                            <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
-                                              <p class="text-success">65%</p>
-                                              <p>85/162</p>
-                                            </div>
-                                            <div class="progress progress-md">
-                                              <div class="progress-bar bg-danger" role="progressbar" style="width: 15%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
-                                            </div>
-                                          </div>
-                                        </td>
-                                        <td><div class="badge badge-opacity-danger">Pending</div></td>
-                                      </tr>
-                                      <tr>
-                                        <td>
-                                          <div class="form-check form-check-flat mt-0">
-                                            <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input" aria-checked="false"><i class="input-helper"></i></label>
-                                          </div>
-                                        </td>
-                                        <td>
-                                          <div class="d-flex">
-                                            <img src="{% static 'ServiceCenter/images/faces/face5.jpg'%}" alt="">
-                                            <div>
-                                              <h6>Katherine Butler</h6>
-                                              <p>Head admin</p>
-                                            </div>
-                                          </div>
-                                        </td>
-                                        <td>
-                                          <h6>Company name 1</h6>
-                                          <p>company type</p>
-                                        </td>
-                                        <td>
-                                          <div>
-                                            <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
-                                              <p class="text-success">65%</p>
-                                              <p>85/162</p>
-                                            </div>
-                                            <div class="progress progress-md">
-                                              <div class="progress-bar bg-success" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
-                                            </div>
-                                          </div>
-                                        </td>
-                                        <td><div class="badge badge-opacity-success">Completed</div></td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row flex-grow">
-                          <div class="col-md-6 col-lg-6 grid-margin stretch-card">
-                            <div class="card card-rounded">
-                              <div class="card-body card-rounded">
-                                <h4 class="card-title  card-title-dash">Recent Events</h4>
-                                <div class="list align-items-center border-bottom py-2">
-                                  <div class="wrapper w-100">
-                                    <p class="mb-2 font-weight-medium">
-                                      Change in Directors
-                                    </p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                      <div class="d-flex align-items-center">
-                                        <i class="mdi mdi-calendar text-muted me-1"></i>
-                                        <p class="mb-0 text-small text-muted">Mar 14, 2019</p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="list align-items-center border-bottom py-2">
-                                  <div class="wrapper w-100">
-                                    <p class="mb-2 font-weight-medium">
-                                      Other Events
-                                    </p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                      <div class="d-flex align-items-center">
-                                        <i class="mdi mdi-calendar text-muted me-1"></i>
-                                        <p class="mb-0 text-small text-muted">Mar 14, 2019</p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="list align-items-center border-bottom py-2">
-                                  <div class="wrapper w-100">
-                                    <p class="mb-2 font-weight-medium">
-                                      Quarterly Report
-                                    </p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                      <div class="d-flex align-items-center">
-                                        <i class="mdi mdi-calendar text-muted me-1"></i>
-                                        <p class="mb-0 text-small text-muted">Mar 14, 2019</p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="list align-items-center border-bottom py-2">
-                                  <div class="wrapper w-100">
-                                    <p class="mb-2 font-weight-medium">
-                                      Change in Directors
-                                    </p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                      <div class="d-flex align-items-center">
-                                        <i class="mdi mdi-calendar text-muted me-1"></i>
-                                        <p class="mb-0 text-small text-muted">Mar 14, 2019</p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                
-                                <div class="list align-items-center pt-3">
-                                  <div class="wrapper w-100">
-                                    <p class="mb-0">
-                                      <a href="#" class="fw-bold text-primary">Show all <i class="mdi mdi-arrow-right ms-2"></i></a>
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="col-md-6 col-lg-6 grid-margin stretch-card">
-                            <div class="card card-rounded">
-                              <div class="card-body">
-                                <div class="d-flex align-items-center justify-content-between mb-3">
-                                  <h4 class="card-title card-title-dash">Activities</h4>
-                                  <p class="mb-0">20 finished, 5 remaining</p>
-                                </div>
-                                <ul class="bullet-line-list">
-                                  <li>
-                                    <div class="d-flex justify-content-between">
-                                      <div><span class="text-light-green">Ben Tossell</span> assign you a task</div>
-                                      <p>Just now</p>
-                                    </div>
-                                  </li>
-                                  <li>
-                                    <div class="d-flex justify-content-between">
-                                      <div><span class="text-light-green">Oliver Noah</span> assign you a task</div>
-                                      <p>1h</p>
-                                    </div>
-                                  </li>
-                                  <li>
-                                    <div class="d-flex justify-content-between">
-                                      <div><span class="text-light-green">Jack William</span> assign you a task</div>
-                                      <p>1h</p>
-                                    </div>
-                                  </li>
-                                  <li>
-                                    <div class="d-flex justify-content-between">
-                                      <div><span class="text-light-green">Leo Lucas</span> assign you a task</div>
-                                      <p>1h</p>
-                                    </div>
-                                  </li>
-                                  <li>
-                                    <div class="d-flex justify-content-between">
-                                      <div><span class="text-light-green">Thomas Henry</span> assign you a task</div>
-                                      <p>1h</p>
-                                    </div>
-                                  </li>
-                                  <li>
-                                    <div class="d-flex justify-content-between">
-                                      <div><span class="text-light-green">Ben Tossell</span> assign you a task</div>
-                                      <p>1h</p>
-                                    </div>
-                                  </li>
-                                  <li>
-                                    <div class="d-flex justify-content-between">
-                                      <div><span class="text-light-green">Ben Tossell</span> assign you a task</div>
-                                      <p>1h</p>
-                                    </div>
-                                  </li>
-                                </ul>
-                                <div class="list align-items-center pt-3">
-                                  <div class="wrapper w-100">
-                                    <p class="mb-0">
-                                      <a href="#" class="fw-bold text-primary">Show all <i class="mdi mdi-arrow-right ms-2"></i></a>
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+
+
+
                       </div>
                       <div class="col-lg-4 d-flex flex-column">
-                        <div class="row flex-grow">
-                          <div class="col-12 grid-margin stretch-card">
-                            <div class="card card-rounded">
-                              <div class="card-body">
-                                <div class="row">
-                                  <div class="col-lg-12">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                      <h4 class="card-title card-title-dash">Todo list</h4>
-                                      <div class="add-items d-flex mb-0">
-                                        <!-- <input type="text" class="form-control todo-list-input" placeholder="What do you need to do today?"> -->
-                                        <button class="add btn btn-icons btn-rounded btn-primary todo-list-add-btn text-white me-0 pl-12p"><i class="mdi mdi-plus"></i></button>
-                                      </div>
-                                    </div>
-                                    <div class="list-wrapper">
-                                      <ul class="todo-list todo-list-rounded">
-                                        <li class="d-block">
-                                          <div class="form-check w-100">
-                                            <label class="form-check-label">
-                                              <input class="checkbox" type="checkbox"> Lorem Ipsum is simply dummy text of the printing <i class="input-helper rounded"></i>
-                                            </label>
-                                            <div class="d-flex mt-2">
-                                              <div class="ps-4 text-small me-3">24 June 2020</div>
-                                              <div class="badge badge-opacity-warning me-3">Due tomorrow</div>
-                                              <i class="mdi mdi-flag ms-2 flag-color"></i>
-                                            </div>
-                                          </div>
-                                        </li>
-                                        <li class="d-block">
-                                          <div class="form-check w-100">
-                                            <label class="form-check-label">
-                                              <input class="checkbox" type="checkbox"> Lorem Ipsum is simply dummy text of the printing <i class="input-helper rounded"></i>
-                                            </label>
-                                            <div class="d-flex mt-2">
-                                              <div class="ps-4 text-small me-3">23 June 2020</div>
-                                              <div class="badge badge-opacity-success me-3">Done</div>
-                                            </div>
-                                          </div>
-                                        </li>
-                                        <li>
-                                          <div class="form-check w-100">
-                                            <label class="form-check-label">
-                                              <input class="checkbox" type="checkbox"> Lorem Ipsum is simply dummy text of the printing <i class="input-helper rounded"></i>
-                                            </label>
-                                            <div class="d-flex mt-2">
-                                              <div class="ps-4 text-small me-3">24 June 2020</div>
-                                              <div class="badge badge-opacity-success me-3">Done</div>
-                                            </div>
-                                          </div>
-                                        </li>
-                                        <li class="border-bottom-0">
-                                          <div class="form-check w-100">
-                                            <label class="form-check-label">
-                                              <input class="checkbox" type="checkbox"> Lorem Ipsum is simply dummy text of the printing <i class="input-helper rounded"></i>
-                                            </label>
-                                            <div class="d-flex mt-2">
-                                              <div class="ps-4 text-small me-3">24 June 2020</div>
-                                              <div class="badge badge-opacity-danger me-3">Expired</div>
-                                            </div>
-                                          </div>
-                                        </li>
-                                      </ul>
-                                    </div>
-                                  </div>
+
+
+
+
+
+                        <div class="card card-rounded">
+                          <div class="card-body">
+                            <h4 class="card-title mb-4">Technician Status</h4>
+
+                            {% for item in technician_status_list %}
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+
+                              <!-- Left Side -->
+                              <div class="d-flex align-items-center">
+
+                                <img src="{{ item.technician.technician_photo.url }}" class="rounded-circle me-3"
+                                  style="width:45px; height:45px; object-fit:cover;">
+
+                                <div>
+                                  <h6 class="mb-0">{{ item.technician.technician_name }}</h6>
+                                  <small class="text-muted">
+                                    Total Completed: {{ item.total_completed }}
+                                  </small>
                                 </div>
+
                               </div>
+
+                              <!-- Status -->
+                              <div>
+                                {% if item.is_busy %}
+                                <span class="badge bg-danger">On Duty</span>
+                                {% else %}
+                                <span class="badge bg-success">Available</span>
+                                {% endif %}
+                              </div>
+
                             </div>
+
+                            <hr class="my-2">
+
+                            {% empty %}
+                            <p class="text-muted text-center">No technicians found.</p>
+                            {% endfor %}
+
                           </div>
                         </div>
-                        <div class="row flex-grow">
-                          <div class="col-12 grid-margin stretch-card">
-                            <div class="card card-rounded">
-                              <div class="card-body">
-                                <div class="row">
-                                  <div class="col-lg-12">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                      <h4 class="card-title card-title-dash">Type By Amount</h4>
-                                    </div>
-                                    <canvas class="my-auto" id="doughnutChart" height="200"></canvas>
-                                    <div id="doughnut-chart-legend" class="mt-5 text-center"></div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row flex-grow">
-                          <div class="col-12 grid-margin stretch-card">
-                            <div class="card card-rounded">
-                              <div class="card-body">
-                                <div class="row">
-                                  <div class="col-lg-12">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                      <div>
-                                        <h4 class="card-title card-title-dash">Leave Report</h4>
-                                      </div>
-                                      <div>
-                                        <div class="dropdown">
-                                          <button class="btn btn-secondary dropdown-toggle toggle-dark btn-lg mb-0 me-0" type="button" id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Month Wise </button>
-                                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton3">
-                                            <h6 class="dropdown-header">week Wise</h6>
-                                            <a class="dropdown-item" href="#">Year Wise</a>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div class="mt-3">
-                                      <canvas id="leaveReport"></canvas>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row flex-grow">
-                          <div class="col-12 grid-margin stretch-card">
-                            <div class="card card-rounded">
-                              <div class="card-body">
-                                <div class="row">
-                                  <div class="col-lg-12">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                      <div>
-                                        <h4 class="card-title card-title-dash">Top Performer</h4>
-                                      </div>
-                                    </div>
-                                    <div class="mt-3">
-                                      <div class="wrapper d-flex align-items-center justify-content-between py-2 border-bottom">
-                                        <div class="d-flex">
-                                          <img class="img-sm rounded-10" src="{% static 'ServiceCenter/images/faces/face1.jpg'%}" alt="profile">
-                                          <div class="wrapper ms-3">
-                                            <p class="ms-1 mb-1 fw-bold">Brandon Washington</p>
-                                            <small class="text-muted mb-0">162543</small>
-                                          </div>
-                                        </div>
-                                        <div class="text-muted text-small">
-                                          1h ago
-                                        </div>
-                                      </div>
-                                      <div class="wrapper d-flex align-items-center justify-content-between py-2 border-bottom">
-                                        <div class="d-flex">
-                                          <img class="img-sm rounded-10" src="{% static 'ServiceCenter/images/faces/face2.jpg'%}" alt="profile">
-                                          <div class="wrapper ms-3">
-                                            <p class="ms-1 mb-1 fw-bold">Wayne Murphy</p>
-                                            <small class="text-muted mb-0">162543</small>
-                                          </div>
-                                        </div>
-                                        <div class="text-muted text-small">
-                                          1h ago
-                                        </div>
-                                      </div>
-                                      <div class="wrapper d-flex align-items-center justify-content-between py-2 border-bottom">
-                                        <div class="d-flex">
-                                          <img class="img-sm rounded-10" src="{% static 'ServiceCenter/images/faces/face3.jpg'%}" alt="profile">
-                                          <div class="wrapper ms-3">
-                                            <p class="ms-1 mb-1 fw-bold">Katherine Butler</p>
-                                            <small class="text-muted mb-0">162543</small>
-                                          </div>
-                                        </div>
-                                        <div class="text-muted text-small">
-                                          1h ago
-                                        </div>
-                                      </div>
-                                      <div class="wrapper d-flex align-items-center justify-content-between py-2 border-bottom">
-                                        <div class="d-flex">
-                                          <img class="img-sm rounded-10" src="{% static 'ServiceCenter/images/faces/face4.jpg'%}" alt="profile">
-                                          <div class="wrapper ms-3">
-                                            <p class="ms-1 mb-1 fw-bold">Matthew Bailey</p>
-                                            <small class="text-muted mb-0">162543</small>
-                                          </div>
-                                        </div>
-                                        <div class="text-muted text-small">
-                                          1h ago
-                                        </div>
-                                      </div>
-                                      <div class="wrapper d-flex align-items-center justify-content-between pt-2">
-                                        <div class="d-flex">
-                                          <img class="img-sm rounded-10" src="{% static 'ServiceCenter/mages/faces/face5.jpg'%}" alt="profile">
-                                          <div class="wrapper ms-3">
-                                            <p class="ms-1 mb-1 fw-bold">Rafell John</p>
-                                            <small class="text-muted mb-0">Alaska, USA</small>
-                                          </div>
-                                        </div>
-                                        <div class="text-muted text-small">
-                                          1h ago
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+
                       </div>
                     </div>
                   </div>
@@ -1013,12 +595,7 @@
         </div>
         <!-- content-wrapper ends -->
         <!-- partial:partials/_footer.html -->
-        <footer class="footer">
-          <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash.</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © 2021. All rights reserved.</span>
-          </div>
-        </footer>
+
         <!-- partial -->
       </div>
       <!-- Admin-panel ends -->
@@ -1038,21 +615,203 @@
   <!-- End plugin js for this page -->
   <!-- inject:js -->
   <script src="{% static 'ServiceCenter/js/off-canvas.js'%}"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+      /* ===============================
+         1️⃣ BOOKING LINE CHART
+      ================================= */
+
+      const bookingCanvas = document.getElementById('performaneLine');
+
+      if (bookingCanvas) {
+
+        fetch("/ServiceCenter/chart-homepage/")
+          .then(response => {
+            if (!response.ok) throw new Error("Booking API failed");
+            return response.json();
+          })
+          .then(data => {
+
+            if (!data.days || data.days.length === 0) {
+              bookingCanvas.parentElement.innerHTML =
+                '<p class="text-muted text-center py-5">No booking data available</p>';
+              return;
+            }
+
+            const ctx = bookingCanvas.getContext('2d');
+
+            // Create gradients
+            const gradientBlue = ctx.createLinearGradient(0, 0, 0, 350);
+            gradientBlue.addColorStop(0, "rgba(31,59,179,0.4)");
+            gradientBlue.addColorStop(1, "rgba(31,59,179,0)");
+
+            const gradientSky = ctx.createLinearGradient(0, 0, 0, 350);
+            gradientSky.addColorStop(0, "rgba(75,192,192,0.4)");
+            gradientSky.addColorStop(1, "rgba(75,192,192,0)");
+
+            new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: data.days,
+                datasets: [
+                  {
+                    label: "Service Bookings",
+                    data: data.service,
+                    borderColor: "#1F3BB3",
+                    backgroundColor: gradientBlue,
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 4
+                  },
+                  {
+                    label: "Breakdown Bookings",
+                    data: data.breakdown,
+                    borderColor: "#4BC0C0",
+                    backgroundColor: gradientSky,
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 4
+                  }
+                ]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: {
+  padding: {
+    bottom: 20
+  }
+},
+  scales: {
+    y: {
+      beginAtZero: true,
+      ticks: {
+        // 👇 force integers only
+        callback: function (value) {
+          return Number.isInteger(value) ? value : '';
+        },
+        stepSize: 1
+      }
+    }
+  }
+}
+
+            });
+
+          })
+          .catch(error => {
+            console.error("Booking chart error:", error);
+          });
+      }
+
+
+      /* ===============================
+         2️⃣ WEEKLY INCOME BAR CHART
+      ================================= */
+
+      const incomeCanvas = document.getElementById('marketingOverview');
+
+      if (incomeCanvas) {
+
+        fetch("/ServiceCenter/weekly-income-chart/")
+          .then(response => {
+            if (!response.ok) throw new Error("Income API failed");
+            return response.json();
+          })
+          .then(data => {
+
+            if (!data.weeks || data.weeks.length === 0) {
+              incomeCanvas.parentElement.innerHTML =
+                '<p class="text-muted text-center py-5">No income data available</p>';
+              return;
+            }
+
+            const ctx = incomeCanvas.getContext('2d');
+
+            /* ✅ UPDATE TOTALS */
+            const totalService = data.total_service || 0;
+            const totalBreakdown = data.total_breakdown || 0;
+
+            const serviceEl = document.getElementById("totalServiceIncome");
+            const breakdownEl = document.getElementById("totalBreakdownIncome");
+
+            if (serviceEl) {
+              serviceEl.innerText = "₹" + totalService.toLocaleString();
+            }
+
+            if (breakdownEl) {
+              breakdownEl.innerText = "₹" + totalBreakdown.toLocaleString();
+            }
+
+            /* ✅ CREATE BAR CHART */
+            new Chart(ctx, {
+              type: 'bar',
+              data: {
+                labels: data.weeks,
+                datasets: [
+                  {
+                    label: "Service Income",
+                    data: data.service,
+                    backgroundColor: "#1F3BB3"
+                  },
+                  {
+                    label: "Breakdown Income",
+                    data: data.breakdown,
+                    backgroundColor: "#4BC0C0"
+                  }
+                ]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: 'top'
+                  },
+                  tooltip: {
+                    callbacks: {
+                      label: function (context) {
+                        return context.dataset.label + ": ₹" +
+                          context.raw.toLocaleString();
+                      }
+                    }
+                  }
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    ticks: {
+                      callback: function (value) {
+                        return "₹" + value.toLocaleString();
+                      }
+                    }
+                  }
+                }
+              }
+            });
+
+          })
+          .catch(error => {
+            console.error("Income chart error:", error);
+          });
+      }
+
+    });
+  </script>
+
+
   <script src="{% static 'ServiceCenter/js/hoverable-collapse.js'%}"></script>
   <script src="{% static 'ServiceCenter/js/template.js'%}"></script>
   <script src="{% static 'ServiceCenter/js/settings.js'%}"></script>
   <script src="{% static 'ServiceCenter/js/todolist.js'%}"></script>
   <!-- endinject -->
   <!-- Custom js for this page-->
-  <script src="{% static 'ServiceCenter/js/dashboard.js'%}"></script>
-  <script src="{% static 'ServiceCenter/js/Chart.roundedBarCharts.js'%}"></script>
+  <!--<script src="{% static 'ServiceCenter/js/dashboard.js'%}"></script>-->
+  <!--<script src="{% static 'ServiceCenter/js/Chart.roundedBarCharts.js'%}"></script>-->
   <!-- End custom js for this page-->
 </body>
 
 </html>
-
-
-
-
-
-

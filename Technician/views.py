@@ -89,50 +89,50 @@ def startwork(request,sid):
     data=tbl_booking.objects.get(id=sid)
     data.booking_status=3
     data.save()
-    return render(request,"Technician/Jobs.html",{'msg':"Work started"})
+    return redirect("Technician:assigned_jobs")
 
 
 def start_diagnosis(request,did):
     data=tbl_booking.objects.get(id=did)
     data.booking_status=4
     data.save()
-    return render(request,"Technician/Jobs.html",{'msg':"Diagnosis started"})
+    return redirect("Technician:assigned_jobs")
 
 def diagnosis_completed(request,cdid):
     data=tbl_booking.objects.get(id=cdid)
     data.booking_status=5
     data.save()
-    return render(request,"Technician/Jobs.html",{'msg':"Diagnosis Finished"})
+    return redirect("Technician:assigned_jobs")
 
 def repair_progress(request,rid):
     data=tbl_booking.objects.get(id=rid)
     data.booking_status=6
     data.save()
-    return render(request,"Technician/Jobs.html",{'msg':"Repair started"})
+    return redirect("Technician:assigned_jobs")
 
 def parts_replaced(request,pid):
     data=tbl_booking.objects.get(id=pid)
     data.booking_status=7
     data.save()
-    return render(request,"Technician/Jobs.html",{'msg':"Repair started"})
+    return redirect("Technician:assigned_jobs")
 
 def testing_QA(request,tid):
     data=tbl_booking.objects.get(id=tid)
     data.booking_status=8
     data.save()
-    return render(request,"Technician/Jobs.html",{'msg':"Testing Phase "})
+    return redirect("Technician:assigned_jobs")
 
 def service_completed(request,sid):
     data=tbl_booking.objects.get(id=sid)
     data.booking_status=9
     data.save()
-    return render(request,"Technician/Jobs.html",{'msg':"Service Completed"})
+    return redirect("Technician:assigned_jobs")
 
 def out_delivery(request,did):
     data=tbl_booking.objects.get(id=did)
     data.booking_status=10
     data.save()
-    return render(request,"Technician/Jobs.html",{'msg':"Out for delivery"})
+    return redirect("Technician:assigned_jobs")
 
 # def delivered(request,did):
 #     data=tbl_booking.objects.get(id=did)
@@ -219,6 +219,7 @@ def update_breakdown_step(request, sid):
 
 def update_breakdown_charge(request, bs_id):
     bs = tbl_breakdown_booking_services.objects.get(id=bs_id)
+    breakdown_bs = tbl_breakdownassist.objects.get(id=bs.booking_id)
     greeting=tbl_technician.objects.get(id=request.session['tid'])
     
 
@@ -232,7 +233,9 @@ def update_breakdown_charge(request, bs_id):
         bs.final_amount = bs.base_amount + extra
         bs.progress_step += 1
         bs.billing_status = True
+        breakdown_bs.breakdown_status = 3
         bs.save()
+        breakdown_bs.save()
 
         total_amount=bs.final_amount
         breakdown_booking=bs.booking

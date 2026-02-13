@@ -36,6 +36,11 @@ urlpatterns = [
 
      path('delete-breakdown-service/<int:did>/',views.delete_breakdown_service,name='delete_breakdown_service'),
      path('view_feedback/',views.view_feedback,name="view_feedback"),
+
+     path('chart-homepage/', views.chart_homepage, name='chart_homepage'),
+     path('weekly-income-chart/', views.weekly_income_chart, name='weekly_income_chart'),
+    
+
      
      
 

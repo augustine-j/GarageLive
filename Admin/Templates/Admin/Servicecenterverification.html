@@ -2,51 +2,393 @@
 {% block content %}
 
 <style>
+  /* Modern Color Palette */
+  :root {
+      --primary-color: #4f46e5;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --border-color: #e5e7eb;
+  }
+
+  /* Layout */
+  .content-wrapper {
+      padding: 20px;
+      background: #f9fafb;
+      min-height: 100vh;
+  }
+
+  /* Card Design */
+  .card {
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      background: white;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      margin-bottom: 24px;
+  }
+
+  .card-body {
+      padding: 24px;
+  }
+
+  /* Header Section */
+  .card-header-section {
+      margin-bottom: 20px;
+  }
+
+  .card-title {
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: var(--text-primary);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+  }
+
+  .card-title::before {
+      content: '';
+      width: 4px;
+      height: 26px;
+      background: var(--primary-color);
+      border-radius: 4px;
+  }
+
+  .card-description {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin: 0;
+  }
+
+  /* Status Badges */
+  .badge {
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+  }
+
+  .badge-warning {
+      background: #fef3c7;
+      color: #92400e;
+  }
+
+  .badge-warning::before {
+      content: '⏳';
+  }
+
+  .badge-success {
+      background: #d1fae5;
+      color: #065f46;
+  }
+
+  .badge-success::before {
+      content: '✓';
+  }
+
+  .badge-danger {
+      background: #fee2e2;
+      color: #991b1b;
+  }
+
+  .badge-danger::before {
+      content: '✕';
+  }
+
+  /* Table Container */
+  .table-responsive {
+      overflow-x: auto;
+      overflow-y: auto;
+      border-radius: 12px;
+      max-height: 70vh;
+  }
+
+  /* Table Styling */
+  .table {
+      font-size: 0.9rem;
+      margin: 0;
+      width: 100%;
+  }
+
+  .table thead {
+      background: #f8f9fa;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+  }
+
+  .table thead th {
+      font-weight: 700;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      border: none;
+      padding: 14px 12px;
+      border-bottom: 2px solid var(--border-color);
+  }
+
+  .table tbody tr {
+      border-bottom: 1px solid #f3f4f6;
+  }
+
+  .table tbody tr:last-child {
+      border-bottom: none;
+  }
+
+  .table-hover tbody tr:hover {
+      background: #f9fafb;
+  }
+
+  .table tbody td {
+      padding: 12px;
+      vertical-align: middle;
+      color: var(--text-primary);
+  }
+
+  /* Serial Number */
+  .serial-number {
+      background: var(--primary-color);
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+  }
+
+  /* Center Name Styling */
+  .center-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+  }
+
+  .center-name::before {
+      content: '🏢';
+      font-size: 1rem;
+  }
+
+  /* Contact Info */
+  .email-info {
+      color: var(--primary-color);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+  }
+
+  .email-info::before {
+      content: '✉️';
+      font-size: 0.9rem;
+  }
+
+  .contact-info {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.85rem;
+  }
+
+  .contact-info::before {
+      content: '📱';
+      font-size: 0.9rem;
+  }
+
+  /* Location Badge */
+  .location-text {
+      background: #f0fdf4;
+      color: #15803d;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+  }
+
+  .location-text::before {
+      content: '📍';
+  }
+
+  /* Address Styling */
+  .address-cell { 
+      min-width: 280px; 
+      max-width: 340px; 
+  }
+
+  .address-label{
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: .02em;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+  }
+
+  .address-box{
+      background: #f8f9fa;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      color: var(--text-primary);
+      word-break: break-word;
+      max-height: 60px;
+      overflow: hidden;
+      position: relative;
+  }
+
+  .address-box::before {
+      content: '🏠';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      opacity: 0.3;
+  }
+
   /* Media thumbnails */
   .sc-img{
-    width: 56px;
-    height: 56px;
-    object-fit: cover;
-    border-radius: 12px;
-    border: 1px solid rgba(0,0,0,.08);
-    background: #fff;
+      width: 56px;
+      height: 56px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid var(--border-color);
+      background: #fff;
+      cursor: pointer;
   }
 
-  /* Address aesthetic (no textarea) */
-  .address-cell{ min-width: 260px; max-width: 340px; }
-  .address-label{
-    display: inline-block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: .02em;
-    color: #6c757d;
-    margin-bottom: 6px;
-  }
-  .address-box{
-    background: #f8f9fa;
-    border: 1px solid rgba(0,0,0,.08);
-    border-radius: 12px;
-    padding: 10px 12px;
-    font-size: 0.875rem;
-    line-height: 1.3;
-    color: #343a40;
-
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-    word-break: break-word;
-    transition: all .15s ease-in-out;
-  }
-  .address-box:hover{
-    background: #ffffff;
-    border-color: rgba(0,0,0,.14);
-    box-shadow: 0 6px 18px rgba(0,0,0,.08);
-    -webkit-line-clamp: 6;
+  .sc-img:hover {
+      border-color: var(--primary-color);
+      transform: scale(1.05);
   }
 
-  /* Keep action buttons on one line */
-  td.action-cell { white-space: nowrap; }
+  /* Date Styling */
+  .date-text {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+  }
+
+  .date-text::before {
+      content: '📅';
+      font-size: 0.9rem;
+  }
+
+  /* Action Buttons */
+  td.action-cell { 
+      white-space: nowrap; 
+  }
+
+  .btn-sm {
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+  }
+
+  .btn-success {
+      background: var(--success-color);
+      color: white;
+  }
+
+  .btn-success:hover {
+      background: #059669;
+  }
+
+  .btn-success::before {
+      content: '✓';
+  }
+
+  .btn-danger {
+      background: var(--danger-color);
+      color: white;
+  }
+
+  .btn-danger:hover {
+      background: #dc2626;
+  }
+
+  .btn-danger::before {
+      content: '✕';
+  }
+
+  /* Empty State */
+  .empty-state {
+      padding: 30px 20px;
+      text-align: center;
+  }
+
+  .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      opacity: 0.3;
+  }
+
+  .empty-text {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+  }
+
+  /* Scrollbar */
+  .table-responsive::-webkit-scrollbar {
+      height: 10px;
+      width: 10px;
+  }
+
+  .table-responsive::-webkit-scrollbar-track {
+      background: #f1f1f1;
+  }
+
+  .table-responsive::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 5px;
+  }
+
+  .table-responsive::-webkit-scrollbar-thumb:hover {
+      background: #555;
+  }
+
+  /* Section Spacing */
+  .grid-margin {
+      margin-bottom: 0 !important;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+      .content-wrapper {
+          padding: 15px;
+      }
+
+      .table {
+          font-size: 0.8rem;
+      }
+
+      .card-title {
+          font-size: 1.1rem;
+      }
+  }
 </style>
 
 <div class="main-panel">
@@ -61,10 +403,10 @@
           <div class="card">
             <div class="card-body">
 
-              <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="d-flex align-items-center justify-content-between card-header-section">
                 <div>
-                  <h4 class="card-title mb-1">Service Center Verification</h4>
-                  <p class="card-description mb-0">Pending centers awaiting approval</p>
+                  <h4 class="card-title">Service Center Verification</h4>
+                  <p class="card-description">Pending centers awaiting approval</p>
                 </div>
                 <span class="badge badge-warning">Pending</span>
               </div>
@@ -90,18 +432,30 @@
                   <tbody>
                     {% for i in data %}
                     <tr>
-                      <td>{{ forloop.counter }}</td>
-                      <td>{{ i.servicecenter_name }}</td>
-                      <td>{{ i.servicecenter_email }}</td>
-                      <td>{{ i.servicecenter_contact }}</td>
+                      <td>
+                        <span class="serial-number">{{ forloop.counter }}</span>
+                      </td>
+                      <td>
+                        <span class="center-name">{{ i.servicecenter_name }}</span>
+                      </td>
+                      <td>
+                        <span class="email-info">{{ i.servicecenter_email }}</span>
+                      </td>
+                      <td>
+                        <span class="contact-info">{{ i.servicecenter_contact }}</span>
+                      </td>
 
                       <td class="address-cell">
                         <div class="address-label">Address</div>
                         <div class="address-box">{{ i.servicecenter_address }}</div>
                       </td>
 
-                      <td>{{ i.place.place_name }}</td>
-                      <td>{{ i.place.district.district_name }}</td>
+                      <td>
+                        <span class="location-text">{{ i.place.place_name }}</span>
+                      </td>
+                      <td>
+                        <span class="location-text">{{ i.place.district.district_name }}</span>
+                      </td>
 
                       <td>
                         <a href="{{ i.servicecenter_logo.url }}" target="_blank" title="View Logo">
@@ -114,7 +468,9 @@
                         </a>
                       </td>
 
-                      <td>{{ i.servicecenter_regdate }}</td>
+                      <td>
+                        <span class="date-text">{{ i.servicecenter_regdate }}</span>
+                      </td>
 
                       <td class="text-center action-cell">
                         <a href="{% url 'Admin:acceptcenter' i.id %}" class="btn btn-sm btn-success me-2">
@@ -129,8 +485,11 @@
                     </tr>
                     {% empty %}
                     <tr>
-                      <td colspan="11" class="text-center text-muted py-4">
-                        No pending centers found.
+                      <td colspan="11">
+                        <div class="empty-state">
+                          <div class="empty-icon">📋</div>
+                          <div class="empty-text">No pending centers found</div>
+                        </div>
                       </td>
                     </tr>
                     {% endfor %}
@@ -150,10 +509,10 @@
           <div class="card">
             <div class="card-body">
 
-              <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="d-flex align-items-center justify-content-between card-header-section">
                 <div>
-                  <h4 class="card-title mb-1">Accepted Centers</h4>
-                  <p class="card-description mb-0">Verified service centers</p>
+                  <h4 class="card-title">Accepted Centers</h4>
+                  <p class="card-description">Verified service centers</p>
                 </div>
                 <span class="badge badge-success">Verified</span>
               </div>
@@ -179,18 +538,30 @@
                   <tbody>
                     {% for i in accepted %}
                     <tr>
-                      <td>{{ forloop.counter }}</td>
-                      <td>{{ i.servicecenter_name }}</td>
-                      <td>{{ i.servicecenter_email }}</td>
-                      <td>{{ i.servicecenter_contact }}</td>
+                      <td>
+                        <span class="serial-number">{{ forloop.counter }}</span>
+                      </td>
+                      <td>
+                        <span class="center-name">{{ i.servicecenter_name }}</span>
+                      </td>
+                      <td>
+                        <span class="email-info">{{ i.servicecenter_email }}</span>
+                      </td>
+                      <td>
+                        <span class="contact-info">{{ i.servicecenter_contact }}</span>
+                      </td>
 
                       <td class="address-cell">
                         <div class="address-label">Address</div>
                         <div class="address-box">{{ i.servicecenter_address }}</div>
                       </td>
 
-                      <td>{{ i.place.place_name }}</td>
-                      <td>{{ i.place.district.district_name }}</td>
+                      <td>
+                        <span class="location-text">{{ i.place.place_name }}</span>
+                      </td>
+                      <td>
+                        <span class="location-text">{{ i.place.district.district_name }}</span>
+                      </td>
 
                       <td>
                         <a href="{{ i.servicecenter_logo.url }}" target="_blank" title="View Logo">
@@ -203,7 +574,9 @@
                         </a>
                       </td>
 
-                      <td>{{ i.servicecenter_regdate }}</td>
+                      <td>
+                        <span class="date-text">{{ i.servicecenter_regdate }}</span>
+                      </td>
 
                       <td class="text-center">
                         {% if i.servicecenter_status == 1 %}
@@ -217,8 +590,11 @@
                     </tr>
                     {% empty %}
                     <tr>
-                      <td colspan="11" class="text-center text-muted py-4">
-                        No accepted centers found.
+                      <td colspan="11">
+                        <div class="empty-state">
+                          <div class="empty-icon">📋</div>
+                          <div class="empty-text">No accepted centers found</div>
+                        </div>
                       </td>
                     </tr>
                     {% endfor %}
@@ -238,10 +614,10 @@
           <div class="card">
             <div class="card-body">
 
-              <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="d-flex align-items-center justify-content-between card-header-section">
                 <div>
-                  <h4 class="card-title mb-1">Rejected Centers</h4>
-                  <p class="card-description mb-0">Centers rejected during verification</p>
+                  <h4 class="card-title">Rejected Centers</h4>
+                  <p class="card-description">Centers rejected during verification</p>
                 </div>
                 <span class="badge badge-danger">Rejected</span>
               </div>
@@ -267,18 +643,30 @@
                   <tbody>
                     {% for i in rejected %}
                     <tr>
-                      <td>{{ forloop.counter }}</td>
-                      <td>{{ i.servicecenter_name }}</td>
-                      <td>{{ i.servicecenter_email }}</td>
-                      <td>{{ i.servicecenter_contact }}</td>
+                      <td>
+                        <span class="serial-number">{{ forloop.counter }}</span>
+                      </td>
+                      <td>
+                        <span class="center-name">{{ i.servicecenter_name }}</span>
+                      </td>
+                      <td>
+                        <span class="email-info">{{ i.servicecenter_email }}</span>
+                      </td>
+                      <td>
+                        <span class="contact-info">{{ i.servicecenter_contact }}</span>
+                      </td>
 
                       <td class="address-cell">
                         <div class="address-label">Address</div>
                         <div class="address-box">{{ i.servicecenter_address }}</div>
                       </td>
 
-                      <td>{{ i.place.place_name }}</td>
-                      <td>{{ i.place.district.district_name }}</td>
+                      <td>
+                        <span class="location-text">{{ i.place.place_name }}</span>
+                      </td>
+                      <td>
+                        <span class="location-text">{{ i.place.district.district_name }}</span>
+                      </td>
 
                       <td>
                         <a href="{{ i.servicecenter_logo.url }}" target="_blank" title="View Logo">
@@ -291,7 +679,9 @@
                         </a>
                       </td>
 
-                      <td>{{ i.servicecenter_regdate }}</td>
+                      <td>
+                        <span class="date-text">{{ i.servicecenter_regdate }}</span>
+                      </td>
 
                       <td class="text-center">
                         {% if i.servicecenter_status == 1 %}
@@ -305,8 +695,11 @@
                     </tr>
                     {% empty %}
                     <tr>
-                      <td colspan="11" class="text-center text-muted py-4">
-                        No rejected centers found.
+                      <td colspan="11">
+                        <div class="empty-state">
+                          <div class="empty-icon">📋</div>
+                          <div class="empty-text">No rejected centers found</div>
+                        </div>
                       </td>
                     </tr>
                     {% endfor %}

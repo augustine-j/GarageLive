@@ -75,14 +75,7 @@
       <ul class="navbar-nav ms-auto">
         
 
-        <li class="nav-item d-none d-lg-block">
-          <div id="datepicker-popup" class="input-group date datepicker navbar-date-picker">
-            <span class="input-group-addon input-group-prepend border-right">
-              <span class="icon-calendar input-group-text calendar-icon"></span>
-            </span>
-            <input type="text" class="form-control">
-          </div>
-        </li>
+        
 
         
         
@@ -97,7 +90,7 @@
               <p class="fw-light text-muted mb-0">{{ Data.servicecenter_email }}</p>
             </div>
             <a class="dropdown-item" href="{% url 'ServiceCenter:profile' %}"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile</a>
-            <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
+            
            
             <a class="dropdown-item" href="{% url 'ServiceCenter:logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i> Sign Out</a>
           </div>
