@@ -15,7 +15,20 @@ def homepage(request):
      else:
         greeting=tbl_technician.objects.get(id=request.session['tid'])
         techniciandata=tbl_technician.objects.get(id=request.session['tid'])
-        return render(request,"Technician/HomePage.html",{'data':techniciandata,'greeting':greeting})
+        assigned_service_jobs=tbl_booking.objects.filter(technician=techniciandata,booking_status__gte=1,booking_status__lte=10).prefetch_related('tbl_booking_services_set')
+        
+        assigned_breakdown_jobs=tbl_breakdownassist.objects.filter(technician=techniciandata,breakdown_status=1)
+        completed_service_count=tbl_booking.objects.filter(technician=techniciandata,booking_status=12).count()
+        completed_breakdown_count=tbl_breakdownassist.objects.filter(technician=techniciandata,breakdown_status=3).count()
+        
+
+
+
+        return render(request,"Technician/HomePage.html",{'data':techniciandata,'greeting':greeting,
+        "assigned_service_jobs": assigned_service_jobs,
+        "assigned_breakdown_jobs": assigned_breakdown_jobs,
+        "assigned_total": assigned_service_jobs.count() + assigned_breakdown_jobs.count(),
+        "total_completed": completed_service_count + completed_breakdown_count})
 
 def profile(request):
      if 'tid' not in request.session:

@@ -34,34 +34,16 @@ def homepage(request):
         pending_breakdown_approvals=tbl_breakdownassist.objects.filter(servicecenter=centerdata, breakdown_status=0).count()
         customer_feedback_count = tbl_feedback.objects.filter(servicecenter=centerdata,feedback_date__month=today.month,feedback_date__year=today.year).count()
         technicians = tbl_technician.objects.filter(servicecenter=centerdata)
-        busy_ids=get_busy_technician_ids(centerdata)
+        busy_tech_ids=get_busy_technician_ids(centerdata)
 
-        service_completed = tbl_booking.objects.filter(
-        servicecenter=centerdata,
-        booking_status=12,   # completed service
-        technician__isnull=False).values('technician').annotate(total=Count('id'))
-
-        breakdown_completed = tbl_breakdownassist.objects.filter(
-        servicecenter=centerdata,
-        breakdown_status=2,  # completed breakdown
-        technician__isnull=False).values('technician').annotate(total=Count('id'))
-        completed_map = defaultdict(int)
-        for item in service_completed:
-            completed_map[item['technician']] += item['total']
-
-        for item in breakdown_completed:
-            completed_map[item['technician']] += item['total']
         technician_status_list = []
         for tech in technicians:
-            technician_status_list.append({
-            "technician": tech,
-            "is_busy": tech.id in busy_ids,
-            "total_completed": completed_map.get(tech.id, 0)})
-        
-        technician_status_list = sorted(
-        technician_status_list,
-        key=lambda x: x['total_completed'],
-        reverse=True)
+            service_completed=tbl_booking.objects.filter(servicecenter=centerdata,technician=tech,booking_status=12).count()
+            breakdown_completed=tbl_breakdownassist.objects.filter(servicecenter=centerdata,technician=tech,breakdown_status=3).count()
+            total_completed= service_completed+ breakdown_completed
+            is_busy = tech.id in busy_tech_ids
+            technician_status_list.append({"technician": tech,"is_busy": is_busy,"total_completed": total_completed})
+        technician_status_list.sort(key=lambda x: x['total_completed'],reverse=True)
 
 
 
