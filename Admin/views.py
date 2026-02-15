@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 
 
+
 # Create your views here.
 def district(request):
      if 'aid' not in request.session:
@@ -211,7 +212,7 @@ def userview(request):
 
 
     
-        
+      
 def adminhome(request):
      if 'aid' not in request.session:
       return redirect("Guest:Login")
@@ -439,7 +440,7 @@ def editmodel(request,eid):
 
 
 def logout(request):
-    del request.session['aid']
+    request.session.flush()
     return redirect("Guest:Login")
 
 

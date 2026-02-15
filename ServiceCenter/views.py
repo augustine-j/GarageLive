@@ -17,6 +17,7 @@ from collections import defaultdict
 
 
 
+
 # Create your views here.
 
 def homepage(request):
@@ -263,7 +264,7 @@ def generate_bill(request, bid):
 
 
 def logout(request):
-    del request.session['cid']
+    request.session.flush()
     return redirect("Guest:Login")
 
 

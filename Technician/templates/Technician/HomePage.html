@@ -139,7 +139,8 @@
       </div>
       <div class="navbar-menu-wrapper d-flex align-items-top">
         <ul class="navbar-nav">
-          <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
+          <li class="nav-item font-weight-semibold ms-0">
+
             <h1 class="welcome-text">
               <span id="greeting"></span>,
               <span class="text-black fw-bold">{{greeting.technician_name}}</span>
@@ -164,7 +165,8 @@
 
 
 
-          <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+          <li class="nav-item dropdown user-dropdown">
+
             <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
               <img class="img-xs rounded-circle" src="{{ greeting.technician_photo.url }}" alt="Profile image"> </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
@@ -242,7 +244,7 @@
 
           <li class="nav-item">
             <a class="nav-link" href="{% url 'Technician:breakdown_jobs' %}">
-              <i class="menu-icon fa-solid fa-briefcase"></i>
+              <i class="menu-icon fa-solid - fa-triangle-exclamation"></i>
               <span class="menu-title">Breakdown Jobs</span>
             </a>
           </li>

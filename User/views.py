@@ -13,6 +13,7 @@ from datetime import date
 
 
 
+
 def myprofile(request):
    if 'uid' not in request.session:
       return redirect("Guest:Login")
@@ -291,7 +292,7 @@ def del_vehicle(request,did):
 
 
 def logout(request):
-   del request.session['uid']
+   request.session.flush()
    return redirect("Guest:Login")
 
 
@@ -365,9 +366,11 @@ def breakdown_booking(request, sid):
 
 
 def breakdown_status(request):
-    data = tbl_breakdown_booking_services.objects.filter(
-        booking__user_id=request.session['uid']).order_by('-id')
-    return render(request, "User/BreakdownStatus.html", {'data': data})
+     if 'uid' not in request.session:
+        return redirect("Guest:Login")
+     else:
+        data = tbl_breakdown_booking_services.objects.filter(booking__user_id=request.session['uid']).order_by('-id')
+        return render(request, "User/BreakdownStatus.html", {'data': data})
 
 
 
@@ -394,17 +397,20 @@ def breakdown_payment(request, bs_id):
 
 
 def breakdown_invoice(request, bs_id):
-    service = tbl_breakdown_booking_services.objects.select_related(
-        "booking",
-        "booking__user",
-        "booking__servicecenter",
-        "booking__technician",
-        "servicecenter_breakdown_service__servicetype"
-    ).get(id=bs_id)
+     if 'uid' not in request.session:
+        return redirect("Guest:Login")
+     else:
+        service = tbl_breakdown_booking_services.objects.select_related(
+            "booking",
+            "booking__user",
+            "booking__servicecenter",
+            "booking__technician",
+            "servicecenter_breakdown_service__servicetype"
+        ).get(id=bs_id)
 
-    return render(request, "User/BreakdownInvoice.html", {
-        "service": service
-    })
+        return render(request, "User/BreakdownInvoice.html", {
+            "service": service
+        })
 
 
 
@@ -470,3 +476,19 @@ def delete_feedback(request, fid):
     )
     feedback.delete()
     return redirect("User:myservicerequest")
+
+
+
+def service_history(request,vid):
+     if 'uid' not in request.session:
+        return redirect("Guest:Login")
+     else:
+        vehicle=tbl_vehicle.objects.get(id=vid,user_id=request.session['uid'])
+        bookings=tbl_booking.objects.filter(vehicle=vehicle,booking_status=12).annotate(total_amount=Sum('tbl_booking_services__final_amount')).prefetch_related('tbl_booking_services_set').order_by('-booking_date')
+        breakdowns=tbl_breakdownassist.objects.filter(vehicle=vehicle,breakdown_status=3).annotate(total_amount=Sum('tbl_breakdown_booking_services__final_amount')).prefetch_related('tbl_breakdown_booking_services_set__servicecenter_breakdown_service').order_by('-breakdown_date')
+        context = {
+            "vehicle": vehicle,
+            "completed_services": bookings,
+            "completed_breakdowns": breakdowns,
+        }
+        return render(request, "User/ServiceHistory.html", context)

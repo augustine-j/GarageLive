@@ -1,0 +1,381 @@
+{% extends 'User/Head_User.html' %}
+{% block content %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=DM+Sans:wght@400;500;700&display=swap');
+
+  :root {
+    --primary-blue: #2563eb;
+    --primary-red: #dc2626;
+    --dark-slate: #1e293b;
+    --light-slate: #475569;
+    --surface: #ffffff;
+    --surface-alt: #f8fafc;
+    --border: #e2e8f0;
+    --success: #10b981;
+    --info: #06b6d4;
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  body {
+    background: var(--surface-alt);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .history-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  /* Header */
+  .vehicle-header {
+    background: linear-gradient(135deg, var(--dark-slate), var(--light-slate));
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 40px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .vehicle-header h1 {
+    font-family: 'Archivo', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  .vehicle-number {
+    font-family: 'Archivo', sans-serif;
+    color: rgba(255,255,255,0.8);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .back-button {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .back-button:hover {
+    background: var(--primary-red);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  /* Section Header */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 3px solid var(--border);
+  }
+
+  .section-header.service { border-bottom-color: var(--primary-blue); }
+  .section-header.breakdown { border-bottom-color: var(--primary-red); }
+
+  .section-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+
+  .section-icon.service {
+    background: linear-gradient(135deg, var(--primary-blue), #3b82f6);
+  }
+
+  .section-icon.breakdown {
+    background: linear-gradient(135deg, var(--primary-red), #ef4444);
+  }
+
+  .section-title {
+    font-family: 'Archivo', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--dark-slate);
+  }
+
+  /* History Cards */
+  .history-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-md);
+    border: 2px solid var(--border);
+    transition: 0.3s ease;
+  }
+
+  .history-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-blue);
+  }
+
+  .history-card.breakdown:hover {
+    border-color: var(--primary-red);
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .booking-id {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+    color: var(--light-slate);
+  }
+
+  .status-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--success), #34d399);
+    color: white;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 16px;
+  }
+
+  .info-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--light-slate);
+    margin-bottom: 4px;
+  }
+
+  .info-value {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--dark-slate);
+  }
+
+  .services-section {
+    margin-top: 20px;
+  }
+
+  .service-tag {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: white;
+    display: inline-block;
+    margin: 4px 6px 4px 0;
+    background: linear-gradient(135deg, var(--info), #22d3ee);
+    transition: 0.3s ease;
+  }
+
+  .service-tag:hover {
+    transform: translateY(-2px);
+  }
+
+  .breakdown-tag {
+    background: linear-gradient(135deg, var(--primary-red), #ef4444);
+  }
+
+  .amount-section {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 2px dashed var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .amount-value {
+    font-family: 'Archivo', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--dark-slate);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--light-slate);
+  }
+
+</style>
+
+
+<div class="history-container">
+
+  <!-- Header -->
+  <div class="vehicle-header">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
+      <div>
+        <h1>
+          {{ vehicle.model.brand.brand_name }}
+          {{ vehicle.model.model_name }}
+        </h1>
+        <div class="vehicle-number">
+          VEHICLE NO: {{ vehicle.vehicle_number }}
+        </div>
+      </div>
+
+      <a href="{% url 'User:myvehicle' %}" class="back-button">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back to Vehicles
+      </a>
+    </div>
+  </div>
+
+
+  <!-- SERVICE HISTORY -->
+  <div class="section-header service">
+    <div class="section-icon service">
+      <i class="fa-solid fa-wrench"></i>
+    </div>
+    <h2 class="section-title">Regular Service History</h2>
+  </div>
+
+  {% for booking in completed_services %}
+  <div class="history-card">
+
+    <div class="card-top">
+      <div class="booking-id">BOOKING #{{ booking.id }}</div>
+      <div class="status-badge">Completed</div>
+    </div>
+
+    <div class="card-grid">
+      <div>
+        <div class="info-label">Service Center</div>
+        <div class="info-value">{{ booking.servicecenter.servicecenter_name }}</div>
+      </div>
+
+      <div>
+        <div class="info-label">Technician</div>
+        <div class="info-value">{{ booking.technician.technician_name }}</div>
+      </div>
+
+      <div>
+        <div class="info-label">Date</div>
+        <div class="info-value">{{ booking.booking_date }}</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="info-label">Complaint</div>
+      <div class="info-value">{{ booking.booking_complaints }}</div>
+    </div>
+
+    {% if booking.tbl_booking_services_set.exists %}
+    <div class="services-section">
+      <div class="info-label">Services Performed</div>
+      {% for service in booking.tbl_booking_services_set.all %}
+        <span class="service-tag">
+          {{ service.servicecenter_services.servicetype.servicetype_name }}
+        </span>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="amount-section">
+      <div class="info-label">Total Amount</div>
+      <div class="amount-value">₹{{ booking.total_amount }}</div>
+    </div>
+
+  </div>
+  {% empty %}
+  <div class="empty-state">
+    <i class="fa-solid fa-folder-open fa-2x"></i>
+    <p>No service history available.</p>
+  </div>
+  {% endfor %}
+
+
+  <!-- BREAKDOWN HISTORY -->
+  <div class="section-header breakdown" style="margin-top:50px;">
+    <div class="section-icon breakdown">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+    <h2 class="section-title">Breakdown History</h2>
+  </div>
+
+  {% for breakdown in completed_breakdowns %}
+  <div class="history-card breakdown">
+
+    <div class="card-top">
+      <div class="booking-id">BREAKDOWN #{{ breakdown.id }}</div>
+      <div class="status-badge">Completed</div>
+    </div>
+
+    <div class="card-grid">
+      <div>
+        <div class="info-label">Service Center</div>
+        <div class="info-value">{{ breakdown.servicecenter.servicecenter_name }}</div>
+      </div>
+
+      <div>
+        <div class="info-label">Technician</div>
+        <div class="info-value">{{ breakdown.technician.technician_name }}</div>
+      </div>
+
+      <div>
+        <div class="info-label">Date</div>
+        <div class="info-value">{{ breakdown.breakdown_date }}</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="info-label">Issue Description</div>
+      <div class="info-value">{{ breakdown.breakdown_complaint }}</div>
+    </div>
+
+    {% if breakdown.tbl_breakdown_booking_services_set.exists %}
+    <div class="services-section">
+      <div class="info-label">Breakdown Services</div>
+      {% for service in breakdown.tbl_breakdown_booking_services_set.all %}
+        <span class="service-tag breakdown-tag">
+          {{ service.servicecenter_breakdown_service.servicetype.servicetype_name }}
+        </span>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="amount-section">
+      <div class="info-label">Total Amount</div>
+      <div class="amount-value">₹{{ breakdown.total_amount }}</div>
+    </div>
+
+  </div>
+  {% empty %}
+  <div class="empty-state">
+    <i class="fa-solid fa-folder-open fa-2x"></i>
+    <p>No breakdown history available.</p>
+  </div>
+  {% endfor %}
+
+</div>
+
+{% endblock content %}

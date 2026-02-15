@@ -35,6 +35,7 @@ urlpatterns = [
     path('feedback/<int:bid>/',views.feedback,name="feedback"),
     path('edit-feedback/<int:fid>/',views.edit_feedback,name="edit_feedback"),
     path('delete-feedback/<int:fid>/',views.delete_feedback,name="delete_feedback"),
+    path('service_history/<int:vid>/',views.service_history,name="service_history"),
 
 
     

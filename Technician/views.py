@@ -170,7 +170,7 @@ def workdescription(request,bid):
 
 
 def logout(request):
-    del request.session['tid']
+    request.session.flush()
     return redirect("Guest:Login")
 
 

@@ -50,6 +50,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'ServiceCenter.middleware.NoCacheMiddleware',
+    'User.middleware.NoCacheMiddleware',
+    'Technician.middleware.NoCacheMiddleware',
+    'Admin.middleware.NoCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'GarageLive.urls'
