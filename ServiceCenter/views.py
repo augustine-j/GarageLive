@@ -270,12 +270,15 @@ def logout(request):
 
 
 def breakdown_requests(request):
-    servicecenter=tbl_servicecenter.objects.get(id=request.session['cid'])
-    services = tbl_breakdown_booking_services.objects.filter(
-        booking__servicecenter_id=request.session['cid']
-    ).select_related(
-        "booking",
-        "booking__user",
+    if 'cid' not in request.session:
+      return redirect("Guest:Login")
+    else:
+        servicecenter=tbl_servicecenter.objects.get(id=request.session['cid'])
+        services = tbl_breakdown_booking_services.objects.filter(
+            booking__servicecenter_id=request.session['cid']
+        ).select_related(
+            "booking",
+            "booking__user",
         "booking__vehicle",
         "booking__vehicle__model__brand",
         "booking__technician",

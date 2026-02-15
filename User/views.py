@@ -8,6 +8,7 @@ from Technician.models import *
 from decimal import Decimal
 from django.db.models import Sum
 from datetime import date
+from django.http import JsonResponse
 
 
 
@@ -492,3 +493,29 @@ def service_history(request,vid):
             "completed_breakdowns": breakdowns,
         }
         return render(request, "User/Servicehistory.html", context)
+
+
+
+def breakdown_status_api(request):
+    if 'uid' not in request.session:
+        return JsonResponse({"error": "Unauthorized"}, status=403)
+    else:
+        data = tbl_breakdown_booking_services.objects.filter(booking__user_id=request.session['uid']).order_by('-id')
+
+        response = []
+
+        for i in data:
+            response.append({
+                "id": i.id,
+                "status": i.booking.breakdown_status,
+                "progress_step": i.progress_step,
+                "technician": i.booking.technician.technician_name if i.booking.technician else "",
+                "total_amount": i.final_amount,
+                "billing_status": i.billing_status,
+                "payment_status": i.payment_status,
+                
+                
+            })
+
+
+        return JsonResponse({"data": response})
