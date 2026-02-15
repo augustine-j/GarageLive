@@ -1,4 +1,3 @@
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -24,11 +23,105 @@
   <link rel="stylesheet" href="{% static 'Technician/css/vertical-layout-light/style.css'%}">
   <!-- endinject -->
   <link rel="shortcut icon" href="{% static 'Technician/images/favicon.png'%}" />
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 </head>
+
 <body>
-  <div class="container-scroller"> 
+
+   <style>
+    .dashboard-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.dashboard-header {
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 15px;
+  color: #fff;
+}
+
+.service-header {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.breakdown-header {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+
+.booking-item {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.booking-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.vehicle-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.vehicle-number {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.info-box {
+  background: #fff;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.detail-box small {
+  font-size: 11px;
+  color: #6c757d;
+}
+
+.detail-box p {
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+.service-badge {
+  background: #667eea;
+  font-size: 11px;
+  color: white;
+}
+
+.badge-success {
+  background: #28a745;
+  color: white;
+}
+
+.badge-progress {
+  background: #ff9800;
+  color: white;
+}
+
+.badge-pending {
+  background: #6c757d;
+  color: white;
+}
+
+.empty-box {
+  min-height: 200px;
+  font-size: 13px;
+  color: #999;
+}
+
+   </style>
+
+
+  <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
     <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
       <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
@@ -41,52 +134,56 @@
           <a class="navbar-brand brand-logo" href="{% url 'Technician:HomePage' %}">
             <img src="{% static 'Technician/images/GarageLive_logo.png'%}" alt="logo" />
           </a>
-         
+
         </div>
       </div>
-      <div class="navbar-menu-wrapper d-flex align-items-top"> 
-       <ul class="navbar-nav">
-  <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
-    <h1 class="welcome-text">
-      <span id="greeting"></span>, 
-      <span class="text-black fw-bold">{{greeting.technician_name}}</span>
-    </h1>
-    <h3 class="welcome-sub-text">Your performance summary this week</h3>
-  </li>
-</ul>
+      <div class="navbar-menu-wrapper d-flex align-items-top">
+        <ul class="navbar-nav">
+          <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
+            <h1 class="welcome-text">
+              <span id="greeting"></span>,
+              <span class="text-black fw-bold">{{greeting.technician_name}}</span>
+            </h1>
+            <h3 class="welcome-sub-text">Your performance summary this week</h3>
+          </li>
+        </ul>
 
-<script>
-  function getGreeting() {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good Morning";
-    else if (hour < 18) return "Good Afternoon";
-    else return "Good Evening";
-  }
+        <script>
+          function getGreeting() {
+            const hour = new Date().getHours();
+            if (hour < 12) return "Good Morning";
+            else if (hour < 18) return "Good Afternoon";
+            else return "Good Evening";
+          }
 
-  document.getElementById("greeting").textContent = getGreeting();
-</script>
+          document.getElementById("greeting").textContent = getGreeting();
+        </script>
         <ul class="navbar-nav ms-auto">
-          
-          
-          
-         
-          
+
+
+
+
+
           <li class="nav-item dropdown d-none d-lg-block user-dropdown">
             <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-              <img class="img-xs rounded-circle" src="{{ greeting.technician_photo.url }}"  alt="Profile image"> </a>
+              <img class="img-xs rounded-circle" src="{{ greeting.technician_photo.url }}" alt="Profile image"> </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
               <div class="dropdown-header text-center">
-               <img class="img-xs rounded-circle" src="{{ greeting.technician_photo.url }}"  alt="Profile image"> </a>
+                <img class="img-xs rounded-circle" src="{{ greeting.technician_photo.url }}" alt="Profile image"> </a>
                 <p class="mb-1 mt-3 font-weight-semibold">{{ greeting.technician_name }}</p>
                 <p class="fw-light text-muted mb-0">{{ greeting.technician_email }}</p>
               </div>
-              <a class="dropdown-item" href="{% url 'Technician:profile' %}"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
-             
-              <a class="dropdown-item" href="{% url 'Technician:logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+              <a class="dropdown-item" href="{% url 'Technician:profile' %}"><i
+                  class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span
+                  class="badge badge-pill badge-danger">1</span></a>
+
+              <a class="dropdown-item" href="{% url 'Technician:logout' %}"><i
+                  class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
             </div>
           </li>
         </ul>
-        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+          data-bs-toggle="offcanvas">
           <span class="mdi mdi-menu"></span>
         </button>
       </div>
@@ -99,8 +196,12 @@
         <div id="theme-settings" class="settings-panel">
           <i class="settings-close ti-close"></i>
           <p class="settings-heading">SIDEBAR SKINS</p>
-          <div class="sidebar-bg-options selected" id="sidebar-light-theme"><div class="img-ss rounded-circle bg-light border me-3"></div>Light</div>
-          <div class="sidebar-bg-options" id="sidebar-dark-theme"><div class="img-ss rounded-circle bg-dark border me-3"></div>Dark</div>
+          <div class="sidebar-bg-options selected" id="sidebar-light-theme">
+            <div class="img-ss rounded-circle bg-light border me-3"></div>Light
+          </div>
+          <div class="sidebar-bg-options" id="sidebar-dark-theme">
+            <div class="img-ss rounded-circle bg-dark border me-3"></div>Dark
+          </div>
           <p class="settings-heading mt-2">HEADER SKINS</p>
           <div class="color-tiles mx-0 px-4">
             <div class="tiles success"></div>
@@ -112,7 +213,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- partial -->
       <!-- partial:partials/_sidebar.html -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
@@ -123,15 +224,15 @@
               <span class="menu-title">Dashboard</span>
             </a>
           </li>
-           <li class="nav-item nav-category">Manage</li>
-           <li class="nav-item">
+          <li class="nav-item nav-category">Manage</li>
+          <li class="nav-item">
             <a class="nav-link" href="{% url 'Technician:profile' %}">
               <i class="menu-icon fa-solid fa-user-circle"></i>
               <span class="menu-title">My Profile</span>
             </a>
           </li>
 
-           <li class="nav-item">
+          <li class="nav-item">
             <a class="nav-link" href="{% url 'Technician:assigned_jobs' %}">
               <i class="menu-icon fa-solid fa-briefcase"></i>
               <span class="menu-title">My Jobs</span>
@@ -146,145 +247,215 @@
             </a>
           </li>
 
-          
-        
+
+
 
       </nav>
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
-          
 
-         <div class="tab-pane fade show active" id="overview">
-          <div class="row mb-4">
 
-  <div class="row mb-4">
+          <div class="tab-pane fade show active" id="overview">
+            
 
-  <div class="col-md-6">
-    <div class="card border-0 shadow-sm rounded-4">
-      <div class="card-body text-center py-4">
-        <div class="mb-2">
-          <i class="fa-solid fa-briefcase fa-2x text-primary"></i>
-        </div>
-        <h6 class="text-muted">Assigned Jobs</h6>
-        <h2 class="fw-bold text-primary">{{ assigned_total }}</h2>
+              <div class="row mb-4">
+
+                <div class="col-md-6">
+                  <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body text-center py-4">
+                      <div class="mb-2">
+                        <i class="fa-solid fa-briefcase fa-2x text-primary"></i>
+                      </div>
+                      <h6 class="text-muted">Assigned Jobs</h6>
+                      <h2 class="fw-bold text-primary">{{ assigned_total }}</h2>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body text-center py-4">
+                      <div class="mb-2">
+                        <i class="fa-solid fa-check-circle fa-2x text-success"></i>
+                      </div>
+                      <h6 class="text-muted">Total Completed</h6>
+                      <h2 class="fw-bold text-success">{{ total_completed }}</h2>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+
+            
+
+
+            <div class="row g-4 align-items-stretch">
+
+  <!-- ===================== SERVICE BOOKINGS ===================== -->
+  <div class="col-lg-6 d-flex">
+    <div class="card dashboard-card w-100 d-flex flex-column">
+
+      <div class="card-header dashboard-header service-header">
+        <i class="fa-solid fa-wrench me-2"></i> Service Bookings
       </div>
-    </div>
-  </div>
 
-  <div class="col-md-6">
-    <div class="card border-0 shadow-sm rounded-4">
-      <div class="card-body text-center py-4">
-        <div class="mb-2">
-          <i class="fa-solid fa-check-circle fa-2x text-success"></i>
-        </div>
-        <h6 class="text-muted">Total Completed</h6>
-        <h2 class="fw-bold text-success">{{ total_completed }}</h2>
-      </div>
-    </div>
-  </div>
+      <div class="card-body p-3 flex-grow-1 d-flex flex-column">
 
-</div>
+        {% if assigned_service_jobs %}
+          {% for booking in assigned_service_jobs %}
+          <div class="booking-item">
 
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <h6 class="vehicle-title">
+                  <i class="fa-solid fa-car text-primary me-1"></i>
+                  {{ booking.vehicle.model.brand.brand_name }}
+                  {{ booking.vehicle.model.model_name }}
+                </h6>
+                <small class="vehicle-number">
+                  {{ booking.vehicle.vehicle_number }}
+                </small>
+              </div>
 
-</div>
+              {% if booking.booking_status == 12 %}
+                <span class="badge badge-success">Completed</span>
+              {% elif booking.booking_status >= 1 and booking.booking_status <= 10 %}
+                <span class="badge badge-progress">In Progress</span>
+              {% else %}
+                <span class="badge badge-pending">Pending</span>
+              {% endif %}
+            </div>
 
+            <div class="row g-2 mb-2">
+              <div class="col-6">
+                <div class="info-box">
+                  <i class="fa-solid fa-user me-1"></i>
+                  {{ booking.user.user_name }}
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="info-box">
+                  <i class="fa-solid fa-phone me-1"></i>
+                  <a href="tel:{{ booking.user.contact_number }}">
+                    {{ booking.user.contact_number }}
+                  </a>
+                </div>
+              </div>
+            </div>
 
-<div class="card border-0 shadow-sm rounded-4 mb-4">
-  <div class="card-body">
-    <h5 class="fw-bold mb-4 text-primary">
-      <i class="fa-solid fa-wrench me-2"></i> Service Bookings
-    </h5>
+            <div class="detail-box">
+              <small>Complaint</small>
+              <p>{{ booking.booking_complaints }}</p>
+            </div>
 
-    {% for booking in assigned_service_jobs %}
-    <div class="border rounded-3 p-3 mb-3 bg-light">
+            <div class="detail-box">
+              <small>Services</small>
+              <div class="d-flex flex-wrap gap-1">
+                {% for service in booking.tbl_booking_services_set.all %}
+                  <span class="badge service-badge">
+                    {{ service.servicecenter_services.servicetype.servicetype_name }}
+                  </span>
+                {% endfor %}
+              </div>
+            </div>
 
-      <div class="d-flex justify-content-between align-items-center">
-        <strong>
-          {{ booking.vehicle.model.brand.brand_name }}
-          {{ booking.vehicle.model.model_name }}
-          ({{ booking.vehicle.vehicle_number }})
-        </strong>
-
-        {% if booking.booking_status == 12 %}
-            <span class="badge bg-success">Completed</span>
-        {% elif booking.booking_status >= 1 and booking.booking_status <= 10 %}
-            <span class="badge bg-warning text-dark">In Progress</span>
+          </div>
+          {% endfor %}
         {% else %}
-            <span class="badge bg-secondary">Pending</span>
+          <div class="empty-box flex-grow-1 d-flex flex-column justify-content-center align-items-center">
+            <i class="fa-solid fa-inbox fa-2x mb-2 text-muted"></i>
+            <p class="text-muted mb-0">No assigned service bookings.</p>
+          </div>
         {% endif %}
+
       </div>
-
-      <div class="mt-2">
-        <small class="text-muted">Complaint:</small>
-        <p class="mb-2">{{ booking.booking_complaints }}</p>
-
-        <small class="text-muted">Services:</small><br>
-        {% for service in booking.tbl_booking_services_set.all %}
-            <span class="badge bg-info text-dark me-1">
-                {{ service.servicecenter_services.servicetype.servicetype_name }}
-            </span>
-        {% endfor %}
-      </div>
-
     </div>
-    {% empty %}
-      <p class="text-muted">No assigned service bookings.</p>
-    {% endfor %}
-
   </div>
-</div>
 
 
+  <!-- ===================== BREAKDOWN BOOKINGS ===================== -->
+  <div class="col-lg-6 d-flex">
+    <div class="card dashboard-card w-100 d-flex flex-column">
 
-<!-- Breakdown Bookings -->
-<div class="card border-0 shadow-sm rounded-4">
-  <div class="card-body">
-    <h5 class="fw-bold mb-4 text-danger">
-      <i class="fa-solid fa-triangle-exclamation me-2"></i> Breakdown Bookings
-    </h5>
+      <div class="card-header dashboard-header breakdown-header">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i> Breakdown Bookings
+      </div>
 
-    {% for breakdown in assigned_breakdown_jobs %}
-    <div class="border rounded-3 p-3 mb-3 bg-light">
+      <div class="card-body p-3 flex-grow-1 d-flex flex-column">
 
-      <div class="d-flex justify-content-between align-items-center">
-        <strong>
-          {{ breakdown.vehicle.model.brand.brand_name }}
-          {{ breakdown.vehicle.model.model_name }}
-          ({{ breakdown.vehicle.vehicle_number }})
-        </strong>
+        {% if assigned_breakdown_jobs %}
+          {% for breakdown in assigned_breakdown_jobs %}
+          <div class="booking-item">
 
-        {% if breakdown.breakdown_status == 3 %}
-            <span class="badge bg-success">Completed</span>
-        {% elif breakdown.breakdown_status == 1 %}
-            <span class="badge bg-warning text-dark">Assigned</span>
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <h6 class="vehicle-title">
+                  <i class="fa-solid fa-car-burst text-danger me-1"></i>
+                  {{ breakdown.vehicle.model.brand.brand_name }}
+                  {{ breakdown.vehicle.model.model_name }}
+                </h6>
+                <small class="vehicle-number">
+                  {{ breakdown.vehicle.vehicle_number }}
+                </small>
+              </div>
+
+              {% if breakdown.breakdown_status == 3 %}
+                <span class="badge badge-success">Completed</span>
+              {% elif breakdown.breakdown_status == 1 %}
+                <span class="badge badge-progress">Assigned</span>
+              {% else %}
+                <span class="badge badge-pending">Pending</span>
+              {% endif %}
+            </div>
+
+            <div class="detail-box">
+              <small>Issue</small>
+              <p>{{ breakdown.breakdown_complaint }}</p>
+            </div>
+
+            <div class="row g-2">
+              <div class="col-6">
+                <div class="info-box">
+                  <i class="fa-solid fa-user me-1"></i>
+                  {{ breakdown.user.user_name }}
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="info-box">
+                  <i class="fa-solid fa-phone me-1"></i>
+                  <a href="tel:{{ breakdown.user.contact_number }}">
+                    {{ breakdown.user.contact_number }}
+                  </a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          {% endfor %}
         {% else %}
-            <span class="badge bg-secondary">Pending</span>
+          <div class="empty-box flex-grow-1 d-flex flex-column justify-content-center align-items-center">
+            <i class="fa-solid fa-inbox fa-2x mb-2 text-muted"></i>
+            <p class="text-muted mb-0">No assigned breakdown bookings.</p>
+          </div>
         {% endif %}
-      </div>
 
-      <div class="mt-2">
-        <small class="text-muted">Issue:</small>
-        <p class="mb-0">{{ breakdown.breakdown_complaint }}</p>
       </div>
-
     </div>
-    {% empty %}
-      <p class="text-muted">No assigned breakdown bookings.</p>
-    {% endfor %}
-
   </div>
+
 </div>
 
 
 
-         </div>
+          </div>
 
 
         </div>
         <!-- content-wrapper ends -->
         <!-- partial:partials/_footer.html -->
-        
+
         <!-- partial -->
       </div>
       <!-- Admin-panel ends -->
@@ -314,13 +485,7 @@
   <script src="{% static 'Technician/js/Chart.roundedBarCharts.js'%}"></script>
   <!-- End custom js for this page-->
 
-  
+
 </body>
 
 </html>
-
-
-
-
-
-

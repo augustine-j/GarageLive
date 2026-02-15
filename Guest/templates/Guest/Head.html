@@ -75,25 +75,47 @@
 
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-        <a href="{% static 'Main/index.html'%}" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
-            <h2 class="m-0 text-primary"><i class="fa fa-car me-3"></i>GarageLive</h2>
-        </a>
-        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="{% url 'Guest:indexpage' %}" class="nav-item nav-link active">Home</a>
-                <a href="{% url 'Guest:NewUser' %}" class="nav-item nav-link">New User</a>
-                <a href="{% url 'Guest:servicecenter' %}" class="nav-item nav-link">New Service center</a>
-                <a href="{% url 'Guest:indexpage' %}#about" class="nav-item nav-link">About</a>
-                <a href="{% url 'Guest:indexpage' %}#service" class="nav-item nav-link">Services</a>
-               
-                <a href="{% url 'Guest:indexpage' %}#contact"  class="nav-item nav-link">Contact</a>
-            </div>
-            <a href="{% url 'Guest:Login' %}" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">Log in<i class="fa fa-arrow-right ms-3"></i></a>
+    
+    <!-- Logo -->
+    <a href="{% static 'Main/index.html'%}" 
+       class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+        <h2 class="m-0 text-primary">
+            <i class="fa fa-car me-3"></i>GarageLive
+        </h2>
+    </a>
+
+    <!-- Toggle -->
+    <button type="button" 
+            class="navbar-toggler me-4" 
+            data-bs-toggle="collapse" 
+            data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Collapse Area -->
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+
+        <!-- Nav Links -->
+        <div class="navbar-nav ms-auto p-4 p-lg-0">
+            <a href="{% url 'Guest:indexpage' %}" class="nav-item nav-link active">Home</a>
+            <a href="{% url 'Guest:NewUser' %}" class="nav-item nav-link">New User</a>
+            <a href="{% url 'Guest:servicecenter' %}" class="nav-item nav-link">New Service center</a>
+            <a href="{% url 'Guest:indexpage' %}#about" class="nav-item nav-link">About</a>
+            <a href="{% url 'Guest:indexpage' %}#service" class="nav-item nav-link">Services</a>
+            <a href="{% url 'Guest:indexpage' %}#contact" class="nav-item nav-link">Contact</a>
         </div>
-    </nav>
+
+        <!-- Login Button -->
+        <div class="ms-lg-3 mt-3 mt-lg-0 px-4 px-lg-0">
+            <a href="{% url 'Guest:Login' %}" 
+               class="btn btn-primary w-100 d-flex justify-content-center align-items-center py-3 px-4">
+                Log in <i class="fa fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+
+    </div>
+</nav>
+
     
     
     

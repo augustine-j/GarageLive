@@ -84,41 +84,64 @@
 
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-        <a href="{% url 'User:HomePage' %}" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
-            <h2 class="m-0 text-primary"><i class="fa fa-car me-3"></i>GarageLive</h2>
-        </a>
-        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="{% url 'User:HomePage' %}" class="nav-item nav-link active">Home</a>
-                 <a href="{% url 'User:MyProfile' %}" class="nav-item nav-link">My Profile</a>
-                 <a href="{% url 'User:myservicerequest' %}" class="nav-item nav-link">Service Requests</a>
 
-                
-                <a href="{% url 'User:viewservicecenter' %}" class="nav-item nav-link">Book Service</a>
-                <a href="{% url 'User:breakdownassist' %}" class="nav-item nav-link">Breakdown Assist</a>
-                <a href="{% url 'User:vehicle' %}" class="nav-item nav-link">Add Vehicle</a>
-                
-                <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Service Hub</a>
-                    <div class="dropdown-menu fade-up m-0">
-                        
-                         <a href="{% url 'User:breakdown_status' %}" class="dropdown-item">Breakdown Request</a>
-                        <a href="{% url 'User:HomePage'  %}#services" class="dropdown-item">Services</a>
-                        <a href="{% url 'User:complaint' %}" class="dropdown-item">Complaint Registration</a>
-                        <a href="{% url 'User:HomePage'  %}#contact"  class="dropdown-item">Contact</a>
-                        <a href="{% url 'User:myvehicle' %}" class="dropdown-item">Manage Vehicle</a>
-                        <a href="#about"  class="dropdown-item">About</a>
-                    </div>
+    <!-- Logo -->
+    <a href="{% url 'User:HomePage' %}" 
+       class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+        <h2 class="m-0 text-primary">
+            <i class="fa fa-car me-3"></i>GarageLive
+        </h2>
+    </a>
+
+    <!-- Toggle -->
+    <button type="button"
+            class="navbar-toggler me-4"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Collapse -->
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+
+        <!-- Navigation Links -->
+        <div class="navbar-nav ms-auto p-4 p-lg-0">
+
+            <a href="{% url 'User:HomePage' %}" class="nav-item nav-link active">Home</a>
+            <a href="{% url 'User:MyProfile' %}" class="nav-item nav-link">My Profile</a>
+            <a href="{% url 'User:myservicerequest' %}" class="nav-item nav-link">Service Requests</a>
+            <a href="{% url 'User:viewservicecenter' %}" class="nav-item nav-link">Book Service</a>
+            <a href="{% url 'User:breakdownassist' %}" class="nav-item nav-link">Breakdown Assist</a>
+            <a href="{% url 'User:vehicle' %}" class="nav-item nav-link">Add Vehicle</a>
+
+            <!-- Dropdown -->
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                    Service Hub
+                </a>
+                <div class="dropdown-menu fade-up m-0">
+                    <a href="{% url 'User:breakdown_status' %}" class="dropdown-item">Breakdown Request</a>
+                    <a href="{% url 'User:HomePage' %}#services" class="dropdown-item">Services</a>
+                    <a href="{% url 'User:complaint' %}" class="dropdown-item">Complaint Registration</a>
+                    <a href="{% url 'User:HomePage' %}#contact" class="dropdown-item">Contact</a>
+                    <a href="{% url 'User:myvehicle' %}" class="dropdown-item">Manage Vehicle</a>
+                    <a href="#about" class="dropdown-item">About</a>
                 </div>
-                
-                
             </div>
-            <a href="{% url 'User:logout' %}" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">Log Out<i class="fa fa-arrow-right ms-3"></i></a>
+
         </div>
-    </nav>
+
+        <!-- Logout Button -->
+        <div class="ms-lg-3 mt-3 mt-lg-0 px-4 px-lg-0">
+            <a href="{% url 'User:logout' %}" 
+               class="btn btn-primary w-100 d-flex justify-content-center align-items-center py-3 px-4">
+                Log Out <i class="fa fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+
+    </div>
+</nav>
+
     <!-- Navbar End -->
 
 
