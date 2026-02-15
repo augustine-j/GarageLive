@@ -491,4 +491,4 @@ def service_history(request,vid):
             "completed_services": bookings,
             "completed_breakdowns": breakdowns,
         }
-        return render(request, "User/ServiceHistory.html", context)
+        return render(request, "User/Servicehistory.html", context)
