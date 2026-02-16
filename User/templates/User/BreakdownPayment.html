@@ -1,142 +1,487 @@
 {% extends 'User/Head_User.html' %}
 {% block content %}
 
-<!-- Breakdown Payment Section -->
-<div class="container-fluid bg-secondary booking my-5 wow fadeInUp" data-wow-delay="0.1s">
-  <div class="container">
-    <div class="row gx-5">
+<style>
+:root{
+  --rzp-blue:#0d6efd;
+  --border:#e5e7eb;
+  --bg:#f4f6f9;
+  --text:#1f2937;
+  --muted:#6b7280;
+  --success:#16a34a;
+}
 
-      <!-- Left Info Panel -->
-      <div class="col-lg-6 py-5">
-        <div class="py-5">
-          <h1 class="text-white mb-4">Secure Breakdown Payment</h1>
-          <p class="text-white mb-0">
-            Review your breakdown service charges and complete the payment.
-            Once paid, the invoice will be locked and available for download.
-          </p>
+/* PAGE */
+.pay-page{
+  min-height:100vh;
+  background:var(--bg);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px 20px;
+}
 
-          <div class="mt-4 p-4 bg-primary bg-opacity-25 rounded">
-            <h5 class="text-white mb-2">After Payment</h5>
-            <ul class="text-white-50 mb-0 ps-3">
-              <li>Status will be marked as <strong>Paid</strong></li>
-              <li>Invoice can be downloaded anytime</li>
-              <li>Billing will be permanently locked</li>
-            </ul>
+.payment-container{
+  width:100%;
+  max-width:1000px;
+  display:grid;
+  grid-template-columns:1fr 400px;
+  gap:30px;
+}
+
+/* BREAKDOWN INFO */
+.breakdown-box{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:30px;
+  box-shadow:0 10px 25px rgba(0,0,0,.05);
+}
+
+.breakdown-box h3{
+  font-weight:600;
+  margin-bottom:20px;
+}
+
+.label{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:600;
+  margin-top:15px;
+}
+
+.value{
+  font-weight:600;
+  margin-top:5px;
+}
+
+.divider{
+  border-top:1px solid var(--border);
+  margin:20px 0;
+}
+
+.row-charge{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  margin-bottom:8px;
+  color:var(--muted);
+}
+
+.total{
+  display:flex;
+  justify-content:space-between;
+  font-size:18px;
+  font-weight:600;
+  margin-top:10px;
+}
+
+.total span:last-child{
+  color:var(--success);
+}
+
+.pay-btn{
+  width:100%;
+  height:48px;
+  background:var(--rzp-blue);
+  border:none;
+  border-radius:8px;
+  color:#fff;
+  font-weight:600;
+  margin-top:20px;
+  cursor:pointer;
+}
+
+/* ===== Razorpay Modal ===== */
+.rzp-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.rzp-box{
+  width:100%;
+  max-width:820px;
+  background:#fff;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 25px 60px rgba(0,0,0,.25);
+  display:flex;
+  flex-direction:column;
+}
+
+/* Blue Header Strip */
+.rzp-header{
+  background:var(--rzp-blue);
+  color:#fff;
+  padding:16px 20px;
+  font-weight:600;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.rzp-body{
+  display:grid;
+  grid-template-columns:340px 1fr;
+}
+
+/* 3D CARD */
+.card-container{
+  perspective:1200px;
+  padding:30px;
+  background:#f8fafc;
+}
+
+.credit-card{
+  width:100%;
+  height:210px;
+  border-radius:16px;
+  position:relative;
+  transform-style:preserve-3d;
+  transition:transform .8s cubic-bezier(.4,.2,.2,1);
+}
+
+.credit-card.flip{
+  transform:rotateY(180deg);
+}
+
+.card-face{
+  position:absolute;
+  inset:0;
+  border-radius:16px;
+  padding:22px;
+  backface-visibility:hidden;
+  overflow:hidden;
+  color:#fff;
+}
+
+.card-front{
+  background:linear-gradient(135deg,#0d6efd,#2563eb);
+  box-shadow:0 15px 35px rgba(13,110,253,.4);
+}
+
+.card-front::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at top right,
+              rgba(255,255,255,.25),
+              transparent 60%);
+}
+
+.card-chip{
+  width:42px;
+  height:30px;
+  background:linear-gradient(135deg,#d1d5db,#f3f4f6);
+  border-radius:6px;
+  margin-bottom:25px;
+}
+
+.card-number{
+  font-size:18px;
+  letter-spacing:2px;
+  margin-bottom:25px;
+}
+
+.card-bottom{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+}
+
+.card-back{
+  background:linear-gradient(135deg,#1e293b,#334155);
+  transform:rotateY(180deg);
+}
+
+.card-stripe{
+  height:45px;
+  background:#000;
+  margin-bottom:40px;
+}
+
+.card-cvv{
+  background:#fff;
+  color:#000;
+  padding:6px 10px;
+  border-radius:4px;
+  text-align:right;
+}
+
+/* RIGHT SIDE */
+.rzp-right{
+  padding:30px;
+}
+
+.input-group{
+  margin-bottom:15px;
+}
+
+.input-group input{
+  width:100%;
+  height:44px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:0 12px;
+  font-size:14px;
+}
+
+.row{
+  display:flex;
+  gap:12px;
+}
+
+.pay-action{
+  width:100%;
+  height:46px;
+  background:var(--rzp-blue);
+  border:none;
+  border-radius:8px;
+  color:#fff;
+  font-weight:600;
+  margin-top:10px;
+  cursor:pointer;
+}
+
+/* Processing */
+.processing{
+  text-align:center;
+  padding:40px 20px;
+  display:none;
+}
+
+.spinner{
+  width:50px;
+  height:50px;
+  border:5px solid #e5e7eb;
+  border-top:5px solid var(--rzp-blue);
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin:0 auto 20px;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg);}
+}
+
+/* Success */
+.success-screen{
+  text-align:center;
+  padding:40px 20px;
+  display:none;
+}
+
+.checkmark{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  background:var(--success);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 20px;
+  animation:pop .4s ease;
+}
+
+.checkmark svg{
+  width:40px;
+  height:40px;
+  stroke:#fff;
+  stroke-width:3;
+  fill:none;
+  stroke-dasharray:100;
+  stroke-dashoffset:100;
+  animation:draw 1s forwards .3s;
+}
+
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes pop{from{transform:scale(.6)} to{transform:scale(1)}}
+
+@media(max-width:850px){
+  .payment-container{grid-template-columns:1fr;}
+  .rzp-body{grid-template-columns:1fr;}
+}
+</style>
+
+<div class="pay-page">
+  <div class="payment-container">
+
+    <!-- BREAKDOWN INFO -->
+    <div class="breakdown-box">
+      <h3>Breakdown Payment Details</h3>
+
+      <div class="label">BREAKDOWN REQUEST ID</div>
+      <div class="value">#{{ service.id }}</div>
+
+      <div class="label">VEHICLE</div>
+      <div class="value">
+        {{ service.booking.vehicle.model.brand.brand_name }}
+        {{ service.booking.vehicle.model.model_name }}
+        ({{ service.booking.vehicle.vehicle_number }})
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="label">SERVICE TYPE</div>
+      <div class="value">
+        {{ service.servicecenter_breakdown_service.servicetype.servicetype_name }}
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="row-charge">
+        <span>Base Price</span>
+        <span>₹ {{ service.base_amount }}</span>
+      </div>
+
+      <div class="row-charge">
+        <span>Extra Charges</span>
+        <span>₹ {{ service.extra_charge }}</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="total">
+        <span>Total Payable</span>
+        <span>₹ {{ service.final_amount }}</span>
+      </div>
+
+      {% if not service.payment_status %}
+        <button class="pay-btn" onclick="openModal()">Pay Now</button>
+      {% else %}
+        <div class="alert alert-success mt-3">Payment Completed ✓</div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+<!-- Razorpay Modal -->
+<div class="rzp-modal" id="rzpModal">
+  <div class="rzp-box">
+
+    <div class="rzp-header">
+      <span>Razorpay Secure Payment</span>
+      <span>₹ {{ service.final_amount }}</span>
+    </div>
+
+    <div class="rzp-body">
+
+      <!-- 3D CARD -->
+      <div class="card-container">
+        <div class="credit-card" id="creditCard">
+          <div class="card-face card-front">
+            <div class="card-chip"></div>
+            <div class="card-number" id="previewNumber">
+              •••• •••• •••• ••••
+            </div>
+            <div class="card-bottom">
+              <span id="previewName">CARD HOLDER</span>
+              <span id="previewExpiry">MM/YY</span>
+            </div>
+          </div>
+          <div class="card-face card-back">
+            <div class="card-stripe"></div>
+            <div class="card-cvv" id="previewCvv">000</div>
           </div>
         </div>
       </div>
 
-      <!-- Right Payment Panel -->
-      <div class="col-lg-6">
-        <div class="bg-primary h-100 d-flex flex-column justify-content-center p-5 wow zoomIn" data-wow-delay="0.6s">
+      <!-- RIGHT SIDE -->
+      <div class="rzp-right">
 
-          <h2 class="text-white text-center mb-4">Payment Summary</h2>
+        <div id="paymentForm">
+          <div class="input-group">
+            <input type="text" id="cardNumber" placeholder="Card Number">
+          </div>
+
+          <div class="input-group">
+            <input type="text" id="cardName" placeholder="Card Holder Name">
+          </div>
+
+          <div class="row">
+            <div class="input-group" style="flex:1;">
+              <input type="text" id="cardExpiry" placeholder="MM/YY">
+            </div>
+            <div class="input-group" style="flex:1;">
+              <input type="text" id="cardCvv" placeholder="CVV">
+            </div>
+          </div>
+
+          <button class="pay-action" onclick="startProcessing()">
+            Pay ₹ {{ service.final_amount }}
+          </button>
+        </div>
+
+        <!-- Processing -->
+        <div class="processing" id="processingScreen">
+          <div class="spinner"></div>
+          <p>Processing Payment...</p>
+        </div>
+
+        <!-- Success -->
+        <div class="success-screen" id="successScreen">
+          <div class="checkmark">
+            <svg viewBox="0 0 52 52">
+              <path d="M14 27 L22 35 L38 19"/>
+            </svg>
+          </div>
+          <h4>Payment Successful</h4>
 
           <form method="post">
             {% csrf_token %}
-
-            <!-- Bill Summary -->
-            <div class="bg-white rounded p-4 mb-4">
-
-              <!-- Booking Info -->
-              <div class="mb-3">
-                <div class="text-muted fw-semibold" style="font-size: 12px; letter-spacing: .04em;">
-                  BREAKDOWN REQUEST ID
-                </div>
-                <div class="fw-bold">#{{ service.id }}</div>
-              </div>
-
-              <div class="mb-3">
-                <div class="text-muted fw-semibold" style="font-size: 12px; letter-spacing: .04em;">
-                  VEHICLE
-                </div>
-                <div class="fw-semibold">
-                  {{ service.booking.vehicle.model.brand.brand_name }}
-                  {{ service.booking.vehicle.model.model_name }}
-                  ({{ service.booking.vehicle.vehicle_number }})
-                </div>
-              </div>
-
-              <hr>
-
-              <!-- Service Breakdown -->
-              <div class="mb-3">
-                <h6 class="fw-semibold mb-3">Breakdown Service Charges</h6>
-
-                <div class="border rounded p-3 mb-3">
-
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong>
-                      {{ service.servicecenter_breakdown_service.servicetype.servicetype_name }}
-                    </strong>
-                    <strong class="text-success">
-                      ₹ {{ service.final_amount }}
-                    </strong>
-                  </div>
-
-                  <div class="ps-2" style="font-size: 13px;">
-                    <div class="d-flex justify-content-between text-muted">
-                      <span>Base Price</span>
-                      <span>₹ {{ service.base_amount }}</span>
-                    </div>
-
-                    <div class="d-flex justify-content-between text-muted">
-                      <span>Extra Charges</span>
-                      <span>₹ {{ service.extra_charge }}</span>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-
-              <hr>
-
-              <!-- Total -->
-              <div class="d-flex justify-content-between align-items-center">
-                <span class="fw-semibold fs-5">Total Payable</span>
-                <span class="fw-bold fs-4 text-success">
-                  ₹ {{ service.final_amount }}
-                </span>
-              </div>
-
-              <div class="text-muted mt-1" style="font-size: 12px;">
-                Includes base price and additional service charges.
-              </div>
-
-            </div>
-
-            <!-- Actions -->
-            {% if not service.payment_status %}
-              <button class="btn btn-secondary w-100 py-3 mb-3" type="submit">
-                Pay Now
-              </button>
-            {% else %}
-              <div class="alert alert-success text-center fw-semibold">
-                Payment Completed ✓
-              </div>
-            {% endif %}
-
-            <button
-              class="btn btn-light w-100 py-3"
-              type="button"
-              onclick="window.location='{% url 'User:breakdown_status' %}'">
-              Cancel
+            <button type="submit" class="pay-action">
+              Continue
             </button>
-
           </form>
-
         </div>
-      </div>
 
+      </div>
     </div>
   </div>
 </div>
 
-{% if msg %}
 <script>
-  alert("{{ msg }}");
-  window.location = "{% url 'User:breakdownstatus' %}";
+function openModal(){
+  document.getElementById("rzpModal").style.display="flex";
+}
+
+function startProcessing(){
+  document.getElementById("paymentForm").style.display="none";
+  document.getElementById("processingScreen").style.display="block";
+
+  setTimeout(function(){
+    document.getElementById("processingScreen").style.display="none";
+    document.getElementById("successScreen").style.display="block";
+  },2000);
+}
+
+const card=document.getElementById("creditCard");
+
+cardCvv.onfocus=()=> card.classList.add("flip");
+cardCvv.onblur=()=> card.classList.remove("flip");
+
+cardNumber.oninput=()=>{
+  let val=cardNumber.value.replace(/\s/g,'').replace(/(\d{4})/g,'$1 ').trim();
+  previewNumber.innerText=val||"•••• •••• •••• ••••";
+};
+
+cardName.oninput=()=>{
+  previewName.innerText=cardName.value||"CARD HOLDER";
+};
+
+cardExpiry.oninput=()=>{
+  previewExpiry.innerText=cardExpiry.value||"MM/YY";
+};
+
+cardCvv.oninput=()=>{
+  previewCvv.innerText=cardCvv.value||"000";
+};
 </script>
-{% endif %}
 
 {% endblock content %}

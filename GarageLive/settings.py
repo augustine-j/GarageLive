@@ -134,3 +134,8 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'augustinejosephj6@gmail.com'
 EMAIL_HOST_PASSWORD = 'gimvlwciqzijgnoo'
+
+
+
+SESSION_COOKIE_AGE = 1200  # 20 minutes in seconds
+SESSION_SAVE_EVERY_REQUEST = True 

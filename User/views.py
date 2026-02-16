@@ -9,6 +9,8 @@ from decimal import Decimal
 from django.db.models import Sum
 from datetime import date
 from django.http import JsonResponse
+from django.urls import reverse
+
 
 
 
@@ -231,12 +233,14 @@ def payment(request, bid):
     total_amount = Decimal('0.00')
     for s in services:
         total_amount += s.final_amount or Decimal('0.00')
+    if not booking.booking_status == 11:
+        return redirect("User:myservicerequest")
 
     if request.method == "POST":
         booking.booking_status = 12  
         booking.save()
 
-        return render(request,"User/Payment.html",{'msg':"Payment Succesful"})
+        return redirect("User:myservicerequest")
 
     return render(
         request,
@@ -519,3 +523,24 @@ def breakdown_status_api(request):
 
 
         return JsonResponse({"data": response})
+
+
+
+
+def myservice_request_api(request):
+    if 'uid' not in request.session:
+         return JsonResponse({"data":[]})
+    else:
+        bookings=tbl_booking.objects.filter(user=request.session['uid']).order_by('-id')
+        response=[]
+        
+        for b in bookings:
+            response.append({
+                "id": b.id,
+                "status": b.booking_status,
+                "invoice_url": reverse("User:invoice", args=[b.id]) if b.booking_status > 11 else None,
+                "payment_url": reverse("User:payment", args=[b.id]) if b.booking_status == 11 else None,
+                "feedback_given": hasattr(b, "feedback") and b.feedback is not None,
+            })
+        return JsonResponse({"data": response})
+        

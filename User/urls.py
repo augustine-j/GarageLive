@@ -37,6 +37,8 @@ urlpatterns = [
     path('delete-feedback/<int:fid>/',views.delete_feedback,name="delete_feedback"),
     path('service_history/<int:vid>/',views.service_history,name="service_history"),
     path('breakdown-status-api/', views.breakdown_status_api, name='breakdown_status_api'),
+    path('myservice-request-api/', views.myservice_request_api, name='myservice_request_api'),
+    
 
 
 

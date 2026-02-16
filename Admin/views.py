@@ -14,6 +14,7 @@ from django.http import JsonResponse
 
 
 
+
 # Create your views here.
 def district(request):
      if 'aid' not in request.session:
@@ -493,9 +494,7 @@ def del_breakdown_servicetype(request, did):
 
 
 
-from django.db.models import Sum
-from Guest.models import tbl_servicecenter
-from Admin.models import tbl_commision
+
 
 def admin_commison(request):
 
