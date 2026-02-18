@@ -10,6 +10,7 @@ from django.db.models import Sum
 from datetime import date
 from django.http import JsonResponse
 from django.urls import reverse
+from django.db.models import Avg, Count
 
 
 
@@ -121,8 +122,8 @@ def viewservicecenter(request):
       placedata=tbl_place.objects.all()
    
       if request.method=="POST":
-         servicecenter=tbl_servicecenter.objects.filter(place=request.POST.get("sel_place"),servicecenter_status=1)
-         return render(request,"User/ViewServiceCenter.html",{'servicecenter':servicecenter})
+         servicecenter=tbl_servicecenter.objects.filter(place=request.POST.get("sel_place"),servicecenter_status=1).annotate(avg_rating=Avg('feedbacks__rating'),total_reviews=Count('feedbacks'))
+         return render(request,"User/ViewServiceCenter.html",{'servicecenter':servicecenter,})
 
       else:
          return render(request,"User/ViewServiceCenter.html",{'districtdata':districtdata,'placedata':placedata,'greeting':greeting})
