@@ -142,7 +142,7 @@ def servicecenter(request):
             tbl_servicecenter.objects.create(servicecenter_name=name,servicecenter_email=email,servicecenter_contact=number,
             servicecenter_address=address,servicecenter_logo=logo,servicecenter_license=license_proof,servicecenter_password=password,
             place=place)
-            return render(request,"Guest/ServiceCenterReg.html",{'msg':"Center Registered"})
+            return render(request,"Guest/ServiceCenterReg.html",{'msg':"Center Registered,wait for admin approval",'placedata':placedata,'districtdata':districtdata})
     else:
         return render(request,"Guest/ServiceCenterReg.html",{'placedata':placedata,'districtdata':districtdata})
 

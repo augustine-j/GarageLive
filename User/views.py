@@ -123,7 +123,7 @@ def viewservicecenter(request):
    
       if request.method=="POST":
          servicecenter=tbl_servicecenter.objects.filter(place=request.POST.get("sel_place"),servicecenter_status=1).annotate(avg_rating=Avg('feedbacks__rating'),total_reviews=Count('feedbacks'))
-         return render(request,"User/ViewServiceCenter.html",{'servicecenter':servicecenter,})
+         return render(request,"User/ViewServiceCenter.html",{'servicecenter':servicecenter,'districtdata':districtdata,'placedata':placedata})
 
       else:
          return render(request,"User/ViewServiceCenter.html",{'districtdata':districtdata,'placedata':placedata,'greeting':greeting})

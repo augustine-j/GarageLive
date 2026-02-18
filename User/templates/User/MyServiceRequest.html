@@ -3,21 +3,21 @@
 
 <style>
   :root {
-    --bg: #0a0e27;
-    --card: #141b2d;
+    --bg: #111827;
+    --card: #1a2233;
     --border: rgba(255, 255, 255, .08);
-    --text: #eef0f4;
-    --muted: #7a8294;
-    --accent: #f0a500;
-    --green: #20c9b0;
-    --blue: #4a9eff;
-    --red: #ff4757;
-    --purple: #a855f7;
-    --orange: #f2994a;
+    --text: #e2e8f0;
+    --muted: #6b7a99;
+    --accent: #22d3ee;
+    --green: #34d399;
+    --blue: #60a5fa;
+    --red: #f87171;
+    --purple: #a78bfa;
+    --orange: #fb923c;
   }
 
   .svc-wrap {
-    background: linear-gradient(135deg, var(--bg) 0%, #0d1321 100%);
+    background: linear-gradient(160deg, #0f172a 0%, #111827 45%, #0f1f2e 100%);
     min-height: 100vh;
     padding: 30px 20px 60px;
     color: var(--text);
@@ -43,7 +43,7 @@
     transform: translateX(-50%);
     width: 600px;
     height: 300px;
-    background: radial-gradient(circle, rgba(240, 165, 0, .08), transparent 70%);
+    background: radial-gradient(circle, rgba(34, 211, 238, .07), transparent 70%);
     pointer-events: none;
     z-index: 0;
   }
@@ -52,7 +52,7 @@
     margin: 0 0 12px;
     font-size: clamp(32px, 4vw, 48px);
     font-weight: 800;
-    background: linear-gradient(135deg, var(--accent) 0%, #ffd700 100%);
+    background: linear-gradient(135deg, #22d3ee 0%, #818cf8 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -105,10 +105,10 @@
   }
 
   .fbtn.active {
-    background: linear-gradient(135deg, rgba(240, 165, 0, .2), rgba(255, 215, 0, .15));
-    border-color: rgba(240, 165, 0, .4);
+    background: linear-gradient(135deg, rgba(34, 211, 238, .18), rgba(129, 140, 248, .12));
+    border-color: rgba(34, 211, 238, .4);
     color: var(--accent);
-    box-shadow: 0 4px 15px rgba(240, 165, 0, .2);
+    box-shadow: 0 4px 15px rgba(34, 211, 238, .18);
   }
 
   .fcount {
@@ -122,7 +122,7 @@
   }
 
   .fbtn.active .fcount {
-    background: rgba(240, 165, 0, .3);
+    background: rgba(34, 211, 238, .28);
     color: #fff;
   }
 
@@ -159,7 +159,7 @@
 
   .cardx:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 48px rgba(240, 165, 0, .15);
+    box-shadow: 0 12px 48px rgba(34, 211, 238, .1);
   }
 
   .cardx:hover::before {
@@ -482,7 +482,7 @@
     background: linear-gradient(90deg, var(--accent), var(--green));
     border-radius: 999px;
     transition: width 1s ease;
-    box-shadow: 0 0 20px rgba(240, 165, 0, .5);
+    box-shadow: 0 0 20px rgba(34, 211, 238, .4);
     max-width: 100%;
     width: 0%;
   }
@@ -562,7 +562,7 @@
   .bd-track-step.active .bd-track-dot {
     background: var(--accent);
     border-color: var(--accent);
-    box-shadow: 0 0 25px rgba(240, 165, 0, .6);
+    box-shadow: 0 0 25px rgba(34, 211, 238, .5);
     animation: activeDot 2s infinite;
   }
 
@@ -658,10 +658,10 @@
 
   /* FOOTER */
   .foot {
-    padding: 18px 24px;
+    padding: 14px 24px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 16px;
     border-top: 1px solid var(--border);
     background: rgba(255, 255, 255, .02);
@@ -691,14 +691,15 @@
   }
 
   .act.primary {
-    background: linear-gradient(135deg, var(--accent), #ffa500);
-    border-color: var(--accent);
-    color: #000;
-    box-shadow: 0 4px 15px rgba(240, 165, 0, .25);
+    background: linear-gradient(135deg, #0e7490, #22d3ee);
+    border-color: rgba(34, 211, 238, .5);
+    color: #0f172a;
+    font-weight: 800;
+    box-shadow: 0 4px 15px rgba(34, 211, 238, .22);
   }
 
   .act.primary:hover {
-    box-shadow: 0 6px 25px rgba(240, 165, 0, .4);
+    box-shadow: 0 6px 25px rgba(34, 211, 238, .38);
     transform: translateY(-2px);
   }
 
@@ -729,7 +730,7 @@
   .modal-backdropx {
     position: fixed;
     inset: 0;
-    background: rgba(10, 14, 39, .85);
+    background: rgba(10, 15, 28, .88);
     backdrop-filter: blur(8px);
     display: none;
     align-items: center;
@@ -777,7 +778,7 @@
     gap: 16px;
     padding: 20px 24px;
     border-bottom: 1px solid var(--border);
-    background: rgba(240, 165, 0, .08);
+    background: rgba(34, 211, 238, .06);
   }
 
   .drawer-title {
@@ -882,13 +883,154 @@
       padding-right: 18px;
     }
   }
+  /* HERO REDESIGN */
+  .hero-eyebrow {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .live-blinker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 71, 87, .35);
+    background: rgba(255, 71, 87, .1);
+    color: #ff6b78;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+  }
+
+  .blink-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ff4757;
+    flex-shrink: 0;
+    animation: livePulse 1.4s ease-in-out infinite;
+    box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7);
+  }
+
+  @keyframes livePulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
+    50% { box-shadow: 0 0 0 7px rgba(255, 71, 87, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+  }
+
+  .hero-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 0 0 14px;
+    position: relative;
+    z-index: 1;
+    flex-wrap: wrap;
+  }
+
+  .hero-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(34,211,238,.22), rgba(129,140,248,.12));
+    border: 1px solid rgba(34,211,238,.35);
+    box-shadow: 0 8px 32px rgba(34,211,238,.18), inset 0 1px 0 rgba(255,255,255,.08);
+    flex-shrink: 0;
+  }
+
+  .hero-icon-wrap svg {
+    width: 30px;
+    height: 30px;
+    stroke: #22d3ee;
+    filter: drop-shadow(0 0 8px rgba(34,211,238,.5));
+  }
+
+  .hero-text-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1;
+    gap: 4px;
+  }
+
+  .hero-sub-word {
+    font-size: clamp(13px, 1.8vw, 17px);
+    font-weight: 500;
+    color: rgba(238,240,244,.5);
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    -webkit-text-fill-color: unset;
+    background: none;
+  }
+
+  .hero-main-word {
+    font-size: clamp(30px, 4.5vw, 52px);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    background: linear-gradient(135deg, #22d3ee 0%, #818cf8 60%, #60a5fa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  /* VEHICLE ACTIONS */
+  .veh-actions {
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 1px solid var(--border);
+  }
+
+  .veh-actions .act {
+    width: 100%;
+    justify-content: center;
+    height: 38px;
+    font-size: 12.5px;
+  }
+
+  /* FOOTER — now minimal */
+  .foot {
+    padding: 14px 24px;
+    border-top: 1px solid var(--border);
+    background: rgba(255, 255, 255, .02);
+  }
+
 </style>
 
 <div class="svc-wrap">
   <div class="svc-container">
 
     <div class="hero">
-      <h1>🚗 Service Request Tracking</h1>
+      <div class="hero-eyebrow">
+        <span class="live-blinker">
+          <span class="blink-dot"></span>
+          LIVE TRACKING
+        </span>
+      </div>
+      <h1 class="hero-title">
+        <span class="hero-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Gear / cog -->
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </span>
+        <span class="hero-text-wrap">
+          <span class="hero-sub-word">Service</span>
+          <span class="hero-main-word">Request Tracking</span>
+        </span>
+      </h1>
       <p>Track each service request with real-time status updates, progress indicators, and detailed work notes.</p>
     </div>
 
@@ -1079,74 +1221,71 @@
                 <strong>{{i.vehicle.model.brand.brand_name}} {{ i.vehicle.model.model_name }}</strong>
                 <span>{{ i.vehicle.vehicle_number }}</span>
               </div>
+              <div class="veh-actions">
+                <a class="act primary" href="{% url 'User:worknote' i.id %}">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                  </svg>
+                  View Notes
+                </a>
+
+                {% if i.booking_status > 11 %}
+                <a class="act secondary" href="{% url 'User:invoice' i.id %}">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                  View Invoice
+                </a>
+                {% endif %}
+
+                {# Pay Now — independent of feedback, only depends on status #}
+                <div class="pay-section" data-payment-url="{% url 'User:payment' i.id %}">
+                  {% if i.booking_status == 11 %}
+                  <a class="act success" href="{% url 'User:payment' i.id %}">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="5" width="20" height="14" rx="2"/>
+                      <path d="M2 10h20"/>
+                    </svg>
+                    Pay Now
+                  </a>
+                  {% endif %}
+                </div>
+
+                {% if i.booking_status >= 11 %}
+                {% if not i.feedback %}
+                <a class="act success" href="{% url 'User:feedback' i.id %}">
+                  ⭐ Give Feedback
+                </a>
+                {% else %}
+                <span class="act secondary" style="cursor:default;">
+                  {% for star in "12345" %}
+                  {% if forloop.counter <= i.feedback.rating %} <span style="color:gold;">★</span>
+                  {% else %}
+                  <span style="color:#ccc;">★</span>
+                  {% endif %}
+                  {% endfor %}
+                </span>
+
+                {% if i.booking_status >= 9 and i.feedback %}
+                <button type="button" class="act secondary" data-open-feedback="1" data-id="{{ i.feedback.id }}"
+                  data-edit-url="{% url 'User:edit_feedback' i.feedback.id %}"
+                  data-delete-url="{% url 'User:delete_feedback' i.feedback.id %}"
+                  data-center="{{ i.servicecenter.servicecenter_name }}" data-rating="{{ i.feedback.rating }}"
+                  data-content="{{ i.feedback.feedback_content|escapejs }}">
+                  👁 View Feedback
+                </button>
+                {% endif %}
+
+                {% endif %}
+                {% endif %}
+              </div>
             </div>
           </div>
 
           <div class="foot">
             <p class="smallnote">Work notes update as the service progresses</p>
-
-            <div class="actions">
-              <a class="act primary" href="{% url 'User:worknote' i.id %}">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                </svg>
-                View Notes
-              </a>
-
-              {% if i.booking_status > 11 %}
-              <a class="act secondary" href="{% url 'User:invoice' i.id %}">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                </svg>
-                View Invoice
-              </a>
-              {% endif %}
-
-              <div class="pay-section" data-payment-url="{% url 'User:payment' i.id %}">
-              </div>
-
-
-
-
-              {% if i.booking_status >= 11 %}
-              {% if not i.feedback %}
-              <a class="act success" href="{% url 'User:feedback' i.id %}">
-                ⭐ Give Feedback
-              </a>
-              {% else %}
-              <!-- Stars -->
-              <span class="act secondary" style="cursor:default;">
-                {% for star in "12345" %}
-                {% if forloop.counter <= i.feedback.rating %} <span style="color:gold;">★</span>
-              {% else %}
-              <span style="color:#ccc;">★</span>
-              {% endif %}
-              {% endfor %}
-              </span>
-
-              <!-- View Feedback Button -->
-              {% if i.booking_status >= 9 and i.feedback %}
-              <button type="button" class="act secondary" data-open-feedback="1" data-id="{{ i.feedback.id }}"
-                data-edit-url="{% url 'User:edit_feedback' i.feedback.id %}"
-                data-delete-url="{% url 'User:delete_feedback' i.feedback.id %}"
-                data-center="{{ i.servicecenter.servicecenter_name }}" data-rating="{{ i.feedback.rating }}"
-                data-content="{{ i.feedback.feedback_content|escapejs }}">
-                👁 View Feedback
-              </button>
-
-              {% endif %}
-
-              {% endif %}
-              {% endif %}
-
-
-
-
-
-
-            </div>
           </div>
 
         </div>
@@ -1374,34 +1513,29 @@
   ====================================================== */
  function updateActions(card, item) {
 
-  const actionBox = card.querySelector(".actions");
+  const actionBox = card.querySelector(".veh-actions");
   if (!actionBox) return;
 
-  // remove old dynamic buttons
+  // Remove only dynamically added buttons
   actionBox.querySelectorAll(".dynamic-btn").forEach(b => b.remove());
 
-  /* ---------------- PAYMENT BUTTON ---------------- */
-  if (item.status === 11) {
+  const status = parseInt(item.status);  // 🔥 important
 
-    const payUrl = card.dataset.paymentUrl;  // 🔥 get from HTML
+  /* ---------------- PAYMENT BUTTON ---------------- */
+  if (status === 11) {
+
+    const payUrl = card.dataset.paymentUrl;
 
     const pay = document.createElement("a");
     pay.href = payUrl;
-    pay.className = "act success dynamic-btn";
-    pay.innerHTML = `
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
-           stroke="currentColor" stroke-width="2">
-        <rect x="2" y="5" width="20" height="14" rx="2"/>
-        <path d="M2 10h20"/>
-      </svg>
-      Pay Amount
-    `;
+    pay.className = "act primary dynamic-btn";
+    pay.innerHTML = "Pay Now";
 
     actionBox.appendChild(pay);
   }
 
   /* ---------------- INVOICE BUTTON ---------------- */
-  if (item.status > 11) {
+  if (status > 11) {
 
     const invoice = document.createElement("a");
     invoice.href = `/User/invoice/${item.id}/`;
@@ -1410,9 +1544,8 @@
 
     actionBox.appendChild(invoice);
   }
-
-  
 }
+
 
 
   /* ======================================================

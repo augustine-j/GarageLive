@@ -6,7 +6,7 @@ class NoCacheMiddleware:
         response = self.get_response(request)
         
         # Apply no-cache headers to all pages except login/static files
-        if request.path not in ['/login/', '/static/']:  # Adjust paths as needed
+        if not request.path.startswith('/static/'):
             response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
             response['Pragma'] = 'no-cache'
             response['Expires'] = '0'

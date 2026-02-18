@@ -137,5 +137,5 @@ EMAIL_HOST_PASSWORD = 'gimvlwciqzijgnoo'
 
 
 
-SESSION_COOKIE_AGE = 1200  # 20 minutes in seconds
+SESSION_COOKIE_AGE = 2400  # 40 minutes in seconds
 SESSION_SAVE_EVERY_REQUEST = True 

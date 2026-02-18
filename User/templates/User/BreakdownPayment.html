@@ -13,21 +13,20 @@
 
 /* PAGE */
 .pay-page{
-  min-height:100vh;
+  min-height:calc(100vh - 140px); /* accounts for header */
   background:var(--bg);
+  padding:60px 20px 80px;
   display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:40px 20px;
+  justify-content:center; /* horizontal center only */
 }
+
 
 .payment-container{
   width:100%;
   max-width:1000px;
-  display:grid;
-  grid-template-columns:1fr 400px;
-  gap:30px;
+  margin:auto;
 }
+
 
 /* BREAKDOWN INFO */
 .breakdown-box{
@@ -231,7 +230,7 @@
   font-size:14px;
 }
 
-.row{
+.card-row{
   display:flex;
   gap:12px;
 }
@@ -404,7 +403,8 @@
             <input type="text" id="cardName" placeholder="Card Holder Name">
           </div>
 
-          <div class="row">
+          <div class="card-row">
+
             <div class="input-group" style="flex:1;">
               <input type="text" id="cardExpiry" placeholder="MM/YY">
             </div>

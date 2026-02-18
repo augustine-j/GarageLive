@@ -2,6 +2,7 @@
 {% block content %}
 
 <style>
+  
 :root{
   --rzp-blue:#0d6efd;
   --border:#e5e7eb;
@@ -23,9 +24,9 @@
 
 .payment-container{
   width:100%;
-  max-width:1100px;
-  display:grid;
-  grid-template-columns:1fr 420px;
+  max-width:680px;
+  display:flex;
+  flex-direction:column;
   gap:30px;
 }
 
@@ -214,7 +215,8 @@
   padding:0 12px;
 }
 
-.row{
+.pay-row {
+
   display:flex;
   gap:12px;
 }
@@ -282,13 +284,23 @@
 @keyframes draw{to{stroke-dashoffset:0}}
 
 @media(max-width:900px){
-  .payment-container{grid-template-columns:1fr;}
   .rzp-body{grid-template-columns:1fr;}
 }
+
+
+
 </style>
+
+
 
 <div class="pay-page">
   <div class="payment-container">
+
+    <!-- PAGE TITLE -->
+    <div style="text-align:center;">
+      <h2 style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:4px;">Complete Your Payment</h2>
+      <p style="color:var(--muted);font-size:14px;margin:0;">Review your booking charges and pay securely</p>
+    </div>
 
     <!-- BILL SUMMARY -->
     <div class="bill-box">
@@ -381,7 +393,8 @@
             <input type="text" id="cardName" placeholder="Card Holder Name">
           </div>
 
-          <div class="row">
+          <div class="pay-row">
+
             <div class="input-group" style="flex:1;">
               <input type="text" id="cardExpiry" placeholder="MM/YY">
             </div>
