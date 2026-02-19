@@ -441,7 +441,7 @@ def editmodel(request,eid):
 
 
 def logout(request):
-    request.session.flush()
+    del request.session['aid']
     return redirect("Guest:Login")
 
 

@@ -1,353 +1,518 @@
 {% extends 'ServiceCenter/Head_service.html' %}
 {% block content %}
 
-
 <style>
-  .blink-dot {
-    width: 9px;
-    height: 9px;
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg-base: #f4f6f9;
+    --bg-surface: #ffffff;
+    --bg-card: #ffffff;
+    --bg-elevated: #f8f9fc;
+    --border: #e4e8f0;
+    --border-bright: #d0d6e4;
+    --accent: #e67e00;
+    --accent-dim: rgba(230,126,0,0.08);
+    --accent-glow: rgba(230,126,0,0.18);
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --cyan: #0891b2;
+    --cyan-bg: #ecfeff;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --orange: #d97706;
+    --orange-bg: #fffbeb;
+    --text-primary: #1a2035;
+    --text-secondary: #5a6480;
+    --text-dim: #9aa0b4;
+    --font-head: 'Plus Jakarta Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body, .main-panel {
+    background: var(--bg-base) !important;
+    font-family: var(--font-body) !important;
+    color: var(--text-primary) !important;
+  }
+
+  /* ── PAGE ── */
+  .bd-page { padding: 28px 24px; min-height: 100vh; }
+
+  /* ── HEADER ── */
+  .bd-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .bd-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0;
+    width: 60px; height: 2px;
+    background: var(--red);
+    border-radius: 2px;
+  }
+
+  .bd-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  .bd-title {
+    font-family: var(--font-head);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.2;
+  }
+  .live-dot {
+    width: 8px; height: 8px;
     border-radius: 50%;
+    background: var(--red);
+    flex-shrink: 0;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.3; transform: scale(0.85); }
+  }
+  .bd-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  /* ── SEARCH ── */
+  .bd-search { position: relative; width: 270px; }
+  .bd-search input {
+    width: 100%;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 9px 14px 9px 36px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    box-shadow: var(--shadow-sm);
+  }
+  .bd-search input::placeholder { color: var(--text-dim); }
+  .bd-search input:focus {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(220,38,38,0.12);
+  }
+  .bd-search .search-icon {
+    position: absolute;
+    left: 11px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    font-size: 15px;
+    pointer-events: none;
+  }
+
+  /* ── FILTER CHIPS ── */
+  .bd-stats {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .stat-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all .18s;
+    user-select: none;
+    box-shadow: var(--shadow-sm);
+  }
+  .stat-chip:hover { border-color: var(--chip-color, var(--accent)); background: var(--bg-elevated); }
+  .stat-chip.active {
+    border-color: var(--chip-color, var(--accent));
+    background: var(--chip-bg, var(--accent-dim));
+  }
+  .stat-chip .chip-label { font-size: 12.5px; font-weight: 600; color: var(--text-secondary); }
+  .stat-chip.active .chip-label { color: var(--chip-color, var(--accent)); }
+  .stat-chip .chip-count {
+    font-family: var(--font-mono);
+    font-size: 12px; font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--bg-elevated);
+    border-radius: 100px;
+    padding: 1px 8px;
+    min-width: 22px; text-align: center;
+    border: 1px solid var(--border);
+  }
+  .stat-chip.active .chip-count {
+    background: var(--chip-color, var(--accent));
+    color: #fff;
+    border-color: transparent;
+  }
+
+  /* ── TABLE ── */
+  .bd-table-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+  .bd-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .bd-table thead th {
+    background: #f8f9fc;
+    color: var(--text-secondary);
+    font-size: 11.5px; font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .bd-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .12s;
+  }
+  .bd-table tbody tr:last-child { border-bottom: none; }
+  .bd-table tbody tr:hover { background: #f8f9fc; }
+  .bd-table td { padding: 14px 16px; vertical-align: middle; color: var(--text-primary); }
+
+  /* ── CELL PIECES ── */
+  .sno { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+
+  .user-name  { font-weight: 600; font-size: 13.5px; color: var(--text-primary); }
+  .user-email { font-size: 11.5px; color: var(--text-secondary); margin-top: 2px; }
+
+  .contact-num { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
+
+  .date-badge {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+    color: var(--blue); background: var(--blue-bg);
+    border: 1px solid rgba(37,99,235,0.15);
+    border-radius: 20px; padding: 3px 10px;
+    display: inline-block; white-space: nowrap;
+  }
+
+  .service-tag {
     display: inline-block;
-    margin-right: 6px;
-    background-color: #dc3545;
-    animation: blink 1.4s infinite;
+    font-size: 11.5px; font-weight: 600;
+    color: var(--orange); background: var(--orange-bg);
+    border: 1px solid rgba(217,119,6,0.2);
+    border-radius: 20px; padding: 3px 10px;
   }
-  @keyframes blink {
-    0%,100% { opacity: 1; }
-    50% { opacity: .3; }
+
+  .complaint-text {
+    font-size: 13px; color: var(--text-secondary);
+    line-height: 1.5; max-width: 220px;
   }
+
+  .vehicle-name  { font-weight: 600; font-size: 13px; color: var(--text-primary); }
+  .vehicle-plate { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+  .vehicle-img {
+    width: 130px; height: 88px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    display: block;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ── STATUS BADGE ── */
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11.5px; font-weight: 600;
+    border-radius: 20px; padding: 4px 12px;
+    border: 1px solid;
+  }
+  .sb-pending    { color: #b45309; background: #fffbeb; border-color: rgba(217,119,6,0.25); }
+  .sb-accepted   { color: var(--green); background: var(--green-bg); border-color: rgba(22,163,74,0.25); }
+  .sb-onway      { color: var(--blue);  background: var(--blue-bg);  border-color: rgba(37,99,235,0.25); }
+  .sb-arrived    { color: var(--cyan);  background: var(--cyan-bg);  border-color: rgba(8,145,178,0.25); }
+  .sb-inprogress { color: var(--purple); background: var(--purple-bg); border-color: rgba(124,58,237,0.25); }
+  .sb-completed  { color: var(--green); background: var(--green-bg); border-color: rgba(22,163,74,0.25); }
+  .sb-rejected   { color: var(--red);   background: var(--red-bg);   border-color: rgba(220,38,38,0.25); }
+  .sb-billed     { color: var(--green); background: var(--green-bg); border-color: rgba(22,163,74,0.25); }
+  .sb-awaiting   { color: var(--orange); background: var(--orange-bg); border-color: rgba(217,119,6,0.25); }
+
+  /* ── ACTION BUTTONS ── */
+  .action-row { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .btn-accept {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--green-bg); border: 1px solid rgba(22,163,74,0.3);
+    color: var(--green); font-size: 12px; font-weight: 600;
+    font-family: var(--font-body); border-radius: 20px;
+    padding: 5px 14px; text-decoration: none; transition: all .15s;
+  }
+  .btn-accept:hover { background: rgba(22,163,74,0.15); color: var(--green); }
+
+  .btn-reject {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--red-bg); border: 1px solid rgba(220,38,38,0.25);
+    color: var(--red); font-size: 12px; font-weight: 600;
+    font-family: var(--font-body); border-radius: 20px;
+    padding: 5px 14px; text-decoration: none; transition: all .15s;
+  }
+  .btn-reject:hover { background: rgba(220,38,38,0.12); color: var(--red); }
+
+  .btn-assign {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--blue-bg); border: 1px solid rgba(37,99,235,0.25);
+    color: var(--blue); font-size: 12px; font-weight: 600;
+    font-family: var(--font-body); border-radius: 20px;
+    padding: 5px 14px; text-decoration: none; transition: all .15s;
+  }
+  .btn-assign:hover { background: rgba(37,99,235,0.12); color: var(--blue); }
+
+  .tech-assigned {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 600; color: var(--text-primary);
+  }
+  .tech-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(124,58,237,0.2);
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-row td {
+    text-align: center; padding: 60px 20px;
+    color: var(--text-dim); background: var(--bg-elevated);
+  }
+  .empty-icon  { font-size: 40px; margin-bottom: 10px; display: block; opacity: 0.4; }
+  .empty-label { font-size: 17px; color: var(--text-secondary); display: block; }
 </style>
 
-<div class="container-xxl py-4">
-  <div class="row">
-    <div class="col-lg-12 grid-margin stretch-card">
-      <div class="card shadow-sm">
-        <div class="card-body">
 
-          <!-- Header -->
-          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-            <div>
-              <h4 class="card-title mb-1">
-                <span class="blink-dot"></span> Breakdown Requests
-              </h4>
-              <p class="card-description mb-0">
-                Emergency roadside assistance requests.
-              </p>
-            </div>
+<div class="bd-page">
 
-            <div class="input-group" style="max-width:300px;">
-              <span class="input-group-text">
-                <i class="mdi mdi-magnify"></i>
-              </span>
-              <input id="bdSearch" type="text" class="form-control" placeholder="Search breakdowns...">
-            </div>
-          </div>
-
-          <!-- Status Filter Pills -->
-
-<div id="statusFilters" class="d-flex flex-wrap gap-2 mb-3">       
-                    <button type="button" class="btn btn-sm btn-outline-warning active" data-status="all">
-                      All <span class="badge bg-warning ms-1" id="cnt-all">0</span>
-                    </button>
-
-                  <button type="button" class="btn btn-sm btn-outline-danger" data-status="pending">
-                    Pending <span class="badge bg-danger ms-1" id="cnt-pending">0</span>
-                  </button>
-
-                  <button type="button" class="btn btn-sm btn-outline-success" data-status="accepted">
-                    Accepted <span class="badge bg-success ms-1" id="cnt-accepted">0</span>
-                  </button>
-
-                  <button type="button" class="btn btn-sm btn-outline-info" data-status="inprogress">
-                    In Progress <span class="badge bg-info ms-1" id="cnt-inprogress">0</span>
-                  </button>
-
-                  <button type="button" class="btn btn-sm btn-outline-success" data-status="completed">
-                    Completed <span class="badge bg-success ms-1" id="cnt-completed">0</span>
-                  </button>
-
-                  <button type="button" class="btn btn-sm btn-outline-dark" data-status="rejected">
-                    Rejected <span class="badge bg-danger ms-1" id="cnt-rejected">0</span>
-                  </button>
-              </div>
-
-          <form method="post">
-            {% csrf_token %}
-
-            <div class="table-responsive">
-              <table class="table table-striped align-middle" id="bdTable">
-                <thead>
-                  <tr>
-                    <th style="width:60px;">Sno</th>
-                    <th>User</th>
-                    <th>Contact</th>
-                    <th>Date</th>
-                    <th>Service Type</th>
-                    <th>Complaint</th>
-                    <th>Vehicle</th>
-                    <th style="width:160px;">Vehicle Image</th>
-                    <th style="width:160px;">Status</th>
-                    <th style="width:220px;">Action</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {% for i in services %}
-                 
-                 <tr data-status="{% if i.booking.breakdown_status == 0 %}pending{% elif i.booking.breakdown_status == 2 %}rejected{% elif i.booking.breakdown_status == 5 or i.billing_status %}completed{% elif i.booking.breakdown_status == 1 and i.progress_step == 0 %}accepted{% elif i.booking.breakdown_status == 1 and i.progress_step > 0 %}inprogress{% else %}unknown{% endif %}">
-
-
-
-
-                    <td class="fw-semibold">{{ forloop.counter }}</td>
-
-                    <!-- User -->
-                    <td>
-                      <div class="d-flex flex-column">
-                        <span class="fw-semibold">{{ i.booking.user.user_name }}</span>
-                        <small class="text-muted">{{ i.booking.user.user_email }}</small>
-                      </div>
-                    </td>
-
-                    <td>{{ i.booking.user.contact_number }}</td>
-
-                    <td>
-                      <span class="badge badge-outline-primary">
-                        {{ i.booking.breakdown_date|date:"d M Y" }}
-                      </span>
-                    </td>
-
-                    <td>
-                    <span class="badge bg-warning text-dark">
-                       {{ i.servicecenter_breakdown_service.servicetype.servicetype_name }}
-                     </span>
-                      </td>
-
-
-                    <td style="max-width:260px;">
-                      <div class="text-wrap">{{ i.booking.breakdown_complaint }}</div>
-                    </td>
-
-                    <!-- Vehicle -->
-                    <td>
-                      <div class="d-flex flex-column">
-                        <span class="fw-semibold">
-                          {{ i.booking.vehicle.model.brand.brand_name }}
-                          {{ i.booking.vehicle.model.model_name }}
-                        </span>
-                        <small class="text-muted">{{ i.booking.vehicle.vehicle_number }}</small>
-                      </div>
-                    </td>
-
-                    <!-- Vehicle Image -->
-                    <td>
-                      <img
-                        src="{{ i.booking.vehicle.vehicle_photo.url }}"
-                        alt="Vehicle"
-                        class="img-fluid rounded shadow-sm"
-                        style="width:150px; height:110px; object-fit:cover;"
-                      />
-                    </td>
-
-                    <!-- Status -->
-                    <td>
-                    
-
-                      {% if i.booking.breakdown_status == 0 %}
-                        Pending Approval
-
-                      {% elif i.booking.breakdown_status == 2 %}
-                        Rejected
-
-                      {% else %}
-                        {# ========== ACCEPTED OR BEYOND ========== #}
-
-                        {% if i.servicecenter_breakdown_service.servicetype.servicetype_name == "Fuel Refill" %}
-                          {% if i.progress_step == 0 %}
-                            Accepted
-                          {% elif i.progress_step == 1 %}
-                            On the Way
-                          {% elif i.progress_step == 2 %}
-                            Arrived
-                          {% elif i.progress_step == 3 %}
-                            Fueled up
-                          {% else %}
-                            Completed
-                          {% endif %}
-
-                        {% elif i.servicecenter_breakdown_service.servicetype.servicetype_name == "Battery Jump Start" %}
-                          {% if i.progress_step == 0 %}
-                            Accepted
-                          {% elif i.progress_step == 1 %}
-                            On the way
-                          {% elif i.progress_step == 2 %}
-                            Arrived
-                          {% elif i.progress_step == 3 %}
-                            Jump started
-                            
-                          {% else %}
-                            Completed
-                          {% endif %}
-
-                        {% elif i.servicecenter_breakdown_service.servicetype.servicetype_name == "Tyre Puncture Repair" %}
-                          {% if i.progress_step == 0 %}
-                            Accepted
-                          {% elif i.progress_step == 1 %}
-                            On the way
-                          {% elif i.progress_step == 2 %}
-                            Arrived
-                          {% elif i.progress_step == 3 %}
-                            Tyre changed
-                          {% else %}
-                            Completed
-                          {% endif %}
-
-                        {% elif i.servicecenter_breakdown_service.servicetype.servicetype_name == "Towing Service" %}
-                          {% if i.progress_step == 0 %}
-                            Accepted
-                          {% elif i.progress_step == 1 %}
-                            On the way
-                          {% elif i.progress_step == 2 %}
-                            Vehicle reached
-                          {% elif i.progress_step == 3 %}
-                            Towing
-                          {% else %}
-                            Completed
-                          {% endif %}
-
-                        {% else %}
-                          In progress
-                        {% endif %}
-
-                      {% endif %}
-
-                </td>
-
-
-                    <!-- Action -->
-                   <td>
-                              {% if i.booking.breakdown_status == 0 %}
-                                <a class="btn btn-sm btn-success"
-                                  href="{% url 'ServiceCenter:acceptbreakdown' i.booking.id %}">
-                                  Accept
-                                </a>
-                                <a class="btn btn-sm btn-danger"
-                                  href="{% url 'ServiceCenter:rejectbreakdown' i.booking.id %}">
-                                  Reject
-                                </a>
-
-                              {% elif i.booking.breakdown_status == 1 %}
-                                {% if not i.booking.technician %}
-                                  <a class="btn btn-sm btn-primary"
-                                    href="{% url 'ServiceCenter:breakdown_technician' i.booking.id %}">
-                                    Assign Technician
-                                  </a>
-                                {% else %}
-                                  <small class="text-muted">
-                                    Technician:
-                                    <b>{{ i.booking.technician.technician_name }}</b>
-                                  </small>
-                                {% endif %}
-
-                              {% elif i.progress_step >= 1 and not i.billing_status %}
-                                <span class="badge bg-warning text-dark">
-                                  Awaiting Technician Billing
-                                </span>
-
-                              {% elif i.billing_status %}
-                                <span class="badge bg-success">
-                                  Billed
-                                </span>
-
-                              {% else %}
-                                <span class="text-muted">No action</span>
-                              {% endif %}
-                            </td>
-
-
-                  </tr>
-
-                  {% empty %}
-                  <tr>
-                    <td colspan="9" class="text-center py-4 text-muted">
-                      No breakdown requests found.
-                    </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-          </form>
-
-        </div>
+  <!-- HEADER -->
+  <div class="bd-header">
+    <div>
+      <div class="bd-eyebrow">Emergency Assistance</div>
+      <div class="bd-title">
+        <span class="live-dot"></span>
+        Breakdown Requests
       </div>
+      <div class="bd-subtitle">Emergency roadside assistance requests from customers</div>
+    </div>
+    <div class="bd-search">
+      <span class="search-icon mdi mdi-magnify"></span>
+      <input type="text" id="bdSearch" placeholder="Search breakdowns…">
     </div>
   </div>
+
+  <!-- FILTER CHIPS -->
+  <div class="bd-stats" id="statusFilters">
+    <div class="stat-chip active" data-status="all" style="--chip-color:#e67e00; --chip-bg:rgba(230,126,0,0.08);">
+      <span class="chip-label">All</span>
+      <span class="chip-count" id="cnt-all">0</span>
+    </div>
+    <div class="stat-chip" data-status="pending" style="--chip-color:#b45309; --chip-bg:#fffbeb;">
+      <span class="chip-label">Pending</span>
+      <span class="chip-count" id="cnt-pending">0</span>
+    </div>
+    <div class="stat-chip" data-status="accepted" style="--chip-color:#16a34a; --chip-bg:#f0fdf4;">
+      <span class="chip-label">Accepted</span>
+      <span class="chip-count" id="cnt-accepted">0</span>
+    </div>
+    <div class="stat-chip" data-status="inprogress" style="--chip-color:#0891b2; --chip-bg:#ecfeff;">
+      <span class="chip-label">In Progress</span>
+      <span class="chip-count" id="cnt-inprogress">0</span>
+    </div>
+    <div class="stat-chip" data-status="completed" style="--chip-color:#7c3aed; --chip-bg:#f5f3ff;">
+      <span class="chip-label">Completed</span>
+      <span class="chip-count" id="cnt-completed">0</span>
+    </div>
+    <div class="stat-chip" data-status="rejected" style="--chip-color:#dc2626; --chip-bg:#fef2f2;">
+      <span class="chip-label">Rejected</span>
+      <span class="chip-count" id="cnt-rejected">0</span>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <form method="post">
+    {% csrf_token %}
+    <div class="bd-table-wrap">
+      <div style="overflow-x: auto;">
+        <table class="bd-table" id="bdTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Customer</th>
+              <th>Contact</th>
+              <th>Date</th>
+              <th>Service Type</th>
+              <th>Complaint</th>
+              <th>Vehicle</th>
+              <th>Photo</th>
+              <th>Status</th>
+              <th>Operations</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in services %}
+            <tr data-status="{% if i.booking.breakdown_status == 0 %}pending{% elif i.booking.breakdown_status == 2 %}rejected{% elif i.booking.breakdown_status == 5 or i.billing_status %}completed{% elif i.booking.breakdown_status == 1 and i.progress_step == 0 %}accepted{% elif i.booking.breakdown_status == 1 and i.progress_step > 0 %}inprogress{% else %}unknown{% endif %}">
+
+              <td><span class="sno">{{ forloop.counter }}</span></td>
+
+              <!-- Customer -->
+              <td>
+                <div class="user-name">{{ i.booking.user.user_name }}</div>
+                <div class="user-email">{{ i.booking.user.user_email }}</div>
+              </td>
+
+              <td><span class="contact-num">{{ i.booking.user.contact_number }}</span></td>
+
+              <td><span class="date-badge">{{ i.booking.breakdown_date|date:"d M Y" }}</span></td>
+
+              <td>
+                <span class="service-tag">
+                  {{ i.servicecenter_breakdown_service.servicetype.servicetype_name }}
+                </span>
+              </td>
+
+              <td>
+                <div class="complaint-text">{{ i.booking.breakdown_complaint }}</div>
+              </td>
+
+              <!-- Vehicle -->
+              <td>
+                <div class="vehicle-name">
+                  {{ i.booking.vehicle.model.brand.brand_name }}
+                  {{ i.booking.vehicle.model.model_name }}
+                </div>
+                <div class="vehicle-plate">{{ i.booking.vehicle.vehicle_number }}</div>
+              </td>
+
+              <td>
+                <img src="{{ i.booking.vehicle.vehicle_photo.url }}" alt="Vehicle" class="vehicle-img"/>
+              </td>
+
+              <!-- STATUS -->
+              <td>
+                {% if i.booking.breakdown_status == 0 %}
+                  <span class="status-badge sb-pending">⏳ Pending</span>
+
+                {% elif i.booking.breakdown_status == 2 %}
+                  <span class="status-badge sb-rejected">✕ Rejected</span>
+
+                {% else %}
+                  {% if i.servicecenter_breakdown_service.servicetype.servicetype_name == "Fuel Refill" %}
+                    {% if i.progress_step == 0 %}<span class="status-badge sb-accepted">✓ Accepted</span>
+                    {% elif i.progress_step == 1 %}<span class="status-badge sb-onway">🚗 On the Way</span>
+                    {% elif i.progress_step == 2 %}<span class="status-badge sb-arrived">📍 Arrived</span>
+                    {% elif i.progress_step == 3 %}<span class="status-badge sb-inprogress">⛽ Fueled Up</span>
+                    {% else %}<span class="status-badge sb-completed">✓ Completed</span>
+                    {% endif %}
+
+                  {% elif i.servicecenter_breakdown_service.servicetype.servicetype_name == "Battery Jump Start" %}
+                    {% if i.progress_step == 0 %}<span class="status-badge sb-accepted">✓ Accepted</span>
+                    {% elif i.progress_step == 1 %}<span class="status-badge sb-onway">🚗 On the Way</span>
+                    {% elif i.progress_step == 2 %}<span class="status-badge sb-arrived">📍 Arrived</span>
+                    {% elif i.progress_step == 3 %}<span class="status-badge sb-inprogress">🔋 Jump Started</span>
+                    {% else %}<span class="status-badge sb-completed">✓ Completed</span>
+                    {% endif %}
+
+                  {% elif i.servicecenter_breakdown_service.servicetype.servicetype_name == "Tyre Puncture Repair" %}
+                    {% if i.progress_step == 0 %}<span class="status-badge sb-accepted">✓ Accepted</span>
+                    {% elif i.progress_step == 1 %}<span class="status-badge sb-onway">🚗 On the Way</span>
+                    {% elif i.progress_step == 2 %}<span class="status-badge sb-arrived">📍 Arrived</span>
+                    {% elif i.progress_step == 3 %}<span class="status-badge sb-inprogress">🔧 Tyre Changed</span>
+                    {% else %}<span class="status-badge sb-completed">✓ Completed</span>
+                    {% endif %}
+
+                  {% elif i.servicecenter_breakdown_service.servicetype.servicetype_name == "Towing Service" %}
+                    {% if i.progress_step == 0 %}<span class="status-badge sb-accepted">✓ Accepted</span>
+                    {% elif i.progress_step == 1 %}<span class="status-badge sb-onway">🚗 On the Way</span>
+                    {% elif i.progress_step == 2 %}<span class="status-badge sb-arrived">📍 Vehicle Reached</span>
+                    {% elif i.progress_step == 3 %}<span class="status-badge sb-inprogress">🚛 Towing</span>
+                    {% else %}<span class="status-badge sb-completed">✓ Completed</span>
+                    {% endif %}
+
+                  {% else %}
+                    <span class="status-badge sb-inprogress">⚙ In Progress</span>
+                  {% endif %}
+                {% endif %}
+              </td>
+
+              <!-- ACTION -->
+              <td>
+                {% if i.booking.breakdown_status == 0 %}
+                  <div class="action-row">
+                    <a class="btn-accept" href="{% url 'ServiceCenter:acceptbreakdown' i.booking.id %}">✓ Accept</a>
+                    <a class="btn-reject" href="{% url 'ServiceCenter:rejectbreakdown' i.booking.id %}">✕ Reject</a>
+                  </div>
+
+                {% elif i.booking.breakdown_status == 1 %}
+                  {% if not i.booking.technician %}
+                    <a class="btn-assign" href="{% url 'ServiceCenter:breakdown_technician' i.booking.id %}">⚙ Assign Technician</a>
+                  {% else %}
+                    <div class="tech-assigned">
+                      <span class="tech-avatar">{{ i.booking.technician.technician_name|first|upper }}</span>
+                      {{ i.booking.technician.technician_name }}
+                    </div>
+                  {% endif %}
+
+                {% elif i.progress_step >= 1 and not i.billing_status %}
+                  <span class="status-badge sb-awaiting">⏳ Awaiting Billing</span>
+
+                {% elif i.billing_status %}
+                  <span class="status-badge sb-billed">✓ Billed</span>
+
+                {% else %}
+                  <span style="color:var(--text-dim); font-size:12px; font-style:italic;">No action</span>
+                {% endif %}
+              </td>
+
+            </tr>
+            {% empty %}
+            <tr class="empty-row">
+              <td colspan="10">
+                <span class="empty-icon">🚗</span>
+                <span class="empty-label">No breakdown requests found</span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </form>
+
 </div>
-
-<script>
-(function () {
-  const searchInput = document.getElementById("bdSearch");
-  const rows = Array.from(document.querySelectorAll("#bdTable tbody tr"));
-  const buttons = document.querySelectorAll("#statusFilters button");
-
-  let activeStatus = "all";
-
-  const counters = {
-    all: 0,
-    pending: 0,
-    accepted: 0,
-    inprogress: 0,
-    completed: 0,
-    rejected: 0
-  };
-
-  // 🔹 INITIAL COUNT (RUNS ON PAGE LOAD)
-  rows.forEach(row => {
-    const st = row.dataset.status;
-    counters.all++;
-    if (counters[st] !== undefined) {
-      counters[st]++;
-    }
-  });
-
-  // 🔹 UPDATE BADGES
-  Object.keys(counters).forEach(key => {
-    const badge = document.getElementById(`cnt-${key}`);
-    if (badge) {
-      badge.innerText = counters[key];
-    }
-  });
-
-  function applyFilters() {
-    const q = searchInput.value.toLowerCase().trim();
-
-    rows.forEach(row => {
-      const matchesSearch = row.innerText.toLowerCase().includes(q);
-      const matchesStatus =
-        activeStatus === "all" ||
-        row.dataset.status === activeStatus;
-
-      row.style.display = (matchesSearch && matchesStatus) ? "" : "none";
-    });
-  }
-
-  // 🔹 STATUS BUTTONS
-  buttons.forEach(btn => {
-    btn.addEventListener("click", function () {
-      buttons.forEach(b => b.classList.remove("active"));
-      this.classList.add("active");
-
-      activeStatus = this.dataset.status;
-      applyFilters();
-    });
-  });
-
-  // 🔹 SEARCH
-  searchInput.addEventListener("keyup", applyFilters);
-})();
-</script>
-
 
 
 {% if msg %}
@@ -357,8 +522,47 @@
 </script>
 {% endif %}
 
+<script>
+(function () {
+  const searchInput = document.getElementById("bdSearch");
+  const rows        = Array.from(document.querySelectorAll("#bdTable tbody tr"));
+  const chips       = document.querySelectorAll("#statusFilters .stat-chip");
 
+  let activeStatus = "all";
 
+  const counters = { all:0, pending:0, accepted:0, inprogress:0, completed:0, rejected:0 };
 
+  rows.forEach(row => {
+    const st = row.dataset.status;
+    counters.all++;
+    if (counters[st] !== undefined) counters[st]++;
+  });
+
+  Object.keys(counters).forEach(key => {
+    const el = document.getElementById(`cnt-${key}`);
+    if (el) el.innerText = counters[key];
+  });
+
+  function applyFilters() {
+    const q = searchInput.value.toLowerCase().trim();
+    rows.forEach(row => {
+      const matchSearch = row.innerText.toLowerCase().includes(q);
+      const matchStatus = activeStatus === "all" || row.dataset.status === activeStatus;
+      row.style.display = (matchSearch && matchStatus) ? "" : "none";
+    });
+  }
+
+  chips.forEach(chip => {
+    chip.addEventListener("click", function () {
+      chips.forEach(c => c.classList.remove("active"));
+      this.classList.add("active");
+      activeStatus = this.dataset.status;
+      applyFilters();
+    });
+  });
+
+  searchInput.addEventListener("keyup", applyFilters);
+})();
+</script>
 
 {% endblock content %}

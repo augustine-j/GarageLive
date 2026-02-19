@@ -22,11 +22,11 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('', include('Guest.urls')),  # 👈 DEFAULT HOMEPAGE
     path('admin/', admin.site.urls),
-    path('Basics/',include('Basics.urls')),
+    
     path('Admin/',include('Admin.urls')),
     path('Guest/',include('Guest.urls')),
     path('User/',include('User.urls')),
-    path('Seller/',include('Seller.urls')),
+    
     path('ServiceCenter/',include('ServiceCenter.urls')),
     path('Technician/',include('Technician.urls')),
 ]

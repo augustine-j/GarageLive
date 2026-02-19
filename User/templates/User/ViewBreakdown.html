@@ -1,6 +1,15 @@
 {% extends 'User/Head_User.html' %}
 {% block content %}
 
+<style>
+  .sc-stars i {
+    color: #f59e0b;
+    font-size: 14px;
+    margin-right: 2px;
+}
+
+</style>
+
 <div class="container-fluid bg-secondary booking my-5 wow fadeInUp" data-wow-delay="0.1s">
   <div class="container">
     <div class="row gx-5">
@@ -111,6 +120,35 @@
 
                 <div>
                   <p class="sc-name">{{ i.servicecenter_name }}</p>
+                 {% if i.avg_rating %}
+<div class="sc-rating">
+  <div class="sc-stars">
+
+   {% for x in "12345" %}
+  {% if forloop.counter <= i.full_stars %}
+    <i class="fa-solid fa-star"></i>
+  {% elif i.half_star and forloop.counter == i.next_star %}
+    <i class="fa-solid fa-star-half-stroke"></i>
+  {% else %}
+    <i class="fa-regular fa-star"></i>
+  {% endif %}
+{% endfor %}
+
+
+  </div>
+
+  <div>
+    {{ i.avg_rating|floatformat:1 }} / 5
+    <small>({{ i.total_reviews }} reviews)</small>
+  </div>
+</div>
+{% else %}
+<div class="sc-rating">
+  <small>No ratings yet</small>
+</div>
+{% endif %}
+
+
 
                   <div class="sc-badges">
                     <div class="sc-pill email">Email: {{ i.servicecenter_email }}</div>

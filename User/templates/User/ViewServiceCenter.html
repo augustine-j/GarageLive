@@ -3,24 +3,10 @@
 
 
 <style>
-  .sc-rating {
-    margin-top: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    font-weight: 800;
-  }
-
-  .sc-stars {
+  .sc-stars i {
     color: #f59e0b;
     font-size: 14px;
-    letter-spacing: 1px;
-  }
-
-  .sc-rating small {
-    color: rgba(15, 23, 42, .55);
-    font-weight: 700;
+    margin-right: 2px;
   }
 </style>
 
@@ -329,93 +315,103 @@
 
 
 
-                  
+
 
                   {% if i.avg_rating %}
                   <div class="sc-rating">
                     <div class="sc-stars">
+
                       {% for x in "12345" %}
-                      {% if forloop.counter <= i.avg_rating|floatformat:0 %} ★ {% else %} ☆ {% endif %} {% endfor %}
-                        </div>
-                        <div>
-                          {{ i.avg_rating|floatformat:1 }} / 5
-                          <small>({{ i.total_reviews }} reviews)</small>
-                        </div>
-                    </div>
-                    {% else %}
-                    <div class="sc-rating">
-                      <small>No ratings yet</small>
-                    </div>
-                    {% endif %}
+                      {% if forloop.counter <= i.full_stars %} <i class="fa-solid fa-star"></i>
+                        {% elif i.half_star and forloop.counter == i.next_star %}
+                        <i class="fa-solid fa-star-half-stroke"></i>
+                        {% else %}
+                        <i class="fa-regular fa-star"></i>
+                        {% endif %}
+                        {% endfor %}
 
 
-                    <div class="sc-badges">
-                      <div class="sc-pill email">
-                        <strong>Email:</strong> <span>{{i.servicecenter_email}}</span>
-                      </div>
-                      <div class="sc-pill phone">
-                        <strong>Contact:</strong> <span>{{i.servicecenter_contact}}</span>
-                      </div>
                     </div>
 
-                    <div class="sc-address">
-                      {{i.servicecenter_address}}
+                    <div>
+                      {{ i.avg_rating|floatformat:1 }} / 5
+                      <small>({{ i.total_reviews }} reviews)</small>
+                    </div>
+                  </div>
+                  {% else %}
+                  <div class="sc-rating">
+                    <small>No ratings yet</small>
+                  </div>
+                  {% endif %}
+
+
+                  <div class="sc-badges">
+                    <div class="sc-pill email">
+                      <strong>Email:</strong> <span>{{i.servicecenter_email}}</span>
+                    </div>
+                    <div class="sc-pill phone">
+                      <strong>Contact:</strong> <span>{{i.servicecenter_contact}}</span>
                     </div>
                   </div>
 
-                  <div class="sc-action">
-                    <div class="sc-rank">#{{forloop.counter}}</div>
-                    <a href="{% url 'User:servicebooking' i.id %}" class="btn btn-primary sc-book">
-                      Book Service
-                    </a>
+                  <div class="sc-address">
+                    {{i.servicecenter_address}}
                   </div>
                 </div>
 
-                <div class="sc-footer">
-                  <div>Tip: Confirm the address and contact details before booking.</div>
-                  <div>GarageLive</div>
-                </div>
-              </div>
-              {% empty %}
-              <div class="sc-item">
-                <div class="sc-row" style="grid-template-columns: 1fr;">
-                  <div class="sc-main">
-                    <p class="sc-name">No service centers found</p>
-                    <div class="sc-address" style="-webkit-line-clamp: unset;">
-                      Select district and place, then click “Search Service Centers”.
-                    </div>
-                  </div>
+                <div class="sc-action">
+                  <div class="sc-rank">#{{forloop.counter}}</div>
+                  <a href="{% url 'User:servicebooking' i.id %}" class="btn btn-primary sc-book">
+                    Book Service
+                  </a>
                 </div>
               </div>
-              {% endfor %}
+
+              <div class="sc-footer">
+                <div>Tip: Confirm the address and contact details before booking.</div>
+                <div>GarageLive</div>
+              </div>
             </div>
-
+            {% empty %}
+            <div class="sc-item">
+              <div class="sc-row" style="grid-template-columns: 1fr;">
+                <div class="sc-main">
+                  <p class="sc-name">No service centers found</p>
+                  <div class="sc-address" style="-webkit-line-clamp: unset;">
+                    Select district and place, then click “Search Service Centers”.
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
           </div>
 
         </div>
+
       </div>
-      <!-- End Results -->
+    </div>
+    <!-- End Results -->
 
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-      <script>
-        $('#sel_district').change(function () {
-          var did = $(this).val();
-          var ur = "{% url 'User:AjaxLocation' %}";
-          $.ajax({
-            url: ur,
-            data: { did: did },
-            success: function (data) {
-              $('#sel_place').html(data);
-            }
-          });
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+      $('#sel_district').change(function () {
+        var did = $(this).val();
+        var ur = "{% url 'User:AjaxLocation' %}";
+        $.ajax({
+          url: ur,
+          data: { did: did },
+          success: function (data) {
+            $('#sel_place').html(data);
+          }
         });
-      </script>
+      });
+    </script>
 
-      {% if msg %}
-      <script>
-        alert("{{msg}}");
-        window.location = "{% url 'User:viewservicecenter' %}";
-      </script>
-      {% endif %}
+    {% if msg %}
+    <script>
+      alert("{{msg}}");
+      window.location = "{% url 'User:viewservicecenter' %}";
+    </script>
+    {% endif %}
 
-      {% endblock content %}
+    {% endblock content %}

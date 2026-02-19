@@ -2,256 +2,433 @@
 {% block content %}
 
 <style>
-  td.action-cell{ white-space: nowrap; }
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
-  .vehicle-thumb{
-    width: 72px;
-    height: 72px;
-    object-fit: cover;
-    border-radius: 14px;
-    border: 1px solid rgba(0,0,0,.10);
-    background: #fff;
+  :root {
+    --bg-base: #f4f6f9;
+    --bg-surface: #ffffff;
+    --bg-card: #ffffff;
+    --bg-elevated: #f8f9fc;
+    --border: #e4e8f0;
+    --accent: #e67e00;
+    --accent-dim: rgba(230,126,0,0.08);
+    --accent-glow: rgba(230,126,0,0.18);
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --cyan: #0891b2;
+    --cyan-bg: #ecfeff;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --orange: #d97706;
+    --orange-bg: #fffbeb;
+    --yellow: #ca8a04;
+    --yellow-bg: #fefce8;
+    --text-primary: #1a2035;
+    --text-secondary: #5a6480;
+    --text-dim: #9aa0b4;
+    --font-head: 'Plus Jakarta Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
   }
 
-  .complaint-cell{ min-width: 260px; max-width: 340px; }
-  .complaint-box{
-    background: #f8f9fa;
-    border: 1px solid rgba(0,0,0,.08);
-    border-radius: 12px;
-    padding: 10px 12px;
-    font-size: .875rem;
-    line-height: 1.3;
-    color: #343a40;
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+  body, .main-panel, .content-wrapper {
+    background: var(--bg-base) !important;
+    font-family: var(--font-body) !important;
+    color: var(--text-primary) !important;
+  }
+
+  /* ── PAGE ── */
+  .jobs-page { padding: 28px 24px; min-height: 100vh; }
+
+  /* ── HEADER ── */
+  .jobs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .jobs-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0;
+    width: 60px; height: 2px;
+    background: var(--blue);
+    border-radius: 2px;
+  }
+  .jobs-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  .jobs-title {
+    font-family: var(--font-head);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+  .jobs-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  /* ── TABLE WRAPPER ── */
+  .jobs-table-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
     overflow: hidden;
-    word-break: break-word;
-    transition: all .15s ease-in-out;
+    box-shadow: var(--shadow-md);
   }
-  .complaint-box:hover{
-    background: #fff;
-    border-color: rgba(0,0,0,.14);
-    box-shadow: 0 6px 18px rgba(0,0,0,.08);
-    -webkit-line-clamp: 6;
+  .jobs-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .jobs-table thead th {
+    background: #f8f9fc;
+    color: var(--text-secondary);
+    font-size: 11.5px; font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .jobs-table thead th.center { text-align: center; }
+  .jobs-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .12s;
+  }
+  .jobs-table tbody tr:last-child { border-bottom: none; }
+  .jobs-table tbody tr:hover { background: #f8f9fc; }
+  .jobs-table td { padding: 14px 16px; vertical-align: middle; color: var(--text-primary); }
+  .jobs-table td.center { text-align: center; }
+
+  /* ── CELL PIECES ── */
+  .sno { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+
+  .user-name  { font-weight: 600; font-size: 13.5px; color: var(--text-primary); }
+  .user-email { font-size: 11.5px; color: var(--text-secondary); margin-top: 2px; }
+
+  .contact-num { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
+
+  .date-badge {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+    color: var(--blue); background: var(--blue-bg);
+    border: 1px solid rgba(37,99,235,0.15);
+    border-radius: 20px; padding: 3px 10px;
+    display: inline-block; white-space: nowrap;
   }
 
-  .meta-muted{ font-size: .85rem; color: #6c757d; }
+  .service-tag {
+    display: inline-block;
+    font-size: 11.5px; font-weight: 500;
+    color: var(--text-secondary); background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 6px; padding: 2px 9px;
+    margin: 2px 2px 2px 0;
+  }
+
+  .complaint-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--red-bg); border: 1px solid rgba(220,38,38,0.25);
+    color: var(--red); font-size: 12px; font-weight: 600;
+    font-family: var(--font-body); border-radius: 20px;
+    padding: 4px 12px; cursor: pointer; transition: all .15s;
+  }
+  .complaint-btn:hover { background: rgba(220,38,38,0.12); border-color: var(--red); }
+
+  .vehicle-name  { font-weight: 600; font-size: 13px; color: var(--text-primary); }
+  .vehicle-plate { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+  .vehicle-img {
+    width: 80px; height: 60px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    display: block;
+    box-shadow: var(--shadow-sm);
+    transition: transform .15s;
+  }
+  .vehicle-img:hover { transform: scale(1.05); }
+
+  /* ── STATUS / ACTION BUTTONS ── */
+  .action-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+
+  .btn-action {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 600;
+    font-family: var(--font-body);
+    border-radius: 20px; padding: 5px 14px;
+    text-decoration: none; transition: all .15s;
+    border: 1px solid; white-space: nowrap;
+  }
+
+  /* blue — primary workflow steps */
+  .btn-blue {
+    color: var(--blue); background: var(--blue-bg);
+    border-color: rgba(37,99,235,0.25);
+  }
+  .btn-blue:hover { background: rgba(37,99,235,0.14); color: var(--blue); }
+
+  /* yellow — cost update */
+  .btn-yellow {
+    color: var(--yellow); background: var(--yellow-bg);
+    border-color: rgba(202,138,4,0.25);
+  }
+  .btn-yellow:hover { background: rgba(202,138,4,0.14); color: var(--yellow); }
+
+  /* green — delivery / complete */
+  .btn-green {
+    color: var(--green); background: var(--green-bg);
+    border-color: rgba(22,163,74,0.25);
+  }
+  .btn-green:hover { background: rgba(22,163,74,0.15); color: var(--green); }
+
+  /* status-only badges */
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11.5px; font-weight: 600;
+    border-radius: 20px; padding: 4px 12px;
+    border: 1px solid;
+  }
+  .sb-done      { color: var(--green); background: var(--green-bg); border-color: rgba(22,163,74,0.25); }
+  .sb-completed { color: var(--purple); background: var(--purple-bg); border-color: rgba(124,58,237,0.25); }
+  .sb-default   { color: var(--cyan); background: var(--cyan-bg); border-color: rgba(8,145,178,0.25); }
+
+  /* notes button */
+  .btn-note {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 600;
+    font-family: var(--font-body);
+    color: var(--text-secondary); background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 20px; padding: 5px 14px;
+    text-decoration: none; transition: all .15s;
+  }
+  .btn-note:hover { background: var(--border); color: var(--text-primary); }
+
+  /* ── EMPTY STATE ── */
+  .empty-row td {
+    text-align: center; padding: 60px 20px;
+    color: var(--text-dim); background: var(--bg-elevated);
+  }
+  .empty-icon  { font-size: 40px; margin-bottom: 10px; display: block; opacity: 0.4; }
+  .empty-label { font-size: 17px; color: var(--text-secondary); display: block; }
+
+  /* ── MODAL ── */
+  .modal-content {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.12) !important;
+  }
+  .modal-header {
+    background: var(--red-bg) !important;
+    border-bottom: 1px solid rgba(220,38,38,0.15) !important;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+  }
+  .modal-title {
+    font-family: var(--font-head) !important;
+    font-size: 17px !important; font-weight: 700 !important;
+    color: var(--red) !important;
+  }
+  .modal-body  { color: var(--text-primary) !important; background: var(--bg-card) !important; }
+  .modal-footer { background: var(--bg-elevated) !important; border-top: 1px solid var(--border) !important; }
+  #complaintMeta { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
+  #complaintText { color: var(--text-primary); font-size: 14px; line-height: 1.7; white-space: pre-line; }
 </style>
 
-<div class="main-panel">
-  <div class="content-wrapper">
 
-    <div class="row">
-      <div class="col-lg-12 grid-margin stretch-card">
-        <div class="card">
-          <div class="card-body">
+<div class="jobs-page">
 
-            <div class="d-flex align-items-center justify-content-between mb-3">
-              <div>
-                <h4 class="card-title mb-1">Assigned Jobs</h4>
-                <p class="card-description mb-0">Update job progress and add work notes</p>
-              </div>
-            </div>
+  <!-- HEADER -->
+  <div class="jobs-header">
+    <div>
+      <div class="jobs-eyebrow">Technician Panel</div>
+      <div class="jobs-title">Assigned Jobs</div>
+      <div class="jobs-subtitle">Update job progress and add work notes</div>
+    </div>
+  </div>
 
-            <form method="post">
-              {% csrf_token %}
+  <!-- TABLE -->
+  <form method="post">
+    {% csrf_token %}
+    <div class="jobs-table-wrap">
+      <div style="overflow-x: auto;">
+        <table class="jobs-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Customer</th>
+              <th>Contact</th>
+              <th>To Date</th>
+              <th>Complaint</th>
+              <th>Service Type</th>
+              <th>Vehicle</th>
+              <th>Photo</th>
+              <th class="center">Progress Action</th>
+              <th class="center">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in data %}
+            <tr>
+              <td><span class="sno">{{ forloop.counter }}</span></td>
 
-              <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                  <thead>
-                    <tr>
-                      <th style="width:70px;">S.No</th>
-                      <th>Customer</th>
-                      <th>Contact</th>
-                      <th style="width:120px;">To Date</th>
-                      <th style="width:340px;">Complaint</th>
-                      <th>Service Type</th>
-                      <th>Vehicle</th>
-                      <th style="width:110px;">Image</th>
-                      <th class="text-center" style="width:210px;">Status / Action</th>
-                      <th class="text-center" style="width:160px;">Notes</th>
-                    </tr>
-                  </thead>
+              <!-- Customer -->
+              <td>
+                <div class="user-name">{{ i.user.user_name }}</div>
+                <div class="user-email">{{ i.user.user_email }}</div>
+              </td>
 
-                  <tbody>
-                    {% for i in data %}
-                    <tr>
-                      <td>{{ forloop.counter }}</td>
+              <td><span class="contact-num">{{ i.user.contact_number }}</span></td>
 
-                      <td>
-                        <div class="fw-semibold">{{ i.user.user_name }}</div>
-                        <div class="meta-muted">{{ i.user.user_email }}</div>
-                      </td>
+              <td><span class="date-badge">{{ i.booking_todate }}</span></td>
 
-                      <td>{{ i.user.contact_number }}</td>
-                      <td>{{ i.booking_todate }}</td>
+              <!-- Complaint -->
+              <td>
+                {% if i.booking_complaints %}
+                  <button
+                    type="button"
+                    class="complaint-btn"
+                    data-bs-toggle="modal"
+                    data-bs-target="#complaintModal"
+                    data-complaint="{{ i.booking_complaints|escapejs }}"
+                    data-user="{{ i.user.user_name }}"
+                    data-booking="#{{ i.id }}"
+                  >
+                    <i class="mdi mdi-alert-circle-outline"></i> View
+                  </button>
+                {% else %}
+                  <span style="color:var(--text-dim); font-size:12px;">—</span>
+                {% endif %}
+              </td>
 
-                      <td style="max-width: 240px;">
-                          {% if i.booking_complaints %}
-                            <button
-                              type="button"
-                              class="btn btn-sm btn-outline-danger"
-                              data-bs-toggle="modal"
-                              data-bs-target="#complaintModal"
-                              data-complaint="{{ i.booking_complaints|escapejs }}"
-                              data-user="{{ i.user.user_name }}"
-                              data-booking="#{{ i.id }}"
-                            >
-                              View
-                            </button>
-                          {% else %}
-                            <span class="text-muted">—</span>
-                          {% endif %}
-                      </td>
+              <!-- Service Types -->
+              <td>
+                {% for bs in i.services %}
+                  <span class="service-tag">{{ bs.servicecenter_services.servicetype.servicetype_name }}</span>
+                {% empty %}
+                  <span style="color:var(--text-dim); font-size:12px;">No services</span>
+                {% endfor %}
+              </td>
 
+              <!-- Vehicle -->
+              <td>
+                <div class="vehicle-name">{{ i.vehicle.model.model_name }}</div>
+                <div class="vehicle-plate">{{ i.vehicle.vehicle_number }}</div>
+              </td>
 
-                      <td style="max-width:220px;">
-                          <div class="d-flex flex-wrap gap-1">
-                            {% for bs in i.services %}
-                              <span class="badge bg-light text-dark border">
-                                {{ bs.servicecenter_services.servicetype.servicetype_name }}
-                              </span>
-                            {% empty %}
-                              <span class="text-muted">No services</span>
-                            {% endfor %}
-                          </div>
-                        </td>
+              <!-- Photo -->
+              <td>
+                <a href="{{ i.vehicle.vehicle_photo.url }}" target="_blank">
+                  <img src="{{ i.vehicle.vehicle_photo.url }}" alt="Vehicle" class="vehicle-img"/>
+                </a>
+              </td>
 
+              <!-- PROGRESS ACTION -->
+              <td class="center">
+                <div class="action-wrap">
+                  {% if i.booking_status == 1 %}
+                    <a href="{% url 'Technician:startwork' i.id %}" class="btn-action btn-blue">▶ Start Work</a>
 
-                      <td>
-                        <div class="fw-semibold">{{ i.vehicle.model.model_name }}</div>
-                        <div class="meta-muted">{{ i.vehicle.vehicle_number }}</div>
-                      </td>
+                  {% elif i.booking_status == 3 %}
+                    <a href="{% url 'Technician:start_diagnosis' i.id %}" class="btn-action btn-blue">🔍 Start Diagnosis</a>
 
-                      <td>
-                        <a href="{{ i.vehicle.vehicle_photo.url }}" target="_blank" title="View vehicle photo">
-                          <img src="{{ i.vehicle.vehicle_photo.url }}" alt="Vehicle" class="vehicle-thumb">
-                        </a>
-                      </td>
+                  {% elif i.booking_status == 4 %}
+                    <a href="{% url 'Technician:diagnosis_completed' i.id %}" class="btn-action btn-blue">✓ Diagnosis Done</a>
 
-                      <td class="text-center action-cell">
-                        {% if i.booking_status == 1 %}
-                          <a href="{% url 'Technician:startwork' i.id %}" class="btn btn-sm btn-outline-primary">
-                            Start Work
-                          </a>
+                  {% elif i.booking_status == 5 %}
+                    <a href="{% url 'Technician:repair_progress' i.id %}" class="btn-action btn-blue">🔧 Repair in Progress</a>
 
-                        {% elif i.booking_status == 3 %}
-                          <a href="{% url 'Technician:start_diagnosis' i.id %}" class="btn btn-sm btn-outline-primary">
-                            Start Diagnosis
-                          </a>
+                  {% elif i.booking_status == 6 %}
+                    <a href="{% url 'Technician:parts_replaced' i.id %}" class="btn-action btn-blue">🔩 Parts Replaced</a>
 
-                        {% elif i.booking_status == 4 %}
-                          <a href="{% url 'Technician:diagnosis_completed' i.id %}" class="btn btn-sm btn-outline-primary">
-                            Diagnosis Completed
-                          </a>
+                  {% elif i.booking_status == 7 %}
+                    <a href="{% url 'Technician:testing_QA' i.id %}" class="btn-action btn-blue">🧪 Move to Testing</a>
 
-                        {% elif i.booking_status == 5 %}
-                          <a href="{% url 'Technician:repair_progress' i.id %}" class="btn btn-sm btn-outline-primary">
-                            Repair in Progress
-                          </a>
+                  {% elif i.booking_status == 8 %}
+                    <a href="{% url 'Technician:service_completed' i.id %}" class="btn-action btn-green">✓ Service Completed</a>
 
-                        {% elif i.booking_status == 6 %}
-                          <a href="{% url 'Technician:parts_replaced' i.id %}" class="btn btn-sm btn-outline-primary">
-                            Parts Replaced
-                          </a>
+                  {% elif i.booking_status == 9 %}
+                    <a href="{% url 'Technician:update_service_cost' i.id %}" class="btn-action btn-yellow">💰 Update Cost</a>
+                    <a href="{% url 'Technician:out_delivery' i.id %}" class="btn-action btn-green">🚗 Out for Delivery</a>
 
-                       {% elif i.booking_status == 7 %}
-                            
+                  {% elif i.booking_status == 11 %}
+                    <span class="status-badge sb-done">✓ Bill Generated</span>
 
-                            <a href="{% url 'Technician:testing_QA' i.id %}"
-                              class="btn btn-sm btn-outline-primary">
-                              Move to Testing
-                            </a>
-                          
+                  {% elif i.booking_status == 12 %}
+                    <span class="status-badge sb-completed">✓ Service Completed</span>
 
+                  {% else %}
+                    <span class="status-badge sb-default">✓ Completed</span>
+                  {% endif %}
+                </div>
+              </td>
 
-                        {% elif i.booking_status == 8 %}
-                          <a href="{% url 'Technician:service_completed' i.id %}" class="btn btn-sm btn-outline-primary">
-                            Service Completed
-                          </a>
-                 
+              <!-- NOTES -->
+              <td class="center">
+                <a href="{% url 'Technician:workdescription' i.id %}" class="btn-note">
+                  📝 Add / View
+                </a>
+              </td>
 
-                        {% elif i.booking_status == 9 %}
-
-                        <a href="{% url 'Technician:update_service_cost' i.id %}"
-                              class="btn btn-sm btn-outline-warning">
-                              Add / Update Service Cost
-                            </a>
-                            
-                          <a href="{% url 'Technician:out_delivery' i.id %}" class="btn btn-sm btn-outline-primary">
-                            Out For Delivery
-                          </a>
-
-                        {% elif i.booking_status == 11 %}
-                          <span class="badge badge-success">Bill Generated</span>
-
-                        {% elif i.booking_status == 12 %}
-                          <span class="badge badge-success">Service Completed</span>
-                          
-              
-
-                        {% else %}
-                          <span class="badge badge-info">Completed</span>
-                        {% endif %}
-                      </td>
-
-                      <td class="text-center action-cell">
-                        <a href="{% url 'Technician:workdescription' i.id %}" class="btn btn-sm btn-light">
-                          Add/View Note
-                        </a>
-                      </td>
-                    </tr>
-
-                    {% empty %}
-                    <tr>
-                      <td colspan="10" class="text-center text-muted py-4">
-                        No assigned jobs found.
-                      </td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-
-                </table>
-              </div>
-
-            </form>
-
-          </div>
-        </div>
+            </tr>
+            {% empty %}
+            <tr class="empty-row">
+              <td colspan="10">
+                <span class="empty-icon">🔧</span>
+                <span class="empty-label">No assigned jobs found</span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
+  </form>
 
-  </div>
 </div>
 
 
-
+<!-- COMPLAINT MODAL -->
 <div class="modal fade" id="complaintModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
-
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title">Customer Complaint</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      <div class="modal-header">
+        <h5 class="modal-title">⚠ Customer Complaint</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-
-      <div class="modal-body">
-        <p class="mb-1 fw-semibold" id="complaintMeta"></p>
-        <hr>
-        <p id="complaintText" class="mb-0" style="white-space: pre-line;"></p>
+      <div class="modal-body p-4">
+        <p class="mb-2" id="complaintMeta"></p>
+        <hr style="border-color: var(--border);">
+        <p id="complaintText" class="mb-0"></p>
       </div>
-
       <div class="modal-footer">
-        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        <button class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
-
     </div>
   </div>
 </div>
-
-
 
 
 {% if msg %}
@@ -259,26 +436,15 @@
   alert("{{ msg }}");
   window.location = "{% url 'Technician:assigned_jobs' %}";
 </script>
-
-
-
-
 {% endif %}
-
-
 
 <script>
   const complaintModal = document.getElementById('complaintModal');
   complaintModal.addEventListener('show.bs.modal', function (event) {
-    const button = event.relatedTarget;
-    const complaint = button.getAttribute('data-complaint');
-    const user = button.getAttribute('data-user');
-    const booking = button.getAttribute('data-booking');
-
+    const btn = event.relatedTarget;
     document.getElementById('complaintMeta').innerText =
-      user + ' • Booking ' + booking;
-
-    document.getElementById('complaintText').innerText = complaint;
+      btn.getAttribute('data-user') + '  ·  Booking ' + btn.getAttribute('data-booking');
+    document.getElementById('complaintText').innerText = btn.getAttribute('data-complaint');
   });
 </script>
 

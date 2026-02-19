@@ -236,7 +236,7 @@ def assignjob(request,tid,bid):
 def generate_bill(request, bid):
 
     booking = tbl_booking.objects.get(id=bid)
-
+    data=tbl_servicecenter.objects.get(id=request.session['cid'])
     services = tbl_booking_services.objects.filter(booking=booking)
 
     total_amount = Decimal('0.00')
@@ -257,14 +257,14 @@ def generate_bill(request, bid):
         {
             "booking": booking,
             "services": services,
-            "total_amount": total_amount
+            "total_amount": total_amount,'Data': data
         }
     )
 
 
 
 def logout(request):
-    request.session.flush()
+    del request.session['cid']
     return redirect("Guest:Login")
 
 

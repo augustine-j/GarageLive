@@ -18,6 +18,7 @@ from django.db.models import Avg, Count
 
 
 
+
 def myprofile(request):
    if 'uid' not in request.session:
       return redirect("Guest:Login")
@@ -123,6 +124,16 @@ def viewservicecenter(request):
    
       if request.method=="POST":
          servicecenter=tbl_servicecenter.objects.filter(place=request.POST.get("sel_place"),servicecenter_status=1).annotate(avg_rating=Avg('feedbacks__rating'),total_reviews=Count('feedbacks'))
+         for sc in servicecenter:
+            if sc.avg_rating:
+                sc.full_stars = int(sc.avg_rating)
+                sc.half_star = (sc.avg_rating - sc.full_stars) >= 0.5
+                sc.next_star = sc.full_stars + 1   # ← ADD THIS
+            else:
+                sc.full_stars = 0
+                sc.half_star = False
+                sc.next_star = 0
+
          return render(request,"User/ViewServiceCenter.html",{'servicecenter':servicecenter,'districtdata':districtdata,'placedata':placedata})
 
       else:
@@ -298,7 +309,7 @@ def del_vehicle(request,did):
 
 
 def logout(request):
-   request.session.flush()
+   del request.session['uid']
    return redirect("Guest:Login")
 
 
@@ -313,7 +324,17 @@ def breakdown_assist(request):
       placedata=tbl_place.objects.all()
    
       if request.method=="POST":
-         servicecenter=tbl_servicecenter.objects.filter(place=request.POST.get("sel_place"),servicecenter_status=1)
+         servicecenter=tbl_servicecenter.objects.filter(place=request.POST.get("sel_place"),servicecenter_status=1).annotate(avg_rating=Avg('feedbacks__rating'),total_reviews=Count('feedbacks'))
+         for sc in servicecenter:
+            if sc.avg_rating:
+                sc.full_stars = int(sc.avg_rating)
+                sc.half_star = (sc.avg_rating - sc.full_stars) >= 0.5
+                sc.next_star = sc.full_stars + 1   # ← ADD THIS
+            else:
+                sc.full_stars = 0
+                sc.half_star = False
+                sc.next_star = 0
+
          return render(request,"User/ViewBreakdown.html",{'servicecenter':servicecenter})
 
       else:
