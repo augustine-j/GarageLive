@@ -624,196 +624,8 @@
               <th>Technician</th>
             </tr>
           </thead>
-          <tbody>
-            {% for i in data %}
-            <tr data-status="{{ i.booking_status }}">
-
-              <td><span class="sno">{{ forloop.counter }}</span></td>
-
-              <td><span class="booking-id">#{{ i.id }}</span></td>
-
-              <td>
-                <div class="user-name">{{ i.user.user_name }}</div>
-                <div class="user-email">{{ i.user.user_email }}</div>
-              </td>
-
-              <td><span class="contact-num">{{ i.user.contact_number }}</span></td>
-
-              <td><span class="date-badge">{{ i.booking_date }}</span></td>
-
-              <td><span class="date-badge">{{ i.booking_todate }}</span></td>
-
-              <td>
-                {% if i.booking_complaints %}
-                  <button
-                    type="button"
-                    class="complaint-btn"
-                    data-bs-toggle="modal"
-                    data-bs-target="#complaintModal"
-                    data-complaint="{{ i.booking_complaints|escapejs }}"
-                    data-user="{{ i.user.user_name }}"
-                    data-booking="#{{ i.id }}"
-                  >
-                    <i class="mdi mdi-alert-circle-outline"></i> View
-                  </button>
-                {% else %}
-                  <span style="color:var(--text-dim); font-size:12px;">—</span>
-                {% endif %}
-              </td>
-
-              <td>
-                {% for bs in i.services %}
-                  <span class="service-tag">{{ bs.servicecenter_services.servicetype.servicetype_name }}</span>
-                {% empty %}
-                  <span style="color:var(--text-dim); font-size:12px;">No services</span>
-                {% endfor %}
-              </td>
-
-              <td>
-                <div class="vehicle-name">{{ i.vehicle.model.brand.brand_name }} {{ i.vehicle.model.model_name }}</div>
-                <div class="vehicle-plate">{{ i.vehicle.vehicle_number }}</div>
-              </td>
-
-              <td>
-                <img src="{{ i.vehicle.vehicle_photo.url }}" alt="Vehicle" class="vehicle-img"/>
-              </td>
-
-              <!-- STATUS / ACTION -->
-              <td class="status-cell">
-                {% if i.booking_status == 0 %}
-                  <span class="status-badge sb-pending">● Pending</span>
-                  <div class="action-row">
-                    <a class="btn-accept" href="{% url 'ServiceCenter:acceptrequest' i.id %}">✓ Accept</a>
-                    <a class="btn-reject" href="{% url 'ServiceCenter:rejectrequest' i.id %}">✕ Reject</a>
-                  </div>
-                  <div class="prog-wrap">
-                    <div class="prog-track"><div class="prog-fill" style="width:5%; background:#d1d5db;"></div></div>
-                    <div class="prog-label">0%</div>
-                  </div>
-
-                {% elif i.booking_status == 1 %}
-                  <span class="status-badge sb-accepted">✓ Accepted</span>
-                  {% if not i.technician %}
-                    <div class="action-row">
-                      <a class="btn-assign" href="{% url 'ServiceCenter:assign_technician' i.id %}">⚙ Assign Technician</a>
-                    </div>
-                  {% else %}
-                    <div style="font-size:11px; color:var(--text-secondary); margin-top:6px;">
-                      Assigned: <span style="color:var(--green); font-weight:600;">{{ i.technician.technician_name }}</span>
-                    </div>
-                  {% endif %}
-                  <div class="prog-wrap">
-                    <div class="prog-track"><div class="prog-fill" style="width:10%; background:var(--green);"></div></div>
-                    <div class="prog-label">10%</div>
-                  </div>
-
-                {% elif i.booking_status == 2 %}
-                  <span class="status-badge sb-rejected">✕ Rejected</span>
-                  <div class="prog-wrap">
-                    <div class="prog-track"><div class="prog-fill" style="width:100%; background:var(--red);"></div></div>
-                    <div class="prog-label">Closed</div>
-                  </div>
-
-                {% elif i.booking_status == 3 %}
-                  <span class="status-badge sb-inprogress">⚙ Work Started</span>
-                  <div class="prog-wrap">
-                    <div class="prog-track"><div class="prog-fill" style="width:20%; background:var(--cyan);"></div></div>
-                    <div class="prog-label">20%</div>
-                  </div>
-
-                {% elif i.booking_status == 4 %}
-                  <span class="status-badge sb-inprogress">⚙ Diagnosis Started</span>
-                  <div class="prog-wrap">
-                    <div class="prog-track"><div class="prog-fill" style="width:35%; background:var(--cyan);"></div></div>
-                    <div class="prog-label">35%</div>
-                  </div>
-
-                {% elif i.booking_status == 5 %}
-                  <span class="status-badge sb-inprogress">⚙ Diagnosis Done</span>
-                  <div class="prog-wrap">
-                    <div class="prog-track"><div class="prog-fill" style="width:50%; background:var(--blue);"></div></div>
-                    <div class="prog-label">50%</div>
-                  </div>
-
-                {% elif i.booking_status == 6 %}
-                  <span class="status-badge sb-inprogress">⚙ Repair In Progress</span>
-                  <div class="prog-wrap">
-                    <div class="prog-track"><div class="prog-fill" style="width:65%; background:var(--cyan);"></div></div>
-                    <div class="prog-label">65%</div>
-                  </div>
-
-                {% elif i.booking_status == 7 %}
-                  <span class="status-badge sb-inprogress">⚙ Parts Replaced</span>
-                  <div class="prog-wrap">
-                    <div class="prog-track"><div class="prog-fill" style="width:75%; background:var(--blue);"></div></div>
-                    <div class="prog-label">75%</div>
-                  </div>
-
-                {% elif i.booking_status == 8 %}
-                  <span class="status-badge sb-inprogress">⚙ Testing</span>
-                  <div class="prog-wrap">
-                    <div class="prog-track"><div class="prog-fill" style="width:85%; background:var(--cyan);"></div></div>
-                    <div class="prog-label">85%</div>
-                  </div>
-
-                {% elif i.booking_status == 9 %}
-                  <span class="status-badge sb-done">✓ Service Done</span>
-                  <div class="prog-wrap">
-                    <div class="prog-track"><div class="prog-fill" style="width:95%; background:#a78bfa;"></div></div>
-                    <div class="prog-label">95%</div>
-                  </div>
-
-                {% elif i.booking_status == 10 %}
-                  <span class="status-badge sb-billing">$ Billing</span>
-                  <div class="action-row">
-                    <a class="btn-bill" href="{% url 'ServiceCenter:generate_bill' i.id %}">Generate Bill</a>
-                  </div>
-                  <div class="prog-wrap">
-                    <div class="prog-track"><div class="prog-fill" style="width:98%; background:var(--accent);"></div></div>
-                    <div class="prog-label">98%</div>
-                  </div>
-
-                {% elif i.booking_status == 11 %}
-                  <span class="status-badge sb-completed">✓ Bill Generated</span>
-                  <div class="prog-wrap">
-                    <div class="prog-track"><div class="prog-fill" style="width:100%; background:var(--green);"></div></div>
-                    <div class="prog-label">100%</div>
-                  </div>
-
-                {% elif i.booking_status == 12 %}
-                  <span class="status-badge sb-completed">✓ Completed</span>
-                  <div class="prog-wrap">
-                    <div class="prog-track"><div class="prog-fill" style="width:100%; background:var(--green);"></div></div>
-                    <div class="prog-label">100%</div>
-                  </div>
-
-                {% else %}
-                  <span class="status-badge sb-default">Unknown</span>
-                {% endif %}
-              </td>
-
-              <!-- TECHNICIAN -->
-              <td>
-                {% if i.technician %}
-                  <div class="tech-name">
-                    <span class="tech-avatar">{{ i.technician.technician_name|first|upper }}</span>
-                    {{ i.technician.technician_name }}
-                  </div>
-                {% else %}
-                  <span class="no-tech">Unassigned</span>
-                {% endif %}
-              </td>
-
-            </tr>
-            {% empty %}
-            <tr class="empty-row">
-              <td colspan="12">
-                <span class="empty-icon">🔧</span>
-                <span class="empty-label">No service requests found</span>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
+          <tbody id="requestsBody">
+</tbody>
         </table>
       </div>
     </div>
@@ -919,6 +731,177 @@
     });
   }
 })();
+</script>
+
+
+<script>
+const tbody = document.getElementById("requestsBody");
+
+const bookingCache = new Map();
+const frozenRows   = new Set();
+
+function getStatusLabel(status){
+    const map = {
+        0: ["Pending", "sb-pending"],
+        1: ["Accepted", "sb-accepted"],
+        2: ["Rejected", "sb-rejected"],
+        3: ["Work Started", "sb-inprogress"],
+        4: ["Diagnosis Started", "sb-inprogress"],
+        5: ["Diagnosis Done", "sb-inprogress"],
+        6: ["Repair In Progress", "sb-inprogress"],
+        7: ["Parts Replaced", "sb-inprogress"],
+        8: ["Testing", "sb-inprogress"],
+        9: ["Service Done", "sb-done"],
+        10:["Billing", "sb-billing"],
+        11:["Bill Generated", "sb-completed"],
+        12:["Completed", "sb-completed"],
+    };
+    return map[status] || ["Unknown", "sb-default"];
+}
+
+function buildActionButtons(item){
+
+    const base = "/ServiceCenter/";
+
+    if (item.status === 0){
+        return `
+            <div class="action-row">
+                <a class="btn-accept" href="${base}acceptrequest/${item.id}">✓ Accept</a>
+                <a class="btn-reject" href="${base}rejectrequest/${item.id}">✕ Reject</a>
+            </div>
+        `;
+    }
+
+    if (item.status === 1 && !item.technician){
+        return `
+            <div class="action-row">
+                <a class="btn-assign" href="${base}assign_technician/${item.id}">
+                    ⚙ Assign Technician
+                </a>
+            </div>
+        `;
+    }
+
+    if (item.status === 10){
+        return `
+            <div class="action-row">
+                <a class="btn-bill" href="${base}generate_bill/${item.id}">
+                    Generate Bill
+                </a>
+            </div>
+        `;
+    }
+
+    return "";
+}
+function buildRow(item, index){
+
+    const [label, badgeClass] = getStatusLabel(item.status);
+
+    const services = item.services.map(s =>
+        `<span class="service-tag">${s}</span>`
+    ).join("");
+
+    const tech = item.technician
+        ? `<div class="tech-name">
+              <span class="tech-avatar">${item.technician.charAt(0).toUpperCase()}</span>
+              ${item.technician}
+           </div>`
+        : `<span class="no-tech">Unassigned</span>`;
+
+    return `
+    <tr id="row-${item.id}" data-status="${item.status}">
+        <td><span class="sno">${index+1}</span></td>
+        <td><span class="booking-id">#${item.id}</span></td>
+        <td>
+            <div class="user-name">${item.user_name}</div>
+            <div class="user-email">${item.user_email}</div>
+        </td>
+        <td><span class="contact-num">${item.user_contact || ''}</span></td>
+        <td><span class="date-badge">${item.from_date}</span></td>
+        <td><span class="date-badge">${item.to_date}</span></td>
+        <td>${item.complaint ? item.complaint : "—"}</td>
+        <td>${services}</td>
+        <td>
+            <div class="vehicle-name">${item.vehicle_name}</div>
+            <div class="vehicle-plate">${item.vehicle_number}</div>
+        </td>
+        <td><img src="${item.vehicle_photo}" class="vehicle-img"/></td>
+        <td class="status-cell">
+            <span class="status-badge ${badgeClass}">${label}</span>
+            ${buildActionButtons(item)}
+        </td>
+        <td>${tech}</td>
+    </tr>
+    `;
+}
+
+function updateRow(item){
+
+    if (frozenRows.has(item.id)) return;
+
+    const row = document.getElementById(`row-${item.id}`);
+    if (!row) return;
+
+    const oldStatus = bookingCache.get(item.id);
+    if (oldStatus === item.status) return;
+
+    const [label, badgeClass] = getStatusLabel(item.status);
+
+    row.dataset.status = item.status;
+
+    const statusCell = row.querySelector(".status-cell");
+    statusCell.innerHTML = `
+        <span class="status-badge ${badgeClass}">${label}</span>
+        ${buildActionButtons(item)}
+    `;
+
+    bookingCache.set(item.id, item.status);
+
+    if (item.status === 12){
+        frozenRows.add(item.id);
+    }
+}
+
+function syncRows(data){
+
+    const incomingIds = new Set();
+
+    data.forEach((item, index) => {
+        incomingIds.add(item.id);
+
+        if (!bookingCache.has(item.id)){
+            tbody.insertAdjacentHTML("beforeend", buildRow(item, index));
+            bookingCache.set(item.id, item.status);
+
+            if (item.status === 12){
+                frozenRows.add(item.id);
+            }
+
+        } else {
+            updateRow(item);
+        }
+    });
+
+    bookingCache.forEach((_, id) => {
+        if (!incomingIds.has(id)){
+            const row = document.getElementById(`row-${id}`);
+            if (row) row.remove();
+            bookingCache.delete(id);
+            frozenRows.delete(id);
+        }
+    });
+}
+
+function fetchRequests(){
+    fetch("{% url 'ServiceCenter:servicecenter_api' %}")
+        .then(res => res.json())
+        .then(data => syncRows(data.data))
+        .catch(err => console.error("API Error:", err));
+}
+
+fetchRequests();
+setInterval(fetchRequests, 5000);
 </script>
 
 {% endblock content %}

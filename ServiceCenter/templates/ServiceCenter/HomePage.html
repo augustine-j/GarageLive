@@ -142,7 +142,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- partial -->
       <!-- partial:partials/_sidebar.html -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
@@ -241,8 +241,7 @@
                               <div id="performance-line-legend"></div>
                             </div>
 
-                            <div class="chartjs-wrapper mt-4" style="position: relative; height: 420px;"
->
+                            <div class="chartjs-wrapper mt-4" style="position: relative; height: 420px;">
                               <canvas id="performaneLine"></canvas>
                             </div>
 
@@ -273,7 +272,7 @@
                                   </div>
                                 </div>
 
-                                <span class="badge bg-primary rounded-pill">
+                                <span class="badge bg-primary rounded-pill" id="pendingServiceBadge">
                                   {{ pending_service_approvals }}
                                 </span>
                               </a>
@@ -289,7 +288,7 @@
                                   </div>
                                 </div>
 
-                                <span class="badge bg-info rounded-pill">
+                                <span class="badge bg-info rounded-pill" id="pendingBreakdownBadge">
                                   {{ pending_breakdown_approvals }}
                                 </span>
                               </a>
@@ -305,7 +304,7 @@
                                   </div>
                                 </div>
 
-                                <span class="badge bg-warning text-dark rounded-pill">
+                                <span class="badge bg-warning text-dark rounded-pill" id="feedbackBadge">
                                   {{ customer_feedback_count }}
                                 </span>
                               </a>
@@ -525,23 +524,23 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-  padding: {
-    bottom: 20
-  }
-},
-  scales: {
-    y: {
-      beginAtZero: true,
-      ticks: {
-        // 👇 force integers only
-        callback: function (value) {
-          return Number.isInteger(value) ? value : '';
-        },
-        stepSize: 1
-      }
-    }
-  }
-}
+                  padding: {
+                    bottom: 20
+                  }
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    ticks: {
+                      // 👇 force integers only
+                      callback: function (value) {
+                        return Number.isInteger(value) ? value : '';
+                      },
+                      stepSize: 1
+                    }
+                  }
+                }
+              }
 
             });
 
@@ -645,6 +644,41 @@
 
     });
   </script>
+
+
+
+<script>
+function fetchHomepageAlerts(){
+
+  fetch("/ServiceCenter/api/homepage-alerts/")
+    .then(res => {
+      if (!res.ok) throw new Error("Alert API failed");
+      return res.json();
+    })
+    .then(data => {
+
+      const serviceBadge = document.getElementById("pendingServiceBadge");
+      const breakdownBadge = document.getElementById("pendingBreakdownBadge");
+      const feedbackBadge = document.getElementById("feedbackBadge");
+
+      if(serviceBadge)
+        serviceBadge.innerText = data.pending_service;
+
+      if(breakdownBadge)
+        breakdownBadge.innerText = data.pending_breakdown;
+
+      if(feedbackBadge)
+        feedbackBadge.innerText = data.feedback_count;
+    })
+    .catch(err => console.error("Homepage alert error:", err));
+}
+
+// initial load
+fetchHomepageAlerts();
+
+// poll every 5 seconds
+setInterval(fetchHomepageAlerts, 5000);
+</script>
 
 
   <script src="{% static 'ServiceCenter/js/hoverable-collapse.js'%}"></script>

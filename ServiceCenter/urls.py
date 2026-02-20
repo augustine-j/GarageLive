@@ -39,6 +39,10 @@ urlpatterns = [
 
      path('chart-homepage/', views.chart_homepage, name='chart_homepage'),
      path('weekly-income-chart/', views.weekly_income_chart, name='weekly_income_chart'),
+     path('api/service-requests/', views.servicecenter_request_api, name="servicecenter_api"),
+     path('api/breakdown-requests/', views.servicecenter_breakdown_api, name="breakdown_api"),
+     path('api/homepage-alerts/', views.homepage_alert_api, name='homepage_alerts'),
+     
     
 
      

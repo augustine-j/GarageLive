@@ -531,5 +531,95 @@ def weekly_income_chart(request):
 
 
 
+def servicecenter_request_api(request):
+    if 'cid' not in request.session:
+        return JsonResponse({"data": []})
+    bookings = tbl_booking.objects.filter(
+    servicecenter=request.session['cid']).select_related(
+    'user', 'vehicle', 'technician').prefetch_related(
+    'tbl_booking_services_set__servicecenter_services__servicetype').order_by('-id')
+    response=[]
+    for b in bookings:
+        services=[]
+        for bs in b.tbl_booking_services_set.all():
+            services.append(
+                bs.servicecenter_services.servicetype.servicetype_name)
+        
+        response.append({
+            "id": b.id,
+            "status":b.booking_status,
+            "user_name": b.user.user_name,
+            "user_email": b.user.user_email,
+            "user_contact": b.user.contact_number,
+            "from_date": str(b.booking_date),
+            "to_date": str(b.booking_todate),
+            "complaint": b.booking_complaints,
+            "vehicle_name": f"{b.vehicle.model.brand.brand_name} {b.vehicle.model.model_name}",
+            "vehicle_number": b.vehicle.vehicle_number,
+            "vehicle_photo": b.vehicle.vehicle_photo.url,
+            "technician": b.technician.technician_name if b.technician else None,
+            "services": services
+        })
+    return JsonResponse({"data": response})
 
 
+
+
+def servicecenter_breakdown_api(request):
+    if 'cid' not in request.session:
+        return JsonResponse({"data": []})
+    data = tbl_breakdown_booking_services.objects.filter(
+        booking__servicecenter_id=request.session['cid']
+    ).select_related(
+        'booking__user',
+        'booking__vehicle__model__brand',
+        'booking__technician',
+        'servicecenter_breakdown_service__servicetype'
+    ).order_by('-id')
+    response = []
+    for i in data:
+        response.append({
+            "id": i.id,
+            "booking_id": i.booking.id,
+            "status": i.booking.breakdown_status,
+            "progress_step": i.progress_step,
+            "user_name": i.booking.user.user_name,
+            "user_email": i.booking.user.user_email,
+            "contact": i.booking.user.contact_number,
+            "date": i.booking.breakdown_date.strftime("%d %b %Y"),
+            "service_type": i.servicecenter_breakdown_service.servicetype.servicetype_name,
+            "complaint": i.booking.breakdown_complaint,
+            "vehicle_name": f"{i.booking.vehicle.model.brand.brand_name} {i.booking.vehicle.model.model_name}",
+            "vehicle_number": i.booking.vehicle.vehicle_number,
+            "vehicle_photo": i.booking.vehicle.vehicle_photo.url,
+            "technician": i.booking.technician.technician_name if i.booking.technician else None,
+            "billing_status": i.billing_status
+        })
+
+    return JsonResponse({"data": response})
+            
+
+def homepage_alert_api(request):
+    if 'cid' not in request.session:
+        return JsonResponse({"error": "Unauthorized"}, status=403)
+
+    center = tbl_servicecenter.objects.get(id=request.session['cid'])
+    today = date.today()
+
+    return JsonResponse({
+        "pending_service": tbl_booking.objects.filter(
+            servicecenter=center,
+            booking_status=0
+        ).count(),
+
+        "pending_breakdown": tbl_breakdownassist.objects.filter(
+            servicecenter=center,
+            breakdown_status=0
+        ).count(),
+
+        "feedback_count": tbl_feedback.objects.filter(
+            servicecenter=center,
+            feedback_date__month=today.month,
+            feedback_date__year=today.year
+        ).count()
+    })

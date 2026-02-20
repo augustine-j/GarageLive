@@ -382,131 +382,8 @@
               <th>Operations</th>
             </tr>
           </thead>
-          <tbody>
-            {% for i in services %}
-            <tr data-status="{% if i.booking.breakdown_status == 0 %}pending{% elif i.booking.breakdown_status == 2 %}rejected{% elif i.booking.breakdown_status == 5 or i.billing_status %}completed{% elif i.booking.breakdown_status == 1 and i.progress_step == 0 %}accepted{% elif i.booking.breakdown_status == 1 and i.progress_step > 0 %}inprogress{% else %}unknown{% endif %}">
-
-              <td><span class="sno">{{ forloop.counter }}</span></td>
-
-              <!-- Customer -->
-              <td>
-                <div class="user-name">{{ i.booking.user.user_name }}</div>
-                <div class="user-email">{{ i.booking.user.user_email }}</div>
-              </td>
-
-              <td><span class="contact-num">{{ i.booking.user.contact_number }}</span></td>
-
-              <td><span class="date-badge">{{ i.booking.breakdown_date|date:"d M Y" }}</span></td>
-
-              <td>
-                <span class="service-tag">
-                  {{ i.servicecenter_breakdown_service.servicetype.servicetype_name }}
-                </span>
-              </td>
-
-              <td>
-                <div class="complaint-text">{{ i.booking.breakdown_complaint }}</div>
-              </td>
-
-              <!-- Vehicle -->
-              <td>
-                <div class="vehicle-name">
-                  {{ i.booking.vehicle.model.brand.brand_name }}
-                  {{ i.booking.vehicle.model.model_name }}
-                </div>
-                <div class="vehicle-plate">{{ i.booking.vehicle.vehicle_number }}</div>
-              </td>
-
-              <td>
-                <img src="{{ i.booking.vehicle.vehicle_photo.url }}" alt="Vehicle" class="vehicle-img"/>
-              </td>
-
-              <!-- STATUS -->
-              <td>
-                {% if i.booking.breakdown_status == 0 %}
-                  <span class="status-badge sb-pending">⏳ Pending</span>
-
-                {% elif i.booking.breakdown_status == 2 %}
-                  <span class="status-badge sb-rejected">✕ Rejected</span>
-
-                {% else %}
-                  {% if i.servicecenter_breakdown_service.servicetype.servicetype_name == "Fuel Refill" %}
-                    {% if i.progress_step == 0 %}<span class="status-badge sb-accepted">✓ Accepted</span>
-                    {% elif i.progress_step == 1 %}<span class="status-badge sb-onway">🚗 On the Way</span>
-                    {% elif i.progress_step == 2 %}<span class="status-badge sb-arrived">📍 Arrived</span>
-                    {% elif i.progress_step == 3 %}<span class="status-badge sb-inprogress">⛽ Fueled Up</span>
-                    {% else %}<span class="status-badge sb-completed">✓ Completed</span>
-                    {% endif %}
-
-                  {% elif i.servicecenter_breakdown_service.servicetype.servicetype_name == "Battery Jump Start" %}
-                    {% if i.progress_step == 0 %}<span class="status-badge sb-accepted">✓ Accepted</span>
-                    {% elif i.progress_step == 1 %}<span class="status-badge sb-onway">🚗 On the Way</span>
-                    {% elif i.progress_step == 2 %}<span class="status-badge sb-arrived">📍 Arrived</span>
-                    {% elif i.progress_step == 3 %}<span class="status-badge sb-inprogress">🔋 Jump Started</span>
-                    {% else %}<span class="status-badge sb-completed">✓ Completed</span>
-                    {% endif %}
-
-                  {% elif i.servicecenter_breakdown_service.servicetype.servicetype_name == "Tyre Puncture Repair" %}
-                    {% if i.progress_step == 0 %}<span class="status-badge sb-accepted">✓ Accepted</span>
-                    {% elif i.progress_step == 1 %}<span class="status-badge sb-onway">🚗 On the Way</span>
-                    {% elif i.progress_step == 2 %}<span class="status-badge sb-arrived">📍 Arrived</span>
-                    {% elif i.progress_step == 3 %}<span class="status-badge sb-inprogress">🔧 Tyre Changed</span>
-                    {% else %}<span class="status-badge sb-completed">✓ Completed</span>
-                    {% endif %}
-
-                  {% elif i.servicecenter_breakdown_service.servicetype.servicetype_name == "Towing Service" %}
-                    {% if i.progress_step == 0 %}<span class="status-badge sb-accepted">✓ Accepted</span>
-                    {% elif i.progress_step == 1 %}<span class="status-badge sb-onway">🚗 On the Way</span>
-                    {% elif i.progress_step == 2 %}<span class="status-badge sb-arrived">📍 Vehicle Reached</span>
-                    {% elif i.progress_step == 3 %}<span class="status-badge sb-inprogress">🚛 Towing</span>
-                    {% else %}<span class="status-badge sb-completed">✓ Completed</span>
-                    {% endif %}
-
-                  {% else %}
-                    <span class="status-badge sb-inprogress">⚙ In Progress</span>
-                  {% endif %}
-                {% endif %}
-              </td>
-
-              <!-- ACTION -->
-              <td>
-                {% if i.booking.breakdown_status == 0 %}
-                  <div class="action-row">
-                    <a class="btn-accept" href="{% url 'ServiceCenter:acceptbreakdown' i.booking.id %}">✓ Accept</a>
-                    <a class="btn-reject" href="{% url 'ServiceCenter:rejectbreakdown' i.booking.id %}">✕ Reject</a>
-                  </div>
-
-                {% elif i.booking.breakdown_status == 1 %}
-                  {% if not i.booking.technician %}
-                    <a class="btn-assign" href="{% url 'ServiceCenter:breakdown_technician' i.booking.id %}">⚙ Assign Technician</a>
-                  {% else %}
-                    <div class="tech-assigned">
-                      <span class="tech-avatar">{{ i.booking.technician.technician_name|first|upper }}</span>
-                      {{ i.booking.technician.technician_name }}
-                    </div>
-                  {% endif %}
-
-                {% elif i.progress_step >= 1 and not i.billing_status %}
-                  <span class="status-badge sb-awaiting">⏳ Awaiting Billing</span>
-
-                {% elif i.billing_status %}
-                  <span class="status-badge sb-billed">✓ Billed</span>
-
-                {% else %}
-                  <span style="color:var(--text-dim); font-size:12px; font-style:italic;">No action</span>
-                {% endif %}
-              </td>
-
-            </tr>
-            {% empty %}
-            <tr class="empty-row">
-              <td colspan="10">
-                <span class="empty-icon">🚗</span>
-                <span class="empty-label">No breakdown requests found</span>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
+          <tbody id="bdBody">
+</tbody>
         </table>
       </div>
     </div>
@@ -563,6 +440,217 @@
 
   searchInput.addEventListener("keyup", applyFilters);
 })();
+</script>
+
+
+<script>
+const bdBody = document.getElementById("bdBody");
+
+const bdCache = new Map();
+const bdFrozen = new Set();   // freeze when completed
+
+function getBreakdownStatus(item){
+
+    // Major states first
+    if (item.status === 0)
+        return ["⏳ Pending", "sb-pending"];
+
+    if (item.status === 2)
+        return ["✕ Rejected", "sb-rejected"];
+
+    if (item.billing_status === true)
+        return ["✓ Completed", "sb-completed"];
+
+    // Service-specific progress mapping
+    const service = item.service_type;
+    const step = item.progress_step;
+
+    // FUEL REFILL
+    if (service === "Fuel Refill"){
+        if (step === 0) return ["✓ Accepted", "sb-accepted"];
+        if (step === 1) return ["🚗 On the Way", "sb-onway"];
+        if (step === 2) return ["📍 Technician on Site", "sb-arrived"];
+        if (step === 3) return ["⛽ Fueled Up", "sb-inprogress"];
+        return ["✓ Completed", "sb-completed"];
+    }
+
+    // BATTERY JUMP START
+    if (service === "Battery Jump Start"){
+        if (step === 0) return ["✓ Accepted", "sb-accepted"];
+        if (step === 1) return ["🚗 On the Way", "sb-onway"];
+        if (step === 2) return ["📍 Technician on Site", "sb-arrived"];
+        if (step === 3) return ["🔋 Jump Started", "sb-inprogress"];
+        return ["✓ Completed", "sb-completed"];
+    }
+
+    // TYRE REPAIR
+    if (service === "Tyre Puncture Repair"){
+        if (step === 0) return ["✓ Accepted", "sb-accepted"];
+        if (step === 1) return ["🚗 On the Way", "sb-onway"];
+        if (step === 2) return ["📍 Technician on Site", "sb-arrived"];
+        if (step === 3) return ["🔧 Tyre Changed", "sb-inprogress"];
+        return ["✓ Completed", "sb-completed"];
+    }
+
+    // TOWING
+    if (service === "Towing Service"){
+        if (step === 0) return ["✓ Accepted", "sb-accepted"];
+        if (step === 1) return ["🚗 On the Way", "sb-onway"];
+        if (step === 2) return ["📍 Technician on Site", "sb-arrived"];
+        if (step === 3) return ["🚛 Towing", "sb-inprogress"];
+        return ["✓ Completed", "sb-completed"];
+    }
+
+    // Fallback
+    return ["⚙ In Progress", "sb-inprogress"];
+}
+function buildBDAction(item){
+
+    const base = "/ServiceCenter/";
+
+    if (item.status === 0){
+        return `
+            <div class="action-row">
+                <a class="btn-accept" href="${base}acceptbreakdown/${item.booking_id}">
+                    ✓ Accept
+                </a>
+                <a class="btn-reject" href="${base}rejectbreakdown/${item.booking_id}">
+                    ✕ Reject
+                </a>
+            </div>
+        `;
+    }
+
+    if (item.status === 1 && !item.technician){
+        return `
+            <a class="btn-assign" href="${base}breakdown_technician/${item.booking_id}">
+                ⚙ Assign Technician
+            </a>
+        `;
+    }
+
+    if (item.billing_status){
+        return `<span class="status-badge sb-billed">✓ Billed</span>`;
+    }
+
+    return `<span style="color:#9aa0b4;font-size:12px;">No action</span>`;
+}
+
+function buildBDRow(item, index){
+
+    const [label, badgeClass] = getBreakdownStatus(item);
+
+    const techDisplay = item.technician
+        ? `<div class="tech-assigned">
+                <span class="tech-avatar">${item.technician.charAt(0)}</span>
+                ${item.technician}
+           </div>`
+        : "";
+
+    return `
+    <tr id="bd-${item.id}">
+        <td><span class="sno">${index+1}</span></td>
+
+        <td>
+            <div class="user-name">${item.user_name}</div>
+            <div class="user-email">${item.user_email}</div>
+        </td>
+
+        <td><span class="contact-num">${item.contact}</span></td>
+        <td><span class="date-badge">${item.date}</span></td>
+
+        <td><span class="service-tag">${item.service_type}</span></td>
+
+        <td><div class="complaint-text">${item.complaint}</div></td>
+
+        <td>
+            <div class="vehicle-name">${item.vehicle_name}</div>
+            <div class="vehicle-plate">${item.vehicle_number}</div>
+        </td>
+
+        <td><img src="${item.vehicle_photo}" class="vehicle-img"></td>
+
+        <td>
+            <span class="status-badge ${badgeClass}">
+                ${label}
+            </span>
+        </td>
+
+        <td>
+            ${item.technician ? techDisplay : buildBDAction(item)}
+        </td>
+    </tr>
+    `;
+}
+
+function updateBDRow(item){
+
+    if (bdFrozen.has(item.id)) return;
+
+    const row = document.getElementById(`bd-${item.id}`);
+    if (!row) return;
+
+    const old = bdCache.get(item.id);
+    const newState = item.status + "-" + item.progress_step + "-" + item.billing_status;
+
+    if (old === newState) return;
+
+    const [label, badgeClass] = getBreakdownStatus(item);
+
+    row.querySelector("td:nth-child(9)").innerHTML =
+        `<span class="status-badge ${badgeClass}">${label}</span>`;
+
+    row.querySelector("td:nth-child(10)").innerHTML =
+        item.technician
+        ? `<div class="tech-assigned">
+                <span class="tech-avatar">${item.technician.charAt(0)}</span>
+                ${item.technician}
+           </div>`
+        : buildBDAction(item);
+
+    bdCache.set(item.id, newState);
+
+    if (label.includes("Completed")){
+        bdFrozen.add(item.id);
+    }
+}
+
+function syncBD(data){
+
+    const incoming = new Set();
+
+    data.forEach((item, index) => {
+
+        incoming.add(item.id);
+
+        const stateKey = item.status + "-" + item.progress_step + "-" + item.billing_status;
+
+        if (!bdCache.has(item.id)){
+            bdBody.insertAdjacentHTML("beforeend", buildBDRow(item, index));
+            bdCache.set(item.id, stateKey);
+        } else {
+            updateBDRow(item);
+        }
+    });
+
+    bdCache.forEach((_, id) => {
+        if (!incoming.has(id)){
+            const row = document.getElementById(`bd-${id}`);
+            if (row) row.remove();
+            bdCache.delete(id);
+        }
+    });
+}
+
+function fetchBreakdowns(){
+    fetch("{% url 'ServiceCenter:breakdown_api' %}")
+        .then(res => res.json())
+        .then(data => syncBD(data.data))
+        .catch(err => console.error("Breakdown API error:", err));
+}
+
+fetchBreakdowns();
+setInterval(fetchBreakdowns, 5000);
 </script>
 
 {% endblock content %}
