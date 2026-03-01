@@ -57,7 +57,7 @@ def editprofile(request):
             editprofile.save()
             return render(request,"Technician/Profile.html",{'msg':"Record Updated"})
         else:
-            return render(request,"Technician/EditProfile.html",{'data':editprofile},{'greeting':greeting})
+            return render(request,"Technician/EditProfile.html",{'data':editprofile,'greeting':greeting})
 
 
 def changepassword(request):
