@@ -663,241 +663,215 @@
 {% endif %}
 
 <script>
-(function () {
-  /* ── SEARCH ── */
-  const search = document.getElementById("tableSearch");
-  const table  = document.getElementById("requestsTable");
-  if (search && table) {
-    search.addEventListener("keyup", function () {
-      const q = this.value.toLowerCase().trim();
-      table.querySelectorAll("tbody tr").forEach(r => {
-        r.style.display = r.innerText.toLowerCase().includes(q) ? "" : "none";
-      });
-    });
-  }
+// ══════════════════════════════════════════════════════
+//  UNIFIED SCRIPT — filtering + counts + live API sync
+// ══════════════════════════════════════════════════════
 
-  /* ── FILTER CHIPS ── */
-  const rows    = Array.from(document.querySelectorAll("#requestsTable tbody tr"));
-  const chips   = document.querySelectorAll("#statusFilters .stat-chip");
-  const counters = { all:0, pending:0, accepted:0, inprogress:0, completed:0, rejected:0 };
-
-  function bucket(s) {
-    s = parseInt(s);
-    if (s === 0) return "pending";
-    if (s === 1) return "accepted";
-    if (s === 2) return "rejected";
-    if ([3,4,5,6,7,8].includes(s)) return "inprogress";
-    if ([9,11,12].includes(s)) return "completed";
-    return "all";
-  }
-
-  rows.forEach(r => {
-    counters.all++;
-    const b = bucket(r.dataset.status);
-    if (counters[b] !== undefined) counters[b]++;
-  });
-
-  document.getElementById("cnt-all").innerText       = counters.all;
-  document.getElementById("cnt-pending").innerText   = counters.pending;
-  document.getElementById("cnt-accepted").innerText  = counters.accepted;
-  document.getElementById("cnt-inprogress").innerText= counters.inprogress;
-  document.getElementById("cnt-completed").innerText = counters.completed;
-  document.getElementById("cnt-rejected").innerText  = counters.rejected;
-
-  chips.forEach(chip => {
-    chip.addEventListener("click", function () {
-      chips.forEach(c => c.classList.remove("active"));
-      this.classList.add("active");
-      const filter = this.dataset.status;
-      rows.forEach(row => {
-        const b = bucket(row.dataset.status);
-        const s = row.dataset.status;
-        if      (filter === "all")        row.style.display = "";
-        else if (filter === "inprogress") row.style.display = b === "inprogress" ? "" : "none";
-        else if (filter === "completed")  row.style.display = b === "completed"  ? "" : "none";
-        else row.style.display = s === filter ? "" : "none";
-      });
-    });
-  });
-
-  /* ── COMPLAINT MODAL ── */
-  const modal = document.getElementById("complaintModal");
-  if (modal) {
-    modal.addEventListener("show.bs.modal", function (e) {
-      const btn = e.relatedTarget;
-      document.getElementById("complaintMeta").innerText =
-        btn.getAttribute("data-user") + "  ·  Booking " + btn.getAttribute("data-booking");
-      document.getElementById("complaintText").innerText = btn.getAttribute("data-complaint");
-    });
-  }
-})();
-</script>
-
-
-<script>
-const tbody = document.getElementById("requestsBody");
+const tbody       = document.getElementById("requestsBody");
+const chips       = document.querySelectorAll("#statusFilters .stat-chip");
+const searchInput = document.getElementById("tableSearch");
 
 const bookingCache = new Map();
 const frozenRows   = new Set();
+let   activeFilter = "all";
 
-function getStatusLabel(status){
-    const map = {
-        0: ["Pending", "sb-pending"],
-        1: ["Accepted", "sb-accepted"],
-        2: ["Rejected", "sb-rejected"],
-        3: ["Work Started", "sb-inprogress"],
-        4: ["Diagnosis Started", "sb-inprogress"],
-        5: ["Diagnosis Done", "sb-inprogress"],
-        6: ["Repair In Progress", "sb-inprogress"],
-        7: ["Parts Replaced", "sb-inprogress"],
-        8: ["Testing", "sb-inprogress"],
-        9: ["Service Done", "sb-done"],
-        10:["Billing", "sb-billing"],
-        11:["Bill Generated", "sb-completed"],
-        12:["Completed", "sb-completed"],
-    };
-    return map[status] || ["Unknown", "sb-default"];
+/* ── bucket: maps numeric status → filter category ── */
+function bucket(s) {
+  s = parseInt(s);
+  if (s === 0) return "pending";
+  if (s === 1) return "accepted";
+  if (s === 2) return "rejected";
+  if ([3,4,5,6,7,8].includes(s)) return "inprogress";
+  if ([9,11,12].includes(s))     return "completed";
+  return "other";
 }
 
-function buildActionButtons(item){
+/* ── refreshFilters: recount + reapply filter + search ── */
+/* Called after every syncRows so counts are always live  */
+function refreshFilters() {
+  const allRows = Array.from(tbody.querySelectorAll("tr[data-status]"));
+  const q = searchInput ? searchInput.value.toLowerCase().trim() : "";
 
-    const base = "/ServiceCenter/";
+  const counts = { all:0, pending:0, accepted:0, inprogress:0, completed:0, rejected:0 };
+  allRows.forEach(row => {
+    counts.all++;
+    const b = bucket(row.dataset.status);
+    if (counts[b] !== undefined) counts[b]++;
+  });
 
-    if (item.status === 0){
-        return `
-            <div class="action-row">
-                <a class="btn-accept" href="${base}acceptrequest/${item.id}">✓ Accept</a>
-                <a class="btn-reject" href="${base}rejectrequest/${item.id}">✕ Reject</a>
-            </div>
-        `;
+  document.getElementById("cnt-all").innerText        = counts.all;
+  document.getElementById("cnt-pending").innerText    = counts.pending;
+  document.getElementById("cnt-accepted").innerText   = counts.accepted;
+  document.getElementById("cnt-inprogress").innerText = counts.inprogress;
+  document.getElementById("cnt-completed").innerText  = counts.completed;
+  document.getElementById("cnt-rejected").innerText   = counts.rejected;
+
+  allRows.forEach(row => {
+    const s = row.dataset.status;
+    const b = bucket(s);
+    let show = false;
+
+    if      (activeFilter === "all")        show = true;
+    else if (activeFilter === "inprogress") show = (b === "inprogress");
+    else if (activeFilter === "completed")  show = (b === "completed");
+    else show = (s === activeFilter);
+
+    if (show && q) show = row.innerText.toLowerCase().includes(q);
+    row.style.display = show ? "" : "none";
+  });
+}
+
+/* ── Chip click handlers ── */
+chips.forEach(chip => {
+  chip.addEventListener("click", function () {
+    chips.forEach(c => c.classList.remove("active"));
+    this.classList.add("active");
+    activeFilter = this.dataset.status;
+    refreshFilters();
+  });
+});
+
+/* ── Search handler ── */
+if (searchInput) {
+  searchInput.addEventListener("keyup", refreshFilters);
+}
+
+/* ── Complaint modal ── */
+const modal = document.getElementById("complaintModal");
+if (modal) {
+  modal.addEventListener("show.bs.modal", function (e) {
+    const btn = e.relatedTarget;
+    document.getElementById("complaintMeta").innerText =
+      btn.getAttribute("data-user") + "  ·  Booking " + btn.getAttribute("data-booking");
+    document.getElementById("complaintText").innerText = btn.getAttribute("data-complaint");
+  });
+}
+
+/* ══ LIVE API POLLING ══ */
+
+function getStatusLabel(status) {
+  const map = {
+    0:  ["⏳ Pending",           "sb-pending"],
+    1:  ["✓ Accepted",           "sb-accepted"],
+    2:  ["✕ Rejected",           "sb-rejected"],
+    3:  ["⚙ Work Started",       "sb-inprogress"],
+    4:  ["⚙ Diagnosis Started",  "sb-inprogress"],
+    5:  ["⚙ Diagnosis Done",     "sb-inprogress"],
+    6:  ["⚙ Repair In Progress", "sb-inprogress"],
+    7:  ["⚙ Parts Replaced",     "sb-inprogress"],
+    8:  ["⚙ Testing",            "sb-inprogress"],
+    9:  ["✓ Service Done",        "sb-done"],
+    10: ["$ Billing",             "sb-billing"],
+    11: ["✓ Bill Generated",      "sb-completed"],
+    12: ["✓ Completed",           "sb-completed"],
+  };
+  return map[status] || ["Unknown", "sb-default"];
+}
+
+function buildActionButtons(item) {
+  const base = "/ServiceCenter/";
+  if (item.status === 0) {
+    return `<div class="action-row">
+      <a class="btn-accept" href="${base}acceptrequest/${item.id}">✓ Accept</a>
+      <a class="btn-reject" href="${base}rejectrequest/${item.id}">✕ Reject</a>
+    </div>`;
+  }
+  if (item.status === 1 && !item.technician) {
+    return `<div class="action-row">
+      <a class="btn-assign" href="${base}assign_technician/${item.id}">⚙ Assign Technician</a>
+    </div>`;
+  }
+  if (item.status === 10) {
+    return `<div class="action-row">
+      <a class="btn-bill" href="${base}generate_bill/${item.id}">Generate Bill</a>
+    </div>`;
+  }
+  return "";
+}
+
+function buildRow(item, index) {
+  const [label, badgeClass] = getStatusLabel(item.status);
+  const services = (item.services || []).map(s => `<span class="service-tag">${s}</span>`).join("");
+  const tech = item.technician
+    ? `<div class="tech-name">
+         <span class="tech-avatar">${item.technician.charAt(0).toUpperCase()}</span>
+         ${item.technician}
+       </div>`
+    : `<span class="no-tech">Unassigned</span>`;
+
+  return `
+  <tr id="row-${item.id}" data-status="${item.status}">
+    <td><span class="sno">${index + 1}</span></td>
+    <td><span class="booking-id">#${item.id}</span></td>
+    <td>
+      <div class="user-name">${item.user_name}</div>
+      <div class="user-email">${item.user_email}</div>
+    </td>
+    <td><span class="contact-num">${item.user_contact || ''}</span></td>
+    <td><span class="date-badge">${item.from_date}</span></td>
+    <td><span class="date-badge">${item.to_date}</span></td>
+    <td>${item.complaint ? item.complaint : '<span style="color:var(--text-dim)">—</span>'}</td>
+    <td>${services}</td>
+    <td>
+      <div class="vehicle-name">${item.vehicle_name}</div>
+      <div class="vehicle-plate">${item.vehicle_number}</div>
+    </td>
+    <td><img src="${item.vehicle_photo}" class="vehicle-img"/></td>
+    <td class="status-cell">
+      <span class="status-badge ${badgeClass}">${label}</span>
+      ${buildActionButtons(item)}
+    </td>
+    <td>${tech}</td>
+  </tr>`;
+}
+
+function updateRow(item) {
+  if (frozenRows.has(item.id)) return;
+  const row = document.getElementById(`row-${item.id}`);
+  if (!row) return;
+  if (bookingCache.get(item.id) === item.status) return;
+
+  const [label, badgeClass] = getStatusLabel(item.status);
+  row.dataset.status = item.status;
+  row.querySelector(".status-cell").innerHTML =
+    `<span class="status-badge ${badgeClass}">${label}</span>${buildActionButtons(item)}`;
+
+  bookingCache.set(item.id, item.status);
+  if (item.status === 12) frozenRows.add(item.id);
+}
+
+function syncRows(data) {
+  const incomingIds = new Set();
+
+  data.forEach((item, index) => {
+    incomingIds.add(item.id);
+    if (!bookingCache.has(item.id)) {
+      tbody.insertAdjacentHTML("beforeend", buildRow(item, index));
+      bookingCache.set(item.id, item.status);
+      if (item.status === 12) frozenRows.add(item.id);
+    } else {
+      updateRow(item);
     }
+  });
 
-    if (item.status === 1 && !item.technician){
-        return `
-            <div class="action-row">
-                <a class="btn-assign" href="${base}assign_technician/${item.id}">
-                    ⚙ Assign Technician
-                </a>
-            </div>
-        `;
+  bookingCache.forEach((_, id) => {
+    if (!incomingIds.has(id)) {
+      const row = document.getElementById(`row-${id}`);
+      if (row) row.remove();
+      bookingCache.delete(id);
+      frozenRows.delete(id);
     }
+  });
 
-    if (item.status === 10){
-        return `
-            <div class="action-row">
-                <a class="btn-bill" href="${base}generate_bill/${item.id}">
-                    Generate Bill
-                </a>
-            </div>
-        `;
-    }
-
-    return "";
-}
-function buildRow(item, index){
-
-    const [label, badgeClass] = getStatusLabel(item.status);
-
-    const services = item.services.map(s =>
-        `<span class="service-tag">${s}</span>`
-    ).join("");
-
-    const tech = item.technician
-        ? `<div class="tech-name">
-              <span class="tech-avatar">${item.technician.charAt(0).toUpperCase()}</span>
-              ${item.technician}
-           </div>`
-        : `<span class="no-tech">Unassigned</span>`;
-
-    return `
-    <tr id="row-${item.id}" data-status="${item.status}">
-        <td><span class="sno">${index+1}</span></td>
-        <td><span class="booking-id">#${item.id}</span></td>
-        <td>
-            <div class="user-name">${item.user_name}</div>
-            <div class="user-email">${item.user_email}</div>
-        </td>
-        <td><span class="contact-num">${item.user_contact || ''}</span></td>
-        <td><span class="date-badge">${item.from_date}</span></td>
-        <td><span class="date-badge">${item.to_date}</span></td>
-        <td>${item.complaint ? item.complaint : "—"}</td>
-        <td>${services}</td>
-        <td>
-            <div class="vehicle-name">${item.vehicle_name}</div>
-            <div class="vehicle-plate">${item.vehicle_number}</div>
-        </td>
-        <td><img src="${item.vehicle_photo}" class="vehicle-img"/></td>
-        <td class="status-cell">
-            <span class="status-badge ${badgeClass}">${label}</span>
-            ${buildActionButtons(item)}
-        </td>
-        <td>${tech}</td>
-    </tr>
-    `;
+  // KEY FIX: refresh counts + filter visibility after every API sync
+  refreshFilters();
 }
 
-function updateRow(item){
-
-    if (frozenRows.has(item.id)) return;
-
-    const row = document.getElementById(`row-${item.id}`);
-    if (!row) return;
-
-    const oldStatus = bookingCache.get(item.id);
-    if (oldStatus === item.status) return;
-
-    const [label, badgeClass] = getStatusLabel(item.status);
-
-    row.dataset.status = item.status;
-
-    const statusCell = row.querySelector(".status-cell");
-    statusCell.innerHTML = `
-        <span class="status-badge ${badgeClass}">${label}</span>
-        ${buildActionButtons(item)}
-    `;
-
-    bookingCache.set(item.id, item.status);
-
-    if (item.status === 12){
-        frozenRows.add(item.id);
-    }
-}
-
-function syncRows(data){
-
-    const incomingIds = new Set();
-
-    data.forEach((item, index) => {
-        incomingIds.add(item.id);
-
-        if (!bookingCache.has(item.id)){
-            tbody.insertAdjacentHTML("beforeend", buildRow(item, index));
-            bookingCache.set(item.id, item.status);
-
-            if (item.status === 12){
-                frozenRows.add(item.id);
-            }
-
-        } else {
-            updateRow(item);
-        }
-    });
-
-    bookingCache.forEach((_, id) => {
-        if (!incomingIds.has(id)){
-            const row = document.getElementById(`row-${id}`);
-            if (row) row.remove();
-            bookingCache.delete(id);
-            frozenRows.delete(id);
-        }
-    });
-}
-
-function fetchRequests(){
-    fetch("{% url 'ServiceCenter:servicecenter_api' %}")
-        .then(res => res.json())
-        .then(data => syncRows(data.data))
-        .catch(err => console.error("API Error:", err));
+function fetchRequests() {
+  fetch("{% url 'ServiceCenter:servicecenter_api' %}")
+    .then(res => res.json())
+    .then(data => syncRows(data.data))
+    .catch(err => console.error("API Error:", err));
 }
 
 fetchRequests();

@@ -619,7 +619,6 @@ def homepage_alert_api(request):
 
         "feedback_count": tbl_feedback.objects.filter(
             servicecenter=center,
-            feedback_date__month=today.month,
-            feedback_date__year=today.year
+            
         ).count()
     })

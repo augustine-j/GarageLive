@@ -398,259 +398,211 @@
   window.location = "{% url 'ServiceCenter:breakdownrequest' %}";
 </script>
 {% endif %}
-
 <script>
-(function () {
-  const searchInput = document.getElementById("bdSearch");
-  const rows        = Array.from(document.querySelectorAll("#bdTable tbody tr"));
-  const chips       = document.querySelectorAll("#statusFilters .stat-chip");
+// ══════════════════════════════════════════════════════
+//  UNIFIED SCRIPT — filtering + counts + live API sync
+// ══════════════════════════════════════════════════════
 
-  let activeStatus = "all";
+const bdBody      = document.getElementById("bdBody");
+const chips       = document.querySelectorAll("#statusFilters .stat-chip");
+const searchInput = document.getElementById("bdSearch");
 
-  const counters = { all:0, pending:0, accepted:0, inprogress:0, completed:0, rejected:0 };
+const bdCache  = new Map();
+const bdFrozen = new Set();
+let   activeFilter = "all";
 
-  rows.forEach(row => {
-    const st = row.dataset.status;
-    counters.all++;
-    if (counters[st] !== undefined) counters[st]++;
+/* ── bucket: maps item data → filter category string ── */
+function bdBucket(item) {
+  if (item.status === 0) return "pending";
+  if (item.status === 2) return "rejected";
+  if (item.billing_status === true) return "completed";
+  if (item.status === 1 && item.progress_step === 0) return "accepted";
+  if (item.status === 1 && item.progress_step > 0)  return "inprogress";
+  return "other";
+}
+
+/* ── refreshFilters: recount + reapply filter + search ── */
+/* Called after every syncBD so counts are always live   */
+function refreshFilters() {
+  const allRows = Array.from(bdBody.querySelectorAll("tr[data-status]"));
+  const q = searchInput ? searchInput.value.toLowerCase().trim() : "";
+
+  const counts = { all:0, pending:0, accepted:0, inprogress:0, completed:0, rejected:0 };
+  allRows.forEach(row => {
+    counts.all++;
+    const b = row.dataset.status;
+    if (counts[b] !== undefined) counts[b]++;
   });
 
-  Object.keys(counters).forEach(key => {
-    const el = document.getElementById(`cnt-${key}`);
-    if (el) el.innerText = counters[key];
-  });
+  document.getElementById("cnt-all").innerText        = counts.all;
+  document.getElementById("cnt-pending").innerText    = counts.pending;
+  document.getElementById("cnt-accepted").innerText   = counts.accepted;
+  document.getElementById("cnt-inprogress").innerText = counts.inprogress;
+  document.getElementById("cnt-completed").innerText  = counts.completed;
+  document.getElementById("cnt-rejected").innerText   = counts.rejected;
 
-  function applyFilters() {
-    const q = searchInput.value.toLowerCase().trim();
-    rows.forEach(row => {
-      const matchSearch = row.innerText.toLowerCase().includes(q);
-      const matchStatus = activeStatus === "all" || row.dataset.status === activeStatus;
-      row.style.display = (matchSearch && matchStatus) ? "" : "none";
-    });
+  allRows.forEach(row => {
+    const b = row.dataset.status;
+    let show = (activeFilter === "all") ? true : (b === activeFilter);
+    if (show && q) show = row.innerText.toLowerCase().includes(q);
+    row.style.display = show ? "" : "none";
+  });
+}
+
+/* ── Chip click handlers ── */
+chips.forEach(chip => {
+  chip.addEventListener("click", function () {
+    chips.forEach(c => c.classList.remove("active"));
+    this.classList.add("active");
+    activeFilter = this.dataset.status;
+    refreshFilters();
+  });
+});
+
+/* ── Search handler ── */
+if (searchInput) {
+  searchInput.addEventListener("keyup", refreshFilters);
+}
+
+/* ══ LIVE API POLLING ══ */
+
+function getBreakdownStatus(item) {
+  if (item.status === 0) return ["⏳ Pending",    "sb-pending"];
+  if (item.status === 2) return ["✕ Rejected",    "sb-rejected"];
+  if (item.billing_status === true) return ["✓ Completed", "sb-completed"];
+
+  const service = item.service_type;
+  const step    = item.progress_step;
+
+  const stepMap = {
+    0: ["✓ Accepted",            "sb-accepted"],
+    1: ["🚗 On the Way",          "sb-onway"],
+    2: ["📍 Technician on Site",  "sb-arrived"],
+  };
+
+  const actionLabel = {
+    "Fuel Refill":          "⛽ Fueled Up",
+    "Battery Jump Start":   "🔋 Jump Started",
+    "Tyre Puncture Repair": "🔧 Tyre Changed",
+    "Towing Service":       "🚛 Towing",
+  };
+
+  if (step <= 2) return stepMap[step] || ["⚙ In Progress", "sb-inprogress"];
+  if (step === 3) return [actionLabel[service] || "⚙ In Progress", "sb-inprogress"];
+  return ["✓ Completed", "sb-completed"];
+}
+
+function buildBDAction(item) {
+  const base = "/ServiceCenter/";
+  if (item.status === 0) {
+    return `<div class="action-row">
+      <a class="btn-accept" href="${base}acceptbreakdown/${item.booking_id}">✓ Accept</a>
+      <a class="btn-reject" href="${base}rejectbreakdown/${item.booking_id}">✕ Reject</a>
+    </div>`;
   }
+  if (item.status === 1 && !item.technician) {
+    return `<a class="btn-assign" href="${base}breakdown_technician/${item.booking_id}">⚙ Assign Technician</a>`;
+  }
+  if (item.billing_status) {
+    return `<span class="status-badge sb-billed">✓ Billed</span>`;
+  }
+  return `<span style="color:#9aa0b4;font-size:12px;font-style:italic;">No action</span>`;
+}
 
-  chips.forEach(chip => {
-    chip.addEventListener("click", function () {
-      chips.forEach(c => c.classList.remove("active"));
-      this.classList.add("active");
-      activeStatus = this.dataset.status;
-      applyFilters();
-    });
+function buildTech(item) {
+  return item.technician
+    ? `<div class="tech-assigned">
+         <span class="tech-avatar">${item.technician.charAt(0).toUpperCase()}</span>
+         ${item.technician}
+       </div>`
+    : buildBDAction(item);
+}
+
+function buildBDRow(item, index) {
+  const [label, badgeClass] = getBreakdownStatus(item);
+  const statusCategory = bdBucket(item);   // for data-status attribute
+
+  return `
+  <tr id="bd-${item.id}" data-status="${statusCategory}">
+    <td><span class="sno">${index + 1}</span></td>
+    <td>
+      <div class="user-name">${item.user_name}</div>
+      <div class="user-email">${item.user_email}</div>
+    </td>
+    <td><span class="contact-num">${item.contact}</span></td>
+    <td><span class="date-badge">${item.date}</span></td>
+    <td><span class="service-tag">${item.service_type}</span></td>
+    <td><div class="complaint-text">${item.complaint}</div></td>
+    <td>
+      <div class="vehicle-name">${item.vehicle_name}</div>
+      <div class="vehicle-plate">${item.vehicle_number}</div>
+    </td>
+    <td><img src="${item.vehicle_photo}" class="vehicle-img"></td>
+    <td><span class="status-badge ${badgeClass}">${label}</span></td>
+    <td>${buildTech(item)}</td>
+  </tr>`;
+}
+
+function updateBDRow(item) {
+  if (bdFrozen.has(item.id)) return;
+
+  const row = document.getElementById(`bd-${item.id}`);
+  if (!row) return;
+
+  const newState = `${item.status}-${item.progress_step}-${item.billing_status}`;
+  if (bdCache.get(item.id) === newState) return;
+
+  const [label, badgeClass] = getBreakdownStatus(item);
+  const statusCategory = bdBucket(item);
+
+  row.dataset.status = statusCategory;
+  row.querySelector("td:nth-child(9)").innerHTML =
+    `<span class="status-badge ${badgeClass}">${label}</span>`;
+  row.querySelector("td:nth-child(10)").innerHTML = buildTech(item);
+
+  bdCache.set(item.id, newState);
+  if (item.billing_status || item.status === 2) bdFrozen.add(item.id);
+}
+
+function syncBD(data) {
+  const incoming = new Set();
+
+  data.forEach((item, index) => {
+    incoming.add(item.id);
+    const stateKey = `${item.status}-${item.progress_step}-${item.billing_status}`;
+
+    if (!bdCache.has(item.id)) {
+      bdBody.insertAdjacentHTML("beforeend", buildBDRow(item, index));
+      bdCache.set(item.id, stateKey);
+    } else {
+      updateBDRow(item);
+    }
   });
 
-  searchInput.addEventListener("keyup", applyFilters);
-})();
-</script>
-
-
-<script>
-const bdBody = document.getElementById("bdBody");
-
-const bdCache = new Map();
-const bdFrozen = new Set();   // freeze when completed
-
-function getBreakdownStatus(item){
-
-    // Major states first
-    if (item.status === 0)
-        return ["⏳ Pending", "sb-pending"];
-
-    if (item.status === 2)
-        return ["✕ Rejected", "sb-rejected"];
-
-    if (item.billing_status === true)
-        return ["✓ Completed", "sb-completed"];
-
-    // Service-specific progress mapping
-    const service = item.service_type;
-    const step = item.progress_step;
-
-    // FUEL REFILL
-    if (service === "Fuel Refill"){
-        if (step === 0) return ["✓ Accepted", "sb-accepted"];
-        if (step === 1) return ["🚗 On the Way", "sb-onway"];
-        if (step === 2) return ["📍 Technician on Site", "sb-arrived"];
-        if (step === 3) return ["⛽ Fueled Up", "sb-inprogress"];
-        return ["✓ Completed", "sb-completed"];
+  bdCache.forEach((_, id) => {
+    if (!incoming.has(id)) {
+      const row = document.getElementById(`bd-${id}`);
+      if (row) row.remove();
+      bdCache.delete(id);
+      bdFrozen.delete(id);
     }
+  });
 
-    // BATTERY JUMP START
-    if (service === "Battery Jump Start"){
-        if (step === 0) return ["✓ Accepted", "sb-accepted"];
-        if (step === 1) return ["🚗 On the Way", "sb-onway"];
-        if (step === 2) return ["📍 Technician on Site", "sb-arrived"];
-        if (step === 3) return ["🔋 Jump Started", "sb-inprogress"];
-        return ["✓ Completed", "sb-completed"];
-    }
-
-    // TYRE REPAIR
-    if (service === "Tyre Puncture Repair"){
-        if (step === 0) return ["✓ Accepted", "sb-accepted"];
-        if (step === 1) return ["🚗 On the Way", "sb-onway"];
-        if (step === 2) return ["📍 Technician on Site", "sb-arrived"];
-        if (step === 3) return ["🔧 Tyre Changed", "sb-inprogress"];
-        return ["✓ Completed", "sb-completed"];
-    }
-
-    // TOWING
-    if (service === "Towing Service"){
-        if (step === 0) return ["✓ Accepted", "sb-accepted"];
-        if (step === 1) return ["🚗 On the Way", "sb-onway"];
-        if (step === 2) return ["📍 Technician on Site", "sb-arrived"];
-        if (step === 3) return ["🚛 Towing", "sb-inprogress"];
-        return ["✓ Completed", "sb-completed"];
-    }
-
-    // Fallback
-    return ["⚙ In Progress", "sb-inprogress"];
-}
-function buildBDAction(item){
-
-    const base = "/ServiceCenter/";
-
-    if (item.status === 0){
-        return `
-            <div class="action-row">
-                <a class="btn-accept" href="${base}acceptbreakdown/${item.booking_id}">
-                    ✓ Accept
-                </a>
-                <a class="btn-reject" href="${base}rejectbreakdown/${item.booking_id}">
-                    ✕ Reject
-                </a>
-            </div>
-        `;
-    }
-
-    if (item.status === 1 && !item.technician){
-        return `
-            <a class="btn-assign" href="${base}breakdown_technician/${item.booking_id}">
-                ⚙ Assign Technician
-            </a>
-        `;
-    }
-
-    if (item.billing_status){
-        return `<span class="status-badge sb-billed">✓ Billed</span>`;
-    }
-
-    return `<span style="color:#9aa0b4;font-size:12px;">No action</span>`;
+  // KEY FIX: refresh counts + filter visibility after every API sync
+  refreshFilters();
 }
 
-function buildBDRow(item, index){
-
-    const [label, badgeClass] = getBreakdownStatus(item);
-
-    const techDisplay = item.technician
-        ? `<div class="tech-assigned">
-                <span class="tech-avatar">${item.technician.charAt(0)}</span>
-                ${item.technician}
-           </div>`
-        : "";
-
-    return `
-    <tr id="bd-${item.id}">
-        <td><span class="sno">${index+1}</span></td>
-
-        <td>
-            <div class="user-name">${item.user_name}</div>
-            <div class="user-email">${item.user_email}</div>
-        </td>
-
-        <td><span class="contact-num">${item.contact}</span></td>
-        <td><span class="date-badge">${item.date}</span></td>
-
-        <td><span class="service-tag">${item.service_type}</span></td>
-
-        <td><div class="complaint-text">${item.complaint}</div></td>
-
-        <td>
-            <div class="vehicle-name">${item.vehicle_name}</div>
-            <div class="vehicle-plate">${item.vehicle_number}</div>
-        </td>
-
-        <td><img src="${item.vehicle_photo}" class="vehicle-img"></td>
-
-        <td>
-            <span class="status-badge ${badgeClass}">
-                ${label}
-            </span>
-        </td>
-
-        <td>
-            ${item.technician ? techDisplay : buildBDAction(item)}
-        </td>
-    </tr>
-    `;
-}
-
-function updateBDRow(item){
-
-    if (bdFrozen.has(item.id)) return;
-
-    const row = document.getElementById(`bd-${item.id}`);
-    if (!row) return;
-
-    const old = bdCache.get(item.id);
-    const newState = item.status + "-" + item.progress_step + "-" + item.billing_status;
-
-    if (old === newState) return;
-
-    const [label, badgeClass] = getBreakdownStatus(item);
-
-    row.querySelector("td:nth-child(9)").innerHTML =
-        `<span class="status-badge ${badgeClass}">${label}</span>`;
-
-    row.querySelector("td:nth-child(10)").innerHTML =
-        item.technician
-        ? `<div class="tech-assigned">
-                <span class="tech-avatar">${item.technician.charAt(0)}</span>
-                ${item.technician}
-           </div>`
-        : buildBDAction(item);
-
-    bdCache.set(item.id, newState);
-
-    if (label.includes("Completed")){
-        bdFrozen.add(item.id);
-    }
-}
-
-function syncBD(data){
-
-    const incoming = new Set();
-
-    data.forEach((item, index) => {
-
-        incoming.add(item.id);
-
-        const stateKey = item.status + "-" + item.progress_step + "-" + item.billing_status;
-
-        if (!bdCache.has(item.id)){
-            bdBody.insertAdjacentHTML("beforeend", buildBDRow(item, index));
-            bdCache.set(item.id, stateKey);
-        } else {
-            updateBDRow(item);
-        }
-    });
-
-    bdCache.forEach((_, id) => {
-        if (!incoming.has(id)){
-            const row = document.getElementById(`bd-${id}`);
-            if (row) row.remove();
-            bdCache.delete(id);
-        }
-    });
-}
-
-function fetchBreakdowns(){
-    fetch("{% url 'ServiceCenter:breakdown_api' %}")
-        .then(res => res.json())
-        .then(data => syncBD(data.data))
-        .catch(err => console.error("Breakdown API error:", err));
+function fetchBreakdowns() {
+  fetch("{% url 'ServiceCenter:breakdown_api' %}")
+    .then(res => res.json())
+    .then(data => syncBD(data.data))
+    .catch(err => console.error("Breakdown API error:", err));
 }
 
 fetchBreakdowns();
 setInterval(fetchBreakdowns, 5000);
 </script>
+
+
 
 {% endblock content %}
