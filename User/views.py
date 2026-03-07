@@ -171,7 +171,7 @@ def servicebooking(request,sid):
             booking=tbl_booking.objects.create(booking_todate=todate,booking_complaints=complaint,user=user,
             servicecenter=servicecenter,vehicle=vehicle)
 
-            for service_id in service_ids:
+            for service_id in service_ids:  
                 sc_service=tbl_servicecenterservices.objects.get(id=service_id)
                 tbl_booking_services.objects.create(booking=booking,servicecenter_services=sc_service,
                 base_amount=sc_service.base_amount)

@@ -28,6 +28,8 @@ urlpatterns = [
      path('breakdown-step/<int:sid>/', views.update_breakdown_step, name='update_breakdown_step'),
      path('update_breakdown_charge/<int:bs_id>',views.update_breakdown_charge,name="update_breakdown_charge"),
 
+     path('add_service/<int:booking_id>/', views.add_service, name='add_service'),
+
     
 
 

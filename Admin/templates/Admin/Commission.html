@@ -78,7 +78,7 @@
     <div class="profit-card text-center">
         <div class="profit-label">Total Admin Profit</div>
         <div class="profit-amount">
-            ₹ {{ overall_total }}
+            ₹ {{ overall_total|floatformat:2 }}
         </div>
     </div>
 
@@ -93,7 +93,7 @@
         <div class="sc-header">
             <h5>{{ item.servicecenter.servicecenter_name }}</h5>
             <div class="total-box">
-                Total: ₹ {{ item.total }}
+                Total: ₹ {{ item.total|floatformat:2 }}
             </div>
         </div>
 
@@ -121,7 +121,7 @@
                             {% endif %}
                         </td>
                         <td>#{{ c.booking_id }}</td>
-                        <td>₹ {{ c.admin_commision }}</td>
+                        <td>₹ {{ c.admin_commision|floatformat:2 }}</td>
                         <td>{{ c.created_at|date:"M d, Y H:i" }}</td>
                         
                     </tr>

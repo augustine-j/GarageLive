@@ -277,5 +277,22 @@ def update_breakdown_charge(request, bs_id):
 
 
 
+def add_service(request, booking_id):
+    greeting=tbl_technician.objects.get(id=request.session['tid'])
+    booking=tbl_booking.objects.get(id=booking_id)
+    servicecenter=greeting.servicecenter
+    services=tbl_servicecenterservices.objects.filter(servicecenter=servicecenter)
+    
+    
+    if request.method=="POST":
+        service_ids=request.POST.getlist("services")
+        for service_id in service_ids:
+            sc_service=tbl_servicecenterservices.objects.get(id=service_id)
+            tbl_booking_services.objects.get_or_create(booking=booking,servicecenter_services=sc_service,base_amount=sc_service.base_amount)
+            
+        
+        return redirect("Technician:assigned_jobs")
+    
+    return render(request,"Technician/Add_Service.html",{"services":services,'greeting':greeting})
 
 

@@ -223,6 +223,19 @@
   }
   .empty-icon  { font-size: 40px; margin-bottom: 10px; display: block; opacity: 0.4; }
   .empty-label { font-size: 17px; color: var(--text-secondary); display: block; }
+
+
+
+   .vehicle-img {
+    width: 80px; height: 60px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    display: block;
+    box-shadow: var(--shadow-sm);
+    transition: transform .15s;
+  }
+  .vehicle-img:hover { transform: scale(1.05); }
 </style>
 
 
@@ -251,6 +264,7 @@
             <th>Service Type</th>
             <th>Complaint</th>
             <th>Vehicle</th>
+            <th>Photo</th>
             <th>Current Status</th>
             <th class="center">Response & Assignment</th>
           </tr>
@@ -286,6 +300,11 @@
               </div>
               <div class="vehicle-plate">{{ i.booking.vehicle.vehicle_number }}</div>
             </td>
+            <td>
+                <a href="{{ i.booking.vehicle.vehicle_photo.url }}" target="_blank">
+                  <img src="{{ i.booking.vehicle.vehicle_photo.url }}" alt="Vehicle" class="vehicle-img"/>
+                </a>
+              </td>
 
             <!-- CURRENT STATUS -->
             <td>

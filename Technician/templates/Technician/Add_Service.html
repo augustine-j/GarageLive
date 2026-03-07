@@ -1,0 +1,573 @@
+{% extends 'Technician/Head_tech.html' %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --bg: #f2f4f8;
+        --surface: #ffffff;
+        --surface2: #f8f9fc;
+        --border: #e4e7ef;
+        --accent: #2563eb;
+        --accent-dim: rgba(37, 99, 235, 0.08);
+        --accent-glow: rgba(37, 99, 235, 0.18);
+        --text: #0f1117;
+        --text-muted: #8b92a8;
+        --text-dim: #5a6278;
+        --price-color: #2563eb;
+        --green: #16a34a;
+        --green-soft: #f0fdf4;
+        --green-border: #bbf7d0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        background: var(--bg) !important;
+        font-family: 'Syne', sans-serif;
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .as-wrapper {
+        min-height: 100vh;
+        padding: 48px 24px 72px;
+        background: var(--bg);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* Subtle grid background */
+    .as-wrapper::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(37,99,235,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(37,99,235,0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .as-inner {
+        width: 100%;
+        max-width: 780px;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* ── Header ── */
+    .as-header {
+        margin-bottom: 32px;
+        text-align: center;
+    }
+
+    .as-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: var(--accent-dim);
+        border: 1px solid rgba(37,99,235,0.18);
+        padding: 5px 14px;
+        border-radius: 4px;
+        margin-bottom: 14px;
+    }
+
+    .as-eyebrow::before {
+        content: '';
+        width: 6px; height: 6px;
+        background: var(--accent);
+        border-radius: 50%;
+        animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.25; }
+    }
+
+    .as-title {
+        font-size: 30px;
+        font-weight: 800;
+        color: var(--text);
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+    }
+
+    .as-title span { color: var(--accent); }
+
+    .as-subtitle {
+        margin-top: 8px;
+        font-size: 14px;
+        color: var(--text-muted);
+        font-weight: 400;
+    }
+
+    /* ── Stats bar ── */
+    .as-stats {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 24px;
+    }
+
+    .as-stat {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: 16px 20px;
+        flex: 1;
+        text-align: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        transition: box-shadow 0.2s;
+    }
+
+    .as-stat:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.08); }
+    .as-stat:first-child { border-radius: 8px 0 0 8px; }
+    .as-stat:last-child  { border-radius: 0 8px 8px 0; }
+
+    .as-stat-value {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--accent);
+        font-family: 'DM Mono', monospace;
+        display: block;
+        letter-spacing: -0.02em;
+    }
+
+    .as-stat-label {
+        font-size: 11px;
+        color: var(--text-muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-top: 3px;
+        display: block;
+    }
+
+    /* ── Main card ── */
+    .as-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .as-card-header {
+        padding: 18px 24px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--surface2);
+    }
+
+    .as-card-title {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+    }
+
+    .as-select-count {
+        font-family: 'DM Mono', monospace;
+        font-size: 12px;
+        color: var(--text-muted);
+        background: var(--bg);
+        border: 1px solid var(--border);
+        padding: 4px 12px;
+        border-radius: 20px;
+        transition: all 0.3s;
+    }
+
+    .as-select-count.has-selection {
+        color: var(--accent);
+        border-color: rgba(37,99,235,0.3);
+        background: var(--accent-dim);
+    }
+
+    /* ── Services grid ── */
+    .as-services-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .as-service-item {
+        border-bottom: 1px solid var(--border);
+        border-right: 1px solid var(--border);
+        transition: background 0.15s;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .as-service-item:nth-child(even) { border-right: none; }
+    .as-service-item:nth-last-child(-n+2) { border-bottom: none; }
+    .as-service-item:last-child:nth-child(odd) {
+        border-right: none;
+        grid-column: span 2;
+        max-width: 50%;
+    }
+
+    .as-service-item:hover { background: #f5f7fc; }
+
+    .as-service-item.selected { background: var(--accent-dim); }
+
+    .as-service-item.selected::after {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 3px;
+        background: var(--accent);
+    }
+
+    .as-service-inner {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 20px;
+        user-select: none;
+    }
+
+    /* Custom checkbox */
+    .as-checkbox {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 20px; height: 20px;
+        min-width: 20px;
+        border: 1.5px solid var(--border);
+        border-radius: 5px;
+        background: var(--surface);
+        cursor: pointer;
+        transition: all 0.15s;
+        position: relative;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    .as-checkbox:checked {
+        background: var(--accent);
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+
+    .as-checkbox:checked::after {
+        content: '';
+        position: absolute;
+        top: 2px; left: 5px;
+        width: 6px; height: 10px;
+        border: 2px solid #fff;
+        border-top: none; border-left: none;
+        transform: rotate(45deg);
+    }
+
+    .as-service-info { flex: 1; min-width: 0; }
+
+    .as-service-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .selected .as-service-name { color: var(--accent); }
+
+    .as-service-tag {
+        font-size: 10px;
+        font-family: 'DM Mono', monospace;
+        color: var(--text-muted);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-top: 2px;
+    }
+
+    .as-service-price {
+        font-family: 'DM Mono', monospace;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--price-color);
+        white-space: nowrap;
+    }
+
+    .selected .as-service-price { color: var(--green); font-weight: 600; }
+
+    /* Empty */
+    .as-empty {
+        grid-column: span 2;
+        padding: 60px 24px;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+
+    /* ── Footer ── */
+    .as-footer {
+        padding: 20px 24px;
+        border-top: 1px solid var(--border);
+        background: var(--surface2);
+    }
+
+    .as-total-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+    }
+
+    .as-total-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+        font-family: 'DM Mono', monospace;
+    }
+
+    .as-total-value {
+        font-family: 'DM Mono', monospace;
+        font-size: 26px;
+        font-weight: 500;
+        color: var(--accent);
+        letter-spacing: -0.02em;
+    }
+
+    .as-total-value small {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-right: 2px;
+    }
+
+    /* Selection chips */
+    .as-selection-summary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 14px;
+    }
+
+    .as-chip {
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        padding: 4px 10px;
+        background: var(--green-soft);
+        border: 1px solid var(--green-border);
+        border-radius: 4px;
+        color: var(--green);
+        animation: chipIn 0.2s ease;
+        display: flex; align-items: center; gap: 5px;
+    }
+
+    .as-chip::before { content: '✓'; font-size: 10px; font-weight: 700; }
+
+    @keyframes chipIn {
+        from { opacity: 0; transform: scale(0.85); }
+        to   { opacity: 1; transform: scale(1); }
+    }
+
+    .as-actions { display: flex; gap: 10px; }
+
+    .as-btn-submit {
+        flex: 1;
+        padding: 14px 24px;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-family: 'Syne', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 14px rgba(37,99,235,0.25);
+    }
+
+    .as-btn-submit:hover:not(:disabled) {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba(37,99,235,0.3);
+    }
+
+    .as-btn-submit:disabled {
+        background: #e5e7eb;
+        color: #9ca3af;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .as-btn-back {
+        padding: 14px 20px;
+        background: transparent;
+        color: var(--text-dim);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-family: 'Syne', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.15s;
+        display: flex; align-items: center; gap: 8px;
+        white-space: nowrap;
+    }
+
+    .as-btn-back:hover {
+        background: var(--surface2);
+        border-color: #c5cad8;
+        color: var(--text);
+        text-decoration: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+        .as-services-grid { grid-template-columns: 1fr; }
+        .as-service-item:nth-child(even) { border-right: 1px solid var(--border); }
+        .as-service-item:nth-last-child(-n+2) { border-bottom: 1px solid var(--border); }
+        .as-service-item:last-child { border-bottom: none !important; }
+        .as-service-item:last-child:nth-child(odd) { grid-column: span 1; max-width: 100%; }
+        .as-stats { flex-direction: column; gap: 6px; }
+        .as-stat { border-radius: 8px !important; }
+        .as-title { font-size: 24px; }
+    }
+</style>
+
+<div class="as-wrapper">
+<div class="as-inner">
+
+    <!-- Header -->
+    <div class="as-header">
+        <div class="as-eyebrow">Additional Services</div>
+        <h1 class="as-title">Select <span>Services</span></h1>
+        <p class="as-subtitle">Choose all work performed during this job</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="as-stats">
+        <div class="as-stat">
+            <span class="as-stat-value">{{ services|length }}</span>
+            <span class="as-stat-label">Available</span>
+        </div>
+        <div class="as-stat">
+            <span class="as-stat-value" id="stat-selected">0</span>
+            <span class="as-stat-label">Selected</span>
+        </div>
+        <div class="as-stat">
+            <span class="as-stat-value" id="stat-total">₹0</span>
+            <span class="as-stat-label">Est. Total</span>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form method="POST" id="serviceForm">
+        {% csrf_token %}
+
+        <div class="as-card">
+
+            <div class="as-card-header">
+                <span class="as-card-title">Available Services</span>
+                <span class="as-select-count" id="selectCount">0 selected</span>
+            </div>
+
+            <div class="as-services-grid">
+                {% for s in services %}
+                <div class="as-service-item" onclick="toggleService(this)">
+                    <div class="as-service-inner">
+                        <input
+                            class="as-checkbox"
+                            type="checkbox"
+                            name="services"
+                            value="{{ s.id }}"
+                            id="service{{ s.id }}"
+                            data-price="{{ s.base_amount }}"
+                            data-name="{{ s.servicetype.servicetype_name }}"
+                            onclick="event.stopPropagation()"
+                        >
+                        <div class="as-service-info">
+                            <div class="as-service-name">{{ s.servicetype.servicetype_name }}</div>
+                            <div class="as-service-tag">Service #{{ s.id }}</div>
+                        </div>
+                        <span class="as-service-price">₹{{ s.base_amount }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="as-empty">
+                    <p>🔧 No services available</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="as-footer">
+                <div class="as-selection-summary" id="selectionSummary"></div>
+
+                <div class="as-total-row">
+                    <span class="as-total-label">Estimated Total</span>
+                    <span class="as-total-value"><small>₹</small><span id="totalAmount">0.00</span></span>
+                </div>
+
+                <div class="as-actions">
+                    <a href="{% url 'Technician:assigned_jobs' %}" class="as-btn-back">← Back</a>
+                    <button type="submit" class="as-btn-submit" id="submitBtn" disabled>
+                        Add Selected Services
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+
+</div>
+</div>
+
+<script>
+    function toggleService(item) {
+        const cb = item.querySelector('.as-checkbox');
+        cb.checked = !cb.checked;
+        updateUI();
+    }
+
+    function updateUI() {
+        const checkboxes = document.querySelectorAll('.as-checkbox');
+        let total = 0, count = 0;
+        const chips = [];
+
+        checkboxes.forEach(cb => {
+            const item = cb.closest('.as-service-item');
+            if (cb.checked) {
+                item.classList.add('selected');
+                total += parseFloat(cb.dataset.price) || 0;
+                count++;
+                chips.push({ name: cb.dataset.name, price: cb.dataset.price });
+            } else {
+                item.classList.remove('selected');
+            }
+        });
+
+        document.getElementById('stat-selected').textContent = count;
+        document.getElementById('stat-total').textContent = '₹' + total.toLocaleString('en-IN');
+        document.getElementById('totalAmount').textContent = total.toFixed(2);
+
+        const countEl = document.getElementById('selectCount');
+        countEl.textContent = count + ' selected';
+        countEl.classList.toggle('has-selection', count > 0);
+
+        document.getElementById('selectionSummary').innerHTML =
+            chips.map(c => `<span class="as-chip">${c.name} · ₹${c.price}</span>`).join('');
+
+        document.getElementById('submitBtn').disabled = count === 0;
+    }
+
+    document.querySelectorAll('.as-checkbox').forEach(cb => {
+        cb.addEventListener('change', updateUI);
+    });
+</script>
+
+{% endblock content %}
