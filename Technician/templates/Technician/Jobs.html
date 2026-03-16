@@ -393,10 +393,15 @@
                 </a>
                 
               </td>
+              
               <td class="center">
+                {% if i.booking_status <= 8 %}
                 <a href="{% url 'Technician:add_service' i.id %}" class="btn-note">
                   ➕ Add Service
                 </a>
+                {% else %}
+                <span style="color:var(--text-dim); font-size:12px;">Service Completed</span>
+                {% endif %}
 
             </tr>
             {% empty %}

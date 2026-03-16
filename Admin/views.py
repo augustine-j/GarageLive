@@ -45,7 +45,7 @@ def AdminRegistration(request):
     if request.method=="POST":
         name=request.POST.get("txt_name")
         email=request.POST.get("txt_email")
-        password=request.POST.get("txt_password")
+        password=request.POST.get("txt_pass")
         admincount=tbl_AdminRegistration.objects.filter(admin_email=email).count()
         if admincount>0:
             return render(request,"Admin/AdminRegistration.html",{'msg':"Email already exists"})
